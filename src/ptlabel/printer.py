@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import snmp
+from .i18n import tr
 from .tapes import MEDIA_TYPES, TAPE_COLORS, TEXT_COLORS, Tape, tape_for_code
 
 RAW_PORT = 9100
@@ -15,19 +16,19 @@ RAW_PORT = 9100
 MODELS = {0x68: "PT-P750W"}
 
 ERRORS_1 = {
-    0x01: "Kein Band eingelegt",
-    0x04: "Schneidemesser blockiert",
-    0x08: "Akku schwach",
-    0x40: "Falsches Netzteil",
+    0x01: tr("No tape loaded"),
+    0x04: tr("Cutter jammed"),
+    0x08: tr("Battery low"),
+    0x40: tr("Wrong power adapter"),
 }
 ERRORS_2 = {
-    0x01: "Falsches Band – bitte Band wechseln",
-    0x02: "Erweiterungspuffer voll",
-    0x04: "Übertragungsfehler",
-    0x08: "Übertragungspuffer voll",
-    0x10: "Abdeckung offen",
-    0x20: "Überhitzung",
-    0x80: "Systemfehler",
+    0x01: tr("Wrong tape – please change the tape"),
+    0x02: tr("Expansion buffer full"),
+    0x04: tr("Transmission error"),
+    0x08: tr("Transmission buffer full"),
+    0x10: tr("Cover open"),
+    0x20: tr("Overheating"),
+    0x80: tr("System error"),
 }
 
 
@@ -51,13 +52,13 @@ class PrinterStatus:
     @classmethod
     def parse(cls, data: bytes) -> PrinterStatus:
         if len(data) < 32 or data[0] != 0x80 or data[2] != 0x42:
-            raise PrinterError("Ungültige Statusantwort")
+            raise PrinterError(tr("Invalid status response"))
         return cls(bytes(data[:32]), data[4], data[8], data[9], data[10], data[11],
                    data[18], data[19], data[24], data[25])
 
     @property
     def model(self) -> str:
-        return MODELS.get(self.model_code, f"Modell 0x{self.model_code:02X}")
+        return MODELS.get(self.model_code, tr("Model 0x{code:02X}").format(code=self.model_code))
 
     @property
     def errors(self) -> list[str]:
@@ -85,10 +86,10 @@ class PrinterStatus:
 
     def describe_media(self) -> str:
         if not self.media_width:
-            return "kein Band"
+            return tr("no tape")
         tape = self.tape
         width = tape.label if tape else f"{self.media_width} mm"
-        kind = MEDIA_TYPES.get(self.media_type, f"Typ 0x{self.media_type:02X}")
+        kind = MEDIA_TYPES.get(self.media_type, tr("type 0x{code:02X}").format(code=self.media_type))
         colors = ""
         if self.tape_color in TAPE_COLORS:
             colors = TAPE_COLORS[self.tape_color][0]
@@ -102,9 +103,9 @@ class PrinterStatus:
         if self.errors:
             text += " – " + ", ".join(self.errors)
         elif self.printing:
-            text += " – druckt"
+            text += " – " + tr("printing")
         else:
-            text += " – bereit"
+            text += " – " + tr("ready")
         return text
 
 
@@ -137,9 +138,9 @@ class NetworkPrinter:
         try:
             raw = snmp.get(self.host, snmp.OID_BROTHER_STATUS, self.community)
         except (snmp.SnmpError, OSError) as exc:
-            raise PrinterError(f"{exc} – Drucker eingeschaltet und im WLAN?") from exc
+            raise PrinterError(tr("{error} – is the printer switched on and connected to the network?").format(error=exc)) from exc
         if not isinstance(raw, bytes):
-            raise PrinterError("Drucker liefert keinen Brother-Status")
+            raise PrinterError(tr("The printer does not report a Brother status"))
         return PrinterStatus.parse(raw)
 
     def send(self, job: bytes) -> None:
@@ -154,7 +155,8 @@ class NetworkPrinter:
                 except (socket.timeout, ConnectionResetError):
                     pass
         except OSError as exc:
-            raise PrinterError(f"Senden an {self.host}:{self.port} fehlgeschlagen ({exc})") from exc
+            raise PrinterError(tr("Sending to {host}:{port} failed ({error})").format(
+                host=self.host, port=self.port, error=exc)) from exc
 
 
 class FilePrinter:
@@ -164,21 +166,22 @@ class FilePrinter:
         self.path = path
 
     def status(self) -> PrinterStatus:
-        raise PrinterError("Status ist nur über das Netzwerk verfügbar")
+        raise PrinterError(tr("Status is only available over the network"))
 
     def send(self, job: bytes) -> None:
         try:
             with open(self.path, "wb") as fh:
                 fh.write(job)
         except OSError as exc:
-            raise PrinterError(f"Schreiben nach {self.path} fehlgeschlagen ({exc})") from exc
+            raise PrinterError(tr("Writing to {path} failed ({error})").format(
+                path=self.path, error=exc)) from exc
 
 
 def open_printer(target: str) -> NetworkPrinter | FilePrinter:
     """``target`` is a host name/IP (optionally ``host:port``), ``file:<path>`` or a /dev path."""
     target = target.strip()
     if not target:
-        raise PrinterError("Kein Drucker eingestellt")
+        raise PrinterError(tr("No printer set"))
     if target.startswith("file:"):
         return FilePrinter(target[5:])
     if target.startswith("/dev/") or Path(target).suffix.lower() in (".bin", ".prn"):

@@ -7,16 +7,18 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDoubleSpinBox, QGridLayout, QGroupBox,
                                QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QPushButton, QSpinBox)
 
+from ..i18n import tr
 from ..model import Prop
 from ..tapes import TAPES
+from .fontui import add_font_previews
 from .qtutil import COLOR_INFO, fmt, set_color
 
 PRINT_FLAGS = [
-    ("auto_cut", "Automatisch schneiden"),
-    ("half_cut", "Halbschnitt zwischen Etiketten"),
-    ("chain", "Kettendruck (spart Band, letztes\nEtikett bleibt im Gerät)"),
-    ("mirror", "Spiegeln"),
-    ("high_res", "Hohe Auflösung 180×360 dpi"),
+    ("auto_cut", tr("Cut automatically")),
+    ("half_cut", tr("Half cut between labels")),
+    ("chain", tr("Chain printing (saves tape, the last\\nlabel stays in the printer)")),
+    ("mirror", tr("Mirror")),
+    ("high_res", tr("High resolution 180×360 dpi")),
 ]
 
 
@@ -34,7 +36,7 @@ class NumberSpin(QDoubleSpinBox):
 
 
 def print_button() -> QPushButton:
-    button = QPushButton("Drucken")
+    button = QPushButton(tr("Print"))
     font = QFont(button.font())
     font.setBold(True)
     button.setFont(font)
@@ -44,23 +46,23 @@ def print_button() -> QPushButton:
 
 class LabelPanel(QGroupBox):
     def __init__(self):
-        super().__init__("Etikett")
+        super().__init__(tr("Label"))
         grid = QGridLayout(self)
         grid.setColumnStretch(1, 1)
         self.tape = QComboBox()
         self.tape.addItems([t.label for t in TAPES])
         self.print_area = QLabel()
         set_color(self.print_area, COLOR_INFO)
-        self.auto_length = QCheckBox("Länge automatisch")
+        self.auto_length = QCheckBox(tr("Automatic length"))
         self.length = NumberSpin(5, 1000, 1)
         self.margin = NumberSpin(1, 50, 0.5)
-        grid.addWidget(QLabel("Bandbreite"), 0, 0)
+        grid.addWidget(QLabel(tr("Tape width")), 0, 0)
         grid.addWidget(self.tape, 0, 1)
         grid.addWidget(self.print_area, 1, 0, 1, 2)
         grid.addWidget(self.auto_length, 2, 0, 1, 2)
-        grid.addWidget(QLabel("Länge (mm)"), 3, 0)
+        grid.addWidget(QLabel(tr("Length (mm)")), 3, 0)
         grid.addWidget(self.length, 3, 1)
-        grid.addWidget(QLabel("Rand links/rechts (mm)"), 4, 0)
+        grid.addWidget(QLabel(tr("Left/right margin (mm)")), 4, 0)
         grid.addWidget(self.margin, 4, 1)
 
     def connect(self, slot) -> None:
@@ -72,25 +74,25 @@ class LabelPanel(QGroupBox):
 
 class PrintPanel(QGroupBox):
     def __init__(self):
-        super().__init__("Drucken")
+        super().__init__(tr("Print"))
         grid = QGridLayout(self)
         grid.setColumnStretch(1, 1)
         self.printer = QLineEdit()
-        self.search = QPushButton("Suchen…")
+        self.search = QPushButton(tr("Search…"))
         self.status = QLabel()
         self.status.setWordWrap(True)
         self.copies = QSpinBox()
         self.copies.setRange(1, 999)
         self.counter = QSpinBox()
         self.counter.setRange(0, 999999)
-        grid.addWidget(QLabel("Drucker"), 0, 0)
+        grid.addWidget(QLabel(tr("Printer")), 0, 0)
         grid.addWidget(self.printer, 0, 1)
         grid.addWidget(self.search, 0, 2)
         grid.addWidget(self.status, 1, 0, 1, 3)
         grid.setRowMinimumHeight(1, 36)
-        grid.addWidget(QLabel("Kopien"), 2, 0)
+        grid.addWidget(QLabel(tr("Copies")), 2, 0)
         grid.addWidget(self.copies, 2, 1)
-        grid.addWidget(QLabel("Nummer {nr} ab"), 3, 0)
+        grid.addWidget(QLabel(tr("Start {nr} at")), 3, 0)
         grid.addWidget(self.counter, 3, 1)
         self.flags: dict[str, QCheckBox] = {}
         for row, (attr, text) in enumerate(PRINT_FLAGS, start=4):
@@ -137,6 +139,7 @@ class PropField(QObject):
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setFilterMode(Qt.MatchFlag.MatchContains)
             self.widget.setCompleter(completer)
+            add_font_previews(self.widget)
             self.widget.currentTextChanged.connect(self.changed)
         elif kind == "multiline":
             self.widget = QPlainTextEdit()
@@ -187,9 +190,9 @@ class PropField(QObject):
 
 def image_row(name: str, on_load) -> QHBoxLayout:
     row = QHBoxLayout()
-    button = QPushButton("Bild laden…")
+    button = QPushButton(tr("Load image…"))
     button.clicked.connect(on_load)
-    label = QLabel(name or "(kein Bild)")
+    label = QLabel(name or tr("(no image)"))
     set_color(label, COLOR_INFO)
     row.addWidget(button)
     row.addWidget(label, 1)

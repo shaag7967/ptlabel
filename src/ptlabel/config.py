@@ -12,6 +12,7 @@ DEFAULTS = {
     "window_geometry": "",
     "zoom": 0,
     "last_dir": "",
+    "language": "",  # empty: follow the system
 }
 
 
@@ -21,6 +22,23 @@ def config_dir() -> Path:
     else:
         base = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
     return base / "ptlabel"
+
+
+def data_dir() -> Path:
+    """Per-user data such as installed fonts."""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("APPDATA") or Path.home() / "AppData" / "Roaming")
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
+    return base / "ptlabel"
+
+
+def cache_dir() -> Path:
+    """Files that can be downloaded again, e.g. font previews."""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
+        return base / "ptlabel" / "cache"
+    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "ptlabel"
 
 
 def load() -> dict:

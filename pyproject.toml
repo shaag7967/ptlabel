@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ptlabel"
 dynamic = ["version"]
-description = "Etiketten-Editor und Druck für den Brother PT-P750W (WLAN)"
+description = "Label editor and printing for the Brother PT-P750W over Wi-Fi"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -17,6 +17,7 @@ classifiers = [
     "Environment :: Win32 (MS Windows)",
     "Environment :: X11 Applications :: Qt",
     "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
     "Natural Language :: German",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -31,7 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "build", "twine"]
+dev = ["pytest", "build", "twine", "babel"]
 
 [project.scripts]
 ptlabel = "ptlabel.cli:main"
@@ -44,6 +45,10 @@ version = { attr = "ptlabel.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+namespaces = false
+
+[tool.setuptools.package-data]
+ptlabel = ["locale/*.pot", "locale/*/LC_MESSAGES/*.po", "locale/*/LC_MESSAGES/*.mo", "data/fonts/*/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

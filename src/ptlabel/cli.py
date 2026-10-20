@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from . import __version__, config
+from .i18n import ntr, tr
 from .model import LabelDocument, QRCodeObject, TextObject
 from .printer import PrinterError, discover_printers, open_printer, wait_for_completion
 from .raster import build_job
@@ -16,18 +17,18 @@ from .render import print_pages, render
 def _printer_target(args) -> str:
     target = args.printer or config.load().get("printer", "")
     if not target:
-        raise PrinterError("Kein Drucker angegeben (--printer HOST) und keiner in der GUI eingestellt")
+        raise PrinterError(tr("No printer given (--printer HOST) and none set in the GUI"))
     return target
 
 
 def _output(doc: LabelDocument, args) -> int:
     if args.preview:
         render(doc).image.point(lambda v: 0 if v else 255).save(args.preview)
-        print(f"Vorschau gespeichert: {args.preview}")
+        print(tr("Preview saved: {path}").format(path=args.preview))
     job = build_job(print_pages(doc), doc.tape, doc.print_options())
     if args.output:
         Path(args.output).write_bytes(job)
-        print(f"Druckdaten gespeichert: {args.output} ({len(job)} Bytes)")
+        print(tr("Print data saved: {path} ({size} bytes)").format(path=args.output, size=len(job)))
     if args.preview or args.output:
         if not args.printer:
             return 0
@@ -37,29 +38,31 @@ def _output(doc: LabelDocument, args) -> int:
         if status.errors:
             raise PrinterError(", ".join(status.errors))
         if status.tape and status.tape.code != doc.tape.code:
-            raise PrinterError(f"Eingelegtes Band ({status.tape.label}) passt nicht zum Etikett ({doc.tape.label})")
+            raise PrinterError(tr("Loaded tape ({loaded}) does not match the label ({label})").format(
+                loaded=status.tape.label, label=doc.tape.label))
     printer.send(job)
     if hasattr(printer, "host"):
         status = wait_for_completion(printer)
         if status.errors:
             raise PrinterError(", ".join(status.errors))
-    print(f"{doc.copies} Etikett(en) gedruckt.")
+    print(ntr("{count} label printed.", "{count} labels printed.", doc.copies).format(count=doc.copies))
     return 0
 
 
 def cmd_status(args) -> int:
     printer = open_printer(_printer_target(args))
     status = printer.status()
-    print(f"Drucker: {status.model}")
-    print(f"Band:    {status.describe_media()}")
-    print(f"Zustand: {', '.join(status.errors) if status.errors else ('druckt' if status.printing else 'bereit')}")
+    state = ", ".join(status.errors) if status.errors else (tr("printing") if status.printing else tr("ready"))
+    print(tr("Printer: {model}").format(model=status.model))
+    print(tr("Tape:    {media}").format(media=status.describe_media()))
+    print(tr("State:   {state}").format(state=state))
     return 1 if status.errors else 0
 
 
 def cmd_discover(args) -> int:
     printers = discover_printers()
     if not printers:
-        print("Kein Brother-Drucker gefunden.")
+        print(tr("No Brother printer found."))
         return 1
     for p in printers:
         print(f"{p.address:24} {p.ip:16} {p.model}")
@@ -107,43 +110,44 @@ def cmd_text(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="ptlabel", description="Etiketten für den Brother PT-P750W erstellen und drucken. "
-                                     "Ohne Befehl startet die grafische Oberfläche.")
+    parser = argparse.ArgumentParser(prog="ptlabel", description=tr(
+        "Design and print labels for the Brother PT-P750W. Without a command the graphical user interface starts."))
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    sub = parser.add_subparsers(dest="cmd", metavar="BEFEHL")
+    sub = parser.add_subparsers(dest="cmd", metavar=tr("COMMAND"))
 
-    sub.add_parser("gui", help="grafische Oberfläche starten (Standard)")
+    sub.add_parser("gui", help=tr("start the graphical user interface (default)"))
 
-    p = sub.add_parser("status", help="Druckerstatus anzeigen")
-    p.add_argument("--printer", help="Hostname/IP des Druckers")
+    p = sub.add_parser("status", help=tr("show the printer status"))
+    p.add_argument("--printer", help=tr("host name/IP of the printer"))
     p.set_defaults(func=cmd_status)
 
-    p = sub.add_parser("discover", help="Brother-Drucker im Netzwerk suchen")
+    p = sub.add_parser("discover", help=tr("search the network for Brother printers"))
     p.set_defaults(func=cmd_discover)
 
     def output_args(p):
-        p.add_argument("--printer", help="Hostname/IP, file:PFAD oder /dev/usb/lp0")
-        p.add_argument("--preview", metavar="PNG", help="Vorschau als PNG speichern (druckt nur zusätzlich mit --printer)")
-        p.add_argument("--output", metavar="DATEI", help="Druckdaten in Datei schreiben (druckt nur zusätzlich mit --printer)")
+        p.add_argument("--printer", help=tr("host name/IP, file:PATH or /dev/usb/lp0"))
+        p.add_argument("--preview", metavar="PNG", help=tr("save a preview as PNG (prints only with --printer)"))
+        p.add_argument("--output", metavar=tr("FILE"),
+                       help=tr("write the print data to a file (prints only with --printer)"))
 
-    p = sub.add_parser("print", help="Etikettendatei (.ptlabel) drucken")
+    p = sub.add_parser("print", help=tr("print a label file (.ptlabel)"))
     p.add_argument("file")
     p.add_argument("--copies", type=int)
-    p.add_argument("--start", type=int, help="Startwert für {nr}")
+    p.add_argument("--start", type=int, help=tr("start value for {nr}"))
     output_args(p)
     p.set_defaults(func=cmd_print)
 
-    p = sub.add_parser("text", help="schnell ein Text-Etikett drucken (jedes Argument = eine Zeile)")
+    p = sub.add_parser("text", help=tr("quickly print a text label (one argument per line)"))
     p.add_argument("text", nargs="+")
-    p.add_argument("--tape", type=float, help="Bandbreite in mm (Standard: eingelegtes Band)")
-    p.add_argument("--font", help="Schriftart, z. B. Arial")
-    p.add_argument("--size", type=float, help="Schriftgröße in pt (Standard: automatisch)")
+    p.add_argument("--tape", type=float, help=tr("tape width in mm (default: loaded tape)"))
+    p.add_argument("--font", help=tr("font, e.g. Arial"))
+    p.add_argument("--size", type=float, help=tr("font size in pt (default: automatic)"))
     p.add_argument("--bold", action="store_true")
     p.add_argument("--italic", action="store_true")
     p.add_argument("--align", choices=("left", "center", "right"), default="left")
-    p.add_argument("--qr", metavar="INHALT", help="QR-Code vor den Text setzen")
-    p.add_argument("--length", type=float, help="feste Etikettlänge in mm")
-    p.add_argument("--margin", type=float, default=2.0, help="Rand in mm (Standard 2)")
+    p.add_argument("--qr", metavar=tr("CONTENT"), help=tr("put a QR code in front of the text"))
+    p.add_argument("--length", type=float, help=tr("fixed label length in mm"))
+    p.add_argument("--margin", type=float, default=2.0, help=tr("margin in mm (default 2)"))
     p.add_argument("--copies", type=int, default=1)
     output_args(p)
     p.set_defaults(func=cmd_text)
@@ -155,5 +159,5 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return args.func(args)
     except (PrinterError, OSError, ValueError) as exc:
-        print(f"Fehler: {exc}", file=sys.stderr)
+        print(tr("Error: {error}").format(error=exc), file=sys.stderr)
         return 1

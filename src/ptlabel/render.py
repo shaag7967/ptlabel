@@ -14,6 +14,7 @@ import segno
 from PIL import Image, ImageDraw, ImageOps
 
 from . import fonts
+from .i18n import tr
 from .model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
                     QRCodeObject, TextObject, expand)
 from .tapes import DPI, MM_PER_INCH, Tape
@@ -100,7 +101,7 @@ def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
         placed.append(Placed(obj, box, size_pt))
         if (box[1] < band_top or box[3] > band_top + band_h or box[0] < margin_px
                 or box[2] > length_px - margin_px):
-            ctx.warnings.append(f"{obj.title} ragt über den druckbaren Bereich hinaus")
+            ctx.warnings.append(tr("{object} extends beyond the printable area").format(object=obj.title))
     canvas = canvas.point(_threshold)
     return RenderResult(canvas, scale, tape, (band_top, band_top + band_h), margin_px, placed, ctx.warnings)
 
@@ -155,7 +156,7 @@ def _render_object(obj: LabelObject, scale: float, ctx: _Ctx):
         return _render_frame(obj, scale), False, None
     if isinstance(obj, LineObject):
         return _render_line(obj, scale), False, None
-    raise TypeError(f"unbekanntes Objekt {obj!r}")
+    raise TypeError(f"unknown object {obj!r}")
 
 
 # --- text -------------------------------------------------------------------
@@ -227,7 +228,7 @@ def _render_qr(obj: QRCodeObject, scale: float, ctx: _Ctx) -> Image.Image:
     box = max(1, round(obj.size * scale))
     module = max(1, box // n)  # whole dots per module keep the code readable
     if module * DPI / (scale * MM_PER_INCH) < 2:
-        ctx.warnings.append("QR-Code: Module kleiner als 2 Punkte – QR-Code größer machen")
+        ctx.warnings.append(tr("QR code: modules smaller than 2 dots – make the QR code larger"))
     raw = bytes(255 if v else 0 for row in qr.matrix for v in row)
     symbol = Image.frombytes("L", (n, n), raw).resize((n * module, n * module), Image.Resampling.NEAREST)
     img = Image.new("L", (max(box, symbol.width),) * 2, 0)
@@ -243,7 +244,8 @@ def _render_barcode(obj: BarcodeObject, scale: float, ctx: _Ctx) -> Image.Image:
         code = barcode.get(obj.symbology, data, **kwargs)
         modules = code.build()[0]
     except Exception as exc:
-        raise ValueError(f"ungültiger Inhalt für {obj.symbology.upper()}: {exc}") from exc
+        raise ValueError(tr("invalid data for {symbology}: {error}").format(
+            symbology=obj.symbology.upper(), error=exc)) from exc
     unit = max(1, round(obj.module * scale * MM_PER_INCH / DPI))
     quiet = 10 * unit
     width = len(modules) * unit + 2 * quiet

@@ -1,9 +1,14 @@
-"""Discovery of installed TrueType/OpenType fonts on Windows and Linux."""
+"""Discovery of TrueType/OpenType fonts.
+
+Fonts come from the system font folders, the fonts shipped with PT-Label and the
+user font folder (fonts added in the GUI or downloaded from Google Fonts).
+"""
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 import threading
 from dataclasses import dataclass
@@ -23,7 +28,14 @@ SPECIAL_WEIGHTS = ("semi", "demi", "light", "thin", "narrow", "condensed", "blac
                    "extra", "ultra", "heavy", "hairline")
 
 
-def font_dirs() -> list[Path]:
+BUNDLED_FONT_DIR = Path(__file__).parent / "data" / "fonts"
+
+
+def user_font_dir() -> Path:
+    return config.data_dir() / "fonts"
+
+
+def system_font_dirs() -> list[Path]:
     if sys.platform == "win32":
         dirs = [Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"]
         if os.environ.get("LOCALAPPDATA"):
@@ -34,6 +46,11 @@ def font_dirs() -> list[Path]:
         data_home = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
         dirs = [Path("/usr/share/fonts"), Path("/usr/local/share/fonts"), data_home / "fonts",
                 Path.home() / ".fonts"]
+    return dirs
+
+
+def font_dirs() -> list[Path]:
+    dirs = [*system_font_dirs(), BUNDLED_FONT_DIR, user_font_dir()]
     return [d for d in dirs if d.is_dir()]
 
 
@@ -82,6 +99,12 @@ class FontRegistry:
             if not self._loaded:
                 self._load()
                 self._loaded = True
+
+    def reload(self) -> None:
+        """Scan the font folders again, e.g. after fonts were added."""
+        with self._lock:
+            self._load()
+            self._loaded = True
 
     def _load(self) -> None:
         cache = {}
@@ -148,6 +171,25 @@ class FontRegistry:
             return value
 
         return max(faces, key=score)
+
+
+def install_font_files(paths, target: Path | None = None) -> list[str]:
+    """Copy font files into the user font folder and return the families they contain.
+
+    Files that are not readable fonts are skipped. The registry is reloaded afterwards.
+    """
+    target = target or user_font_dir()
+    families = []
+    for path in map(Path, paths):
+        faces = _scan_file(str(path)) if path.suffix.lower() in FONT_EXTENSIONS else []
+        if not faces:
+            continue
+        target.mkdir(parents=True, exist_ok=True)
+        if path.resolve().parent != target.resolve():
+            shutil.copy2(path, target / path.name)
+        families += [family for _, family, _ in faces if family not in families]
+    REGISTRY.reload()
+    return families
 
 
 REGISTRY = FontRegistry(config.config_dir() / "fontcache.json")

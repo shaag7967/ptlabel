@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import ClassVar
 
+from .i18n import tr
 from .raster import PrintOptions
 from .tapes import Tape, tape_for_width
 
@@ -27,9 +28,9 @@ class Prop:
 
 ROTATIONS = ((0, "0°"), (90, "90°"), (180, "180°"), (270, "270°"))
 POSITION_PROPS = [
-    Prop("x", "X (mm)", "float", (-50, 1000, 0.5)),
-    Prop("y", "Y (mm)", "float", (-50, 50, 0.5)),
-    Prop("rotation", "Drehung", "choice", ROTATIONS),
+    Prop("x", tr("X (mm)"), "float", (-50, 1000, 0.5)),
+    Prop("y", tr("Y (mm)"), "float", (-50, 50, 0.5)),
+    Prop("rotation", tr("Rotation"), "choice", ROTATIONS),
 ]
 
 
@@ -60,18 +61,18 @@ class LabelObject:
 @dataclass
 class TextObject(LabelObject):
     kind: ClassVar[str] = "text"
-    title: ClassVar[str] = "Text"
+    title: ClassVar[str] = tr("Text")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("text", "Text", "multiline"),
-        Prop("font", "Schriftart", "font"),
-        Prop("size", "Größe (pt)", "float", (3, 300, 1)),
-        Prop("auto_size", "Größe automatisch (Bandhöhe füllen)", "bool"),
-        Prop("bold", "Fett", "bool"),
-        Prop("italic", "Kursiv", "bool"),
-        Prop("underline", "Unterstrichen", "bool"),
-        Prop("invert", "Invertiert (weiß auf schwarz)", "bool"),
-        Prop("align", "Ausrichtung", "choice", (("left", "Links"), ("center", "Zentriert"), ("right", "Rechts"))),
-        Prop("line_spacing", "Zeilenabstand", "float", (0.5, 3, 0.1)),
+        Prop("text", tr("Text"), "multiline"),
+        Prop("font", tr("Font"), "font"),
+        Prop("size", tr("Size (pt)"), "float", (3, 300, 1)),
+        Prop("auto_size", tr("Automatic size (fill tape height)"), "bool"),
+        Prop("bold", tr("Bold"), "bool"),
+        Prop("italic", tr("Italic"), "bool"),
+        Prop("underline", tr("Underline"), "bool"),
+        Prop("invert", tr("Inverted (white on black)"), "bool"),
+        Prop("align", tr("Alignment"), "choice", (("left", tr("Left")), ("center", tr("Centered")), ("right", tr("Right")))),
+        Prop("line_spacing", tr("Line spacing"), "float", (0.5, 3, 0.1)),
     ]
 
     text: str = "Text"
@@ -93,11 +94,11 @@ class TextObject(LabelObject):
 @dataclass
 class QRCodeObject(LabelObject):
     kind: ClassVar[str] = "qrcode"
-    title: ClassVar[str] = "QR-Code"
+    title: ClassVar[str] = tr("QR code")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("data", "Inhalt", "multiline"),
-        Prop("size", "Größe (mm)", "float", (2, 100, 0.5)),
-        Prop("error", "Fehlerkorrektur", "choice", (("L", "L (7 %)"), ("M", "M (15 %)"), ("Q", "Q (25 %)"), ("H", "H (30 %)"))),
+        Prop("data", tr("Content"), "multiline"),
+        Prop("size", tr("Size (mm)"), "float", (2, 100, 0.5)),
+        Prop("error", tr("Error correction"), "choice", (("L", "L (7 %)"), ("M", "M (15 %)"), ("Q", "Q (25 %)"), ("H", "H (30 %)"))),
     ]
 
     data: str = "https://example.com"
@@ -114,7 +115,7 @@ BARCODE_TYPES = (
     ("ean13", "EAN-13"),
     ("ean8", "EAN-8"),
     ("upca", "UPC-A"),
-    ("itf", "ITF (2 aus 5)"),
+    ("itf", tr("ITF (2 of 5)")),
     ("codabar", "Codabar"),
 )
 
@@ -122,14 +123,14 @@ BARCODE_TYPES = (
 @dataclass
 class BarcodeObject(LabelObject):
     kind: ClassVar[str] = "barcode"
-    title: ClassVar[str] = "Barcode"
+    title: ClassVar[str] = tr("Barcode")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("data", "Inhalt", "text"),
-        Prop("symbology", "Typ", "choice", BARCODE_TYPES),
-        Prop("height", "Höhe inkl. Klartext (mm)", "float", (1, 100, 0.5)),
-        Prop("module", "Modulbreite (Punkte)", "int", (1, 6, 1)),
-        Prop("show_text", "Klartext anzeigen", "bool"),
-        Prop("text_size", "Klartext-Größe (pt)", "float", (3, 30, 0.5)),
+        Prop("data", tr("Content"), "text"),
+        Prop("symbology", tr("Type"), "choice", BARCODE_TYPES),
+        Prop("height", tr("Height incl. text (mm)"), "float", (1, 100, 0.5)),
+        Prop("module", tr("Module width (dots)"), "int", (1, 6, 1)),
+        Prop("show_text", tr("Show text"), "bool"),
+        Prop("text_size", tr("Text size (pt)"), "float", (3, 30, 0.5)),
     ]
 
     data: str = "12345678"
@@ -147,15 +148,15 @@ class BarcodeObject(LabelObject):
 @dataclass
 class ImageObject(LabelObject):
     kind: ClassVar[str] = "image"
-    title: ClassVar[str] = "Bild"
+    title: ClassVar[str] = tr("Image")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("data", "Bild", "image"),
-        Prop("width", "Breite (mm)", "float", (1, 500, 0.5)),
-        Prop("height", "Höhe (mm)", "float", (1, 50, 0.5)),
-        Prop("keep_aspect", "Seitenverhältnis beibehalten", "bool"),
-        Prop("dither", "Rastern (für Fotos)", "bool"),
-        Prop("threshold", "Schwellwert (0–255)", "int", (1, 254, 8)),
-        Prop("invert", "Invertieren", "bool"),
+        Prop("data", tr("Image"), "image"),
+        Prop("width", tr("Width (mm)"), "float", (1, 500, 0.5)),
+        Prop("height", tr("Height (mm)"), "float", (1, 50, 0.5)),
+        Prop("keep_aspect", tr("Keep aspect ratio"), "bool"),
+        Prop("dither", tr("Dither (for photos)"), "bool"),
+        Prop("threshold", tr("Threshold (0–255)"), "int", (1, 254, 8)),
+        Prop("invert", tr("Invert"), "bool"),
     ]
 
     data: str = ""  # base64 encoded PNG
@@ -177,13 +178,13 @@ class ImageObject(LabelObject):
 @dataclass
 class FrameObject(LabelObject):
     kind: ClassVar[str] = "frame"
-    title: ClassVar[str] = "Rahmen"
+    title: ClassVar[str] = tr("Frame")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("width", "Breite (mm)", "float", (1, 1000, 0.5)),
-        Prop("height", "Höhe (mm)", "float", (1, 50, 0.5)),
-        Prop("thickness", "Linienstärke (mm)", "float", (0.1, 5, 0.1)),
-        Prop("radius", "Eckenradius (mm)", "float", (0, 20, 0.5)),
-        Prop("fill", "Gefüllt", "bool"),
+        Prop("width", tr("Width (mm)"), "float", (1, 1000, 0.5)),
+        Prop("height", tr("Height (mm)"), "float", (1, 50, 0.5)),
+        Prop("thickness", tr("Line width (mm)"), "float", (0.1, 5, 0.1)),
+        Prop("radius", tr("Corner radius (mm)"), "float", (0, 20, 0.5)),
+        Prop("fill", tr("Filled"), "bool"),
     ]
 
     width: float = 30.0
@@ -200,11 +201,11 @@ class FrameObject(LabelObject):
 @dataclass
 class LineObject(LabelObject):
     kind: ClassVar[str] = "line"
-    title: ClassVar[str] = "Linie"
+    title: ClassVar[str] = tr("Line")
     PROPS: ClassVar[list[Prop]] = [
-        Prop("length", "Länge (mm)", "float", (0.5, 1000, 0.5)),
-        Prop("thickness", "Linienstärke (mm)", "float", (0.1, 10, 0.1)),
-        Prop("vertical", "Senkrecht", "bool"),
+        Prop("length", tr("Length (mm)"), "float", (0.5, 1000, 0.5)),
+        Prop("thickness", tr("Line width (mm)"), "float", (0.1, 10, 0.1)),
+        Prop("vertical", tr("Vertical"), "bool"),
     ]
 
     length: float = 20.0
@@ -262,7 +263,7 @@ class LabelDocument:
     @classmethod
     def from_dict(cls, data: dict) -> LabelDocument:
         if data.get("format") != FILE_FORMAT:
-            raise ValueError("Keine PT-Label-Datei")
+            raise ValueError(tr("Not a PT-Label file"))
         known = {f.name for f in fields(cls)} - {"objects"}
         doc = cls(**{k: v for k, v in data.items() if k in known})
         doc.objects = [object_from_dict(o) for o in data.get("objects", []) if o.get("type") in OBJECT_TYPES]
@@ -299,15 +300,16 @@ class _Formatter(string.Formatter):
         return kwargs[field_name], field_name
 
 
-PLACEHOLDER_HELP = (
-    "{nr}  laufende Nummer (z. B. {nr:03} → 001)\n"
-    "{datum}  heutiges Datum (z. B. {datum:%d.%m.%y})\n"
-    "{zeit}  Uhrzeit (z. B. {zeit:%H:%M:%S})"
+PLACEHOLDER_HELP = tr(
+    "{nr}  running number (e.g. {nr:03} → 001)\n"
+    "{date}  today's date (e.g. {date:%d/%m/%y})\n"
+    "{time}  time of day (e.g. {time:%H:%M:%S})"
 )
 
 
 def expand(text: str, counter: int, now: datetime | None = None) -> str:
-    """Replace {nr}, {datum}, {zeit} placeholders; leave the text unchanged on errors."""
+    """Replace {nr}, {date}, {time} placeholders (German aliases {datum}, {zeit});
+    leave the text unchanged on errors."""
     if "{" not in text:
         return text
     now = now or datetime.now()

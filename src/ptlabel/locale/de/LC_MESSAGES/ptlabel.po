@@ -1,0 +1,883 @@
+# German translation of PT-Label.
+# This file is distributed under the same license as the ptlabel project.
+msgid ""
+msgstr ""
+"Project-Id-Version: ptlabel 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-20 21:48+0200\n"
+"PO-Revision-Date: 2026-10-20 19:48+0000\n"
+"Last-Translator: shaag7967\n"
+"Language: de\n"
+"Language-Team: German\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "&Edit"
+msgstr "&Bearbeiten"
+
+msgid "&File"
+msgstr "&Datei"
+
+msgid "&Help"
+msgstr "&Hilfe"
+
+msgid "&Insert"
+msgstr "&Einfügen"
+
+msgid "&Printer"
+msgstr "D&rucker"
+
+msgid "&View"
+msgstr "&Ansicht"
+
+msgid "(no image)"
+msgstr "(kein Bild)"
+
+msgid "About…"
+msgstr "Über…"
+
+msgid "Add font files"
+msgstr "Schriftdateien hinzufügen"
+
+msgid "Add font files…"
+msgstr "Schriftdateien hinzufügen…"
+
+msgid "Alignment"
+msgstr "Ausrichtung"
+
+msgid "All categories"
+msgstr "Alle Kategorien"
+
+msgid "All files"
+msgstr "Alle Dateien"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "Automatic length"
+msgstr "Länge automatisch"
+
+msgid "Automatic size (fill tape height)"
+msgstr "Größe automatisch (Bandhöhe füllen)"
+
+msgid "Barcode"
+msgstr "Barcode"
+
+msgid "Battery low"
+msgstr "Akku schwach"
+
+msgid "Berry pink"
+msgstr "Beerenpink"
+
+msgid "Black"
+msgstr "Schwarz"
+
+msgid "Blue"
+msgstr "Blau"
+
+msgid "Bold"
+msgstr "Fett"
+
+msgid "Bring forward"
+msgstr "Nach vorne"
+
+msgid "Brother printers found:"
+msgstr "Gefundene Brother-Drucker:"
+
+msgid "COMMAND"
+msgstr "BEFEHL"
+
+msgid "CONTENT"
+msgstr "INHALT"
+
+msgid "Center vertically"
+msgstr "Vertikal zentrieren"
+
+msgid "Centered"
+msgstr "Zentriert"
+
+msgid "Chain printing (saves tape, the last\\nlabel stays in the printer)"
+msgstr "Kettendruck (spart Band, letztes\\nEtikett bleibt im Gerät)"
+
+msgid "Cleaning"
+msgstr "Reinigung"
+
+msgid "Cleaning tape"
+msgstr "Reinigungsband"
+
+msgid "Clear"
+msgstr "Transparent"
+
+msgid "Content"
+msgstr "Inhalt"
+
+msgid "Copies"
+msgstr "Kopien"
+
+msgid "Corner radius (mm)"
+msgstr "Eckenradius (mm)"
+
+msgid "Cover open"
+msgstr "Abdeckung offen"
+
+msgid "Cut automatically"
+msgstr "Automatisch schneiden"
+
+msgid "Cutter jammed"
+msgstr "Schneidemesser blockiert"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid ""
+"Design and print labels for the Brother PT-P750W. Without a command the graphical user interface "
+"starts."
+msgstr ""
+"Etiketten für den Brother PT-P750W erstellen und drucken. Ohne Befehl startet die grafische "
+"Oberfläche."
+
+msgid "Display"
+msgstr "Display"
+
+msgid "Dither (for photos)"
+msgstr "Rastern (für Fotos)"
+
+msgid "Download Google Fonts"
+msgstr "Google Fonts herunterladen"
+
+msgid "Download Google Fonts…"
+msgstr "Google Fonts herunterladen…"
+
+msgid "Duplicate"
+msgstr "Duplizieren"
+
+msgid "Error correction"
+msgstr "Fehlerkorrektur"
+
+#, python-brace-format
+msgid "Error: {error}"
+msgstr "Fehler: {error}"
+
+msgid "Expansion buffer full"
+msgstr "Erweiterungspuffer voll"
+
+msgid "Export as PNG"
+msgstr "Als PNG exportieren"
+
+msgid "Export as PNG…"
+msgstr "Als PNG exportieren…"
+
+#, python-brace-format
+msgid ""
+"Export failed:\n"
+"{error}"
+msgstr ""
+"Export fehlgeschlagen:\n"
+"{error}"
+
+#, python-brace-format
+msgid "Exported: {name}"
+msgstr "Exportiert: {name}"
+
+msgid "F&onts"
+msgstr "Schri&ften"
+
+msgid "FILE"
+msgstr "DATEI"
+
+msgid "Filled"
+msgstr "Gefüllt"
+
+msgid "Find printers…"
+msgstr "Drucker suchen…"
+
+msgid "Fluorescent orange"
+msgstr "Neon Orange"
+
+msgid "Fluorescent yellow"
+msgstr "Neon Gelb"
+
+msgid "Font"
+msgstr "Schriftart"
+
+msgid "Fonts"
+msgstr "Schriften"
+
+#, python-brace-format
+msgid "Fonts added: {families}"
+msgstr "Schriften hinzugefügt: {families}"
+
+msgid "Fonts are installed for PT-Label only (regular and bold, upright and italic)."
+msgstr "Schriften werden nur für PT-Label installiert (normal und fett, aufrecht und kursiv)."
+
+msgid "Frame"
+msgstr "Rahmen"
+
+msgid "Gold"
+msgstr "Gold"
+
+msgid "Green"
+msgstr "Grün"
+
+msgid "Half cut between labels"
+msgstr "Halbschnitt zwischen Etiketten"
+
+msgid "Handwriting"
+msgstr "Handschrift"
+
+msgid "Height (mm)"
+msgstr "Höhe (mm)"
+
+msgid "Height incl. text (mm)"
+msgstr "Höhe inkl. Klartext (mm)"
+
+msgid "High resolution 180×360 dpi"
+msgstr "Hohe Auflösung 180×360 dpi"
+
+#, python-brace-format
+msgid "Host {host!r} not found"
+msgstr "Host {host!r} nicht gefunden"
+
+msgid "ITF (2 of 5)"
+msgstr "ITF (2 aus 5)"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Images"
+msgstr "Bilder"
+
+msgid "Image…"
+msgstr "Bild…"
+
+msgid "Install"
+msgstr "Installieren"
+
+#, python-brace-format
+msgid ""
+"Installation failed:\n"
+"{error}"
+msgstr ""
+"Installation fehlgeschlagen:\n"
+"{error}"
+
+#, python-brace-format
+msgid "Installed: {families}"
+msgstr "Installiert: {families}"
+
+#, python-brace-format
+msgid "Installing {family} …"
+msgstr "Installiere {family} …"
+
+msgid "Invalid status response"
+msgstr "Ungültige Statusantwort"
+
+msgid "Invert"
+msgstr "Invertieren"
+
+msgid "Inverted (white on black)"
+msgstr "Invertiert (weiß auf schwarz)"
+
+msgid "Italic"
+msgstr "Kursiv"
+
+msgid "Keep aspect ratio"
+msgstr "Seitenverhältnis beibehalten"
+
+msgid "Label"
+msgstr "Etikett"
+
+msgid "Label editor for the Brother PT-P750W"
+msgstr "Etiketten-Editor für Brother PT-P750W"
+
+msgid "Left"
+msgstr "Links"
+
+msgid "Left/right margin (mm)"
+msgstr "Rand links/rechts (mm)"
+
+msgid "Length (mm)"
+msgstr "Länge (mm)"
+
+msgid "Light gray"
+msgstr "Hellgrau"
+
+msgid "Lime green"
+msgstr "Limettengrün"
+
+msgid "Line"
+msgstr "Linie"
+
+msgid "Line spacing"
+msgstr "Zeilenabstand"
+
+msgid "Line width (mm)"
+msgstr "Linienstärke (mm)"
+
+msgid "Load image"
+msgstr "Bild laden"
+
+msgid "Load image…"
+msgstr "Bild laden…"
+
+#, python-brace-format
+msgid "Loaded tape ({loaded}) does not match the label ({label})"
+msgstr "Eingelegtes Band ({loaded}) passt nicht zum Etikett ({label})"
+
+msgid "Loading preview …"
+msgstr "Lade Vorschau …"
+
+msgid "Loading the font list …"
+msgstr "Lade Schriftenliste …"
+
+msgid "Matte clear"
+msgstr "Matt Transparent"
+
+msgid "Matte silver"
+msgstr "Matt Silber"
+
+msgid "Matte white"
+msgstr "Matt Weiß"
+
+msgid "Mirror"
+msgstr "Spiegeln"
+
+#, python-brace-format
+msgid "Model 0x{code:02X}"
+msgstr "Modell 0x{code:02X}"
+
+msgid "Module width (dots)"
+msgstr "Modulbreite (Punkte)"
+
+msgid "Monospace"
+msgstr "Festbreite"
+
+msgid "New"
+msgstr "Neu"
+
+msgid "No Brother printer found."
+msgstr "Kein Brother-Drucker gefunden."
+
+msgid ""
+"No Brother printer found.\n"
+"Please enter the host name or IP address by hand."
+msgstr ""
+"Kein Brother-Drucker gefunden.\n"
+"Bitte Hostname oder IP-Adresse von Hand eintragen."
+
+#, python-brace-format
+msgid "No SNMP response from {host}"
+msgstr "Keine SNMP-Antwort von {host}"
+
+#, python-brace-format
+msgid "No downloadable files for {family}"
+msgstr "Keine Dateien zum Herunterladen für {family}"
+
+msgid ""
+"No object selected.\n"
+"Click an object or add a new one\n"
+"with “Insert”."
+msgstr ""
+"Kein Objekt ausgewählt.\n"
+"Objekt anklicken oder über „Einfügen“\n"
+"ein neues hinzufügen."
+
+msgid "No preview available"
+msgstr "Keine Vorschau verfügbar"
+
+msgid "No printer given (--printer HOST) and none set in the GUI"
+msgstr "Kein Drucker angegeben (--printer HOST) und keiner in der GUI eingestellt"
+
+msgid "No printer is set. Search the network now?"
+msgstr "Es ist kein Drucker eingestellt. Jetzt im Netzwerk suchen?"
+
+msgid "No printer set"
+msgstr "Kein Drucker eingestellt"
+
+msgid "No printer set – switch the printer on and click “Search…” or enter its host name/IP"
+msgstr "Kein Drucker eingestellt – Drucker einschalten und „Suchen…“ klicken oder Hostname/IP eintragen"
+
+msgid "No tape loaded"
+msgstr "Kein Band eingelegt"
+
+msgid "Not a PT-Label file"
+msgstr "Keine PT-Label-Datei"
+
+msgid "Object"
+msgstr "Objekt"
+
+msgid "Open"
+msgstr "Öffnen"
+
+msgid "Open font folder"
+msgstr "Schriftordner öffnen"
+
+msgid "Open label"
+msgstr "Etikett öffnen"
+
+msgid "Open…"
+msgstr "Öffnen…"
+
+msgid "Other"
+msgstr "Andere"
+
+msgid "Overheating"
+msgstr "Überhitzung"
+
+msgid "PT-Label label"
+msgstr "PT-Label-Etikett"
+
+msgid "Pink"
+msgstr "Pink"
+
+msgid "Placeholders"
+msgstr "Platzhalter"
+
+msgid "Placeholders…"
+msgstr "Platzhalter…"
+
+#, python-brace-format
+msgid "Preview saved: {path}"
+msgstr "Vorschau gespeichert: {path}"
+
+msgid "Print"
+msgstr "Drucken"
+
+#, python-brace-format
+msgid "Print data saved: {path} ({size} bytes)"
+msgstr "Druckdaten gespeichert: {path} ({size} Bytes)"
+
+#, python-brace-format
+msgid "Printable area: {height:.1f} mm high"
+msgstr "Druckbereich: {height:.1f} mm hoch"
+
+msgid "Printer"
+msgstr "Drucker"
+
+#, python-brace-format
+msgid "Printer: {model}"
+msgstr "Drucker: {model}"
+
+msgid "Printer: –"
+msgstr "Drucker: –"
+
+msgid "Printing failed"
+msgstr "Druck fehlgeschlagen"
+
+#, python-brace-format
+msgid ""
+"Printing failed:\n"
+"{error}"
+msgstr ""
+"Druck fehlgeschlagen:\n"
+"{error}"
+
+msgid "QR code"
+msgstr "QR-Code"
+
+msgid "QR code: modules smaller than 2 dots – make the QR code larger"
+msgstr "QR-Code: Module kleiner als 2 Punkte – QR-Code größer machen"
+
+msgid "Query status"
+msgstr "Status abfragen"
+
+#, python-brace-format
+msgid "Querying {printer} …"
+msgstr "Frage {printer} ab …"
+
+msgid "Quit"
+msgstr "Beenden"
+
+msgid "Red"
+msgstr "Rot"
+
+msgid "Redo"
+msgstr "Wiederholen"
+
+#, python-brace-format
+msgid "Rendering error: {error}"
+msgstr "Fehler bei der Darstellung: {error}"
+
+msgid "Right"
+msgstr "Rechts"
+
+msgid "Rotation"
+msgstr "Drehung"
+
+msgid "Sans serif"
+msgstr "Serifenlos"
+
+msgid "Satin gold"
+msgstr "Satin Gold"
+
+msgid "Satin silver"
+msgstr "Satin Silber"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Save as…"
+msgstr "Speichern unter…"
+
+msgid "Save label"
+msgstr "Etikett speichern"
+
+#, python-brace-format
+msgid "Saved: {name}"
+msgstr "Gespeichert: {name}"
+
+#, python-brace-format
+msgid ""
+"Saving failed:\n"
+"{error}"
+msgstr ""
+"Speichern fehlgeschlagen:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"Search failed:\n"
+"{error}"
+msgstr ""
+"Suche fehlgeschlagen:\n"
+"{error}"
+
+msgid "Searching the network for Brother printers …"
+msgstr "Suche Brother-Drucker im Netzwerk …"
+
+msgid "Search…"
+msgstr "Suchen…"
+
+msgid "Select printer"
+msgstr "Drucker auswählen"
+
+msgid "Send backward"
+msgstr "Nach hinten"
+
+#, python-brace-format
+msgid "Sending to {host}:{port} failed ({error})"
+msgstr "Senden an {host}:{port} fehlgeschlagen ({error})"
+
+#, python-brace-format
+msgid "Sending {count} label to {printer} …"
+msgid_plural "Sending {count} labels to {printer} …"
+msgstr[0] "Sende {count} Etikett an {printer} …"
+msgstr[1] "Sende {count} Etiketten an {printer} …"
+
+msgid "Serif"
+msgstr "Serif"
+
+msgid "Show text"
+msgstr "Klartext anzeigen"
+
+msgid "Size (mm)"
+msgstr "Größe (mm)"
+
+msgid "Size (pt)"
+msgstr "Größe (pt)"
+
+#, python-brace-format
+msgid "Start {nr} at"
+msgstr "Nummer {nr} ab"
+
+#, python-brace-format
+msgid "State:   {state}"
+msgstr "Zustand: {state}"
+
+msgid "Status is only available over the network"
+msgstr "Status ist nur über das Netzwerk verfügbar"
+
+msgid "Stencil"
+msgstr "Schablone"
+
+msgid "System error"
+msgstr "Systemfehler"
+
+msgid "Tape width"
+msgstr "Bandbreite"
+
+#, python-brace-format
+msgid "Tape:    {media}"
+msgstr "Band:    {media}"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Text size (pt)"
+msgstr "Klartext-Größe (pt)"
+
+#, python-brace-format
+msgid ""
+"The file cannot be opened:\n"
+"{error}"
+msgstr ""
+"Datei kann nicht geöffnet werden:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"The font list cannot be loaded:\n"
+"{error}"
+msgstr ""
+"Die Schriftenliste kann nicht geladen werden:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"The fonts cannot be added:\n"
+"{error}"
+msgstr ""
+"Die Schriften können nicht hinzugefügt werden:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"The image cannot be loaded:\n"
+"{error}"
+msgstr ""
+"Bild kann nicht geladen werden:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"The label cannot be created:\n"
+"{error}"
+msgstr ""
+"Etikett kann nicht erzeugt werden:\n"
+"{error}"
+
+msgid "The label has been modified. Save changes?"
+msgstr "Das Etikett wurde geändert. Änderungen speichern?"
+
+msgid "The printer does not report a Brother status"
+msgstr "Drucker liefert keinen Brother-Status"
+
+#, python-brace-format
+msgid ""
+"The printer has {loaded} tape loaded, the label is designed for {label}.\n"
+"\n"
+"Print anyway?"
+msgstr ""
+"Im Drucker ist {loaded}-Band eingelegt, das Etikett ist für {label} angelegt.\n"
+"\n"
+"Trotzdem drucken?"
+
+msgid "The printer reports an error"
+msgstr "Drucker meldet Fehler"
+
+msgid "The printer reports:"
+msgstr "Der Drucker meldet:"
+
+msgid "The selected files are not usable fonts."
+msgstr "Die ausgewählten Dateien sind keine verwendbaren Schriften."
+
+msgid "Threshold (0–255)"
+msgstr "Schwellwert (0–255)"
+
+msgid "Tools"
+msgstr "Werkzeuge"
+
+msgid "Transmission buffer full"
+msgstr "Übertragungspuffer voll"
+
+msgid "Transmission error"
+msgstr "Übertragungsfehler"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Underline"
+msgstr "Unterstrichen"
+
+msgid "Undo"
+msgstr "Rückgängig"
+
+msgid "Untitled"
+msgstr "Unbenannt"
+
+msgid "Usable in texts, QR codes and barcodes:"
+msgstr "In Texten, QR-Codes und Barcodes verwendbar:"
+
+msgid "Usage…"
+msgstr "Bedienung…"
+
+msgid "Use"
+msgstr "Übernehmen"
+
+#, python-brace-format
+msgid "Use loaded tape ({tape})"
+msgstr "Eingelegtes Band ({tape}) übernehmen"
+
+msgid "Use tape"
+msgstr "Band übernehmen"
+
+msgid "Vertical"
+msgstr "Senkrecht"
+
+msgid "White"
+msgstr "Weiß"
+
+msgid "Width (mm)"
+msgstr "Breite (mm)"
+
+#, python-brace-format
+msgid "Writing to {path} failed ({error})"
+msgstr "Schreiben nach {path} fehlgeschlagen ({error})"
+
+msgid "Wrong power adapter"
+msgstr "Falsches Netzteil"
+
+msgid "Wrong tape – please change the tape"
+msgstr "Falsches Band – bitte Band wechseln"
+
+msgid "X (mm)"
+msgstr "X (mm)"
+
+msgid "Y (mm)"
+msgstr "Y (mm)"
+
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Zoom in"
+msgstr "Vergrößern"
+
+msgid "Zoom out"
+msgstr "Verkleinern"
+
+msgid "auto"
+msgstr "auto"
+
+msgid "fixed label length in mm"
+msgstr "feste Etikettlänge in mm"
+
+msgid "font size in pt (default: automatic)"
+msgstr "Schriftgröße in pt (Standard: automatisch)"
+
+msgid "font, e.g. Arial"
+msgstr "Schriftart, z. B. Arial"
+
+msgid "heat-shrink tube 2:1"
+msgstr "Schrumpfschlauch 2:1"
+
+msgid "heat-shrink tube 3:1"
+msgstr "Schrumpfschlauch 3:1"
+
+msgid "host name/IP of the printer"
+msgstr "Hostname/IP des Druckers"
+
+msgid "host name/IP, file:PATH or /dev/usb/lp0"
+msgstr "Hostname/IP, file:PFAD oder /dev/usb/lp0"
+
+msgid "incompatible"
+msgstr "inkompatibel"
+
+#, python-brace-format
+msgid "invalid data for {symbology}: {error}"
+msgstr "ungültiger Inhalt für {symbology}: {error}"
+
+msgid "laminated"
+msgstr "laminiert"
+
+msgid "margin in mm (default 2)"
+msgstr "Rand in mm (Standard 2)"
+
+msgid "no tape"
+msgstr "kein Band"
+
+msgid "non-laminated"
+msgstr "nicht laminiert"
+
+msgid "print a label file (.ptlabel)"
+msgstr "Etikettendatei (.ptlabel) drucken"
+
+msgid "printing"
+msgstr "druckt"
+
+msgid "put a QR code in front of the text"
+msgstr "QR-Code vor den Text setzen"
+
+msgid "quickly print a text label (one argument per line)"
+msgstr "schnell ein Text-Etikett drucken (jedes Argument = eine Zeile)"
+
+msgid "ready"
+msgstr "bereit"
+
+msgid "save a preview as PNG (prints only with --printer)"
+msgstr "Vorschau als PNG speichern (druckt nur zusätzlich mit --printer)"
+
+msgid "search the network for Brother printers"
+msgstr "Brother-Drucker im Netzwerk suchen"
+
+msgid "show the printer status"
+msgstr "Druckerstatus anzeigen"
+
+msgid "start the graphical user interface (default)"
+msgstr "grafische Oberfläche starten (Standard)"
+
+#, python-brace-format
+msgid "start value for {nr}"
+msgstr "Startwert für {nr}"
+
+msgid "tape width in mm (default: loaded tape)"
+msgstr "Bandbreite in mm (Standard: eingelegtes Band)"
+
+#, python-brace-format
+msgid "type 0x{code:02X}"
+msgstr "Typ 0x{code:02X}"
+
+msgid "write the print data to a file (prints only with --printer)"
+msgstr "Druckdaten in Datei schreiben (druckt nur zusätzlich mit --printer)"
+
+#, python-brace-format
+msgid "{count} label printed"
+msgid_plural "{count} labels printed"
+msgstr[0] "{count} Etikett gedruckt"
+msgstr[1] "{count} Etiketten gedruckt"
+
+#, python-brace-format
+msgid "{count} label printed."
+msgid_plural "{count} labels printed."
+msgstr[0] "{count} Etikett gedruckt."
+msgstr[1] "{count} Etiketten gedruckt."
+
+#, python-brace-format
+msgid "{error} – is the printer switched on and connected to the network?"
+msgstr "{error} – Drucker eingeschaltet und im WLAN?"
+
+#, python-brace-format, python-format
+msgid ""
+"{nr}  running number (e.g. {nr:03} → 001)\n"
+"{date}  today's date (e.g. {date:%d/%m/%y})\n"
+"{time}  time of day (e.g. {time:%H:%M:%S})"
+msgstr ""
+"{nr}  laufende Nummer (z. B. {nr:03} → 001)\n"
+"{datum}  heutiges Datum (z. B. {datum:%d.%m.%y})\n"
+"{zeit}  Uhrzeit (z. B. {zeit:%H:%M:%S})"
+
+#, python-brace-format
+msgid "{object} extends beyond the printable area"
+msgstr "{object} ragt über den druckbaren Bereich hinaus"
+
+msgid ""
+"• Add objects with the toolbar or the “Insert” menu.\n"
+"• Click an object and drag it with the mouse; the white square at the bottom right changes its "
+"size.\n"
+"• Arrow keys move by 0.5 mm (0.1 mm with Shift), Del deletes.\n"
+"• Double-click jumps to the text field, right-click opens the context menu.\n"
+"• The mouse wheel scrolls, Ctrl+wheel zooms.\n"
+"• Gray shaded areas are not printed (tape edges and margins).\n"
+"• The preview shows the colors of the loaded tape."
+msgstr ""
+"• Objekte über die Werkzeugleiste oder „Einfügen“ hinzufügen.\n"
+"• Objekt anklicken und mit der Maus verschieben; das weiße Quadrat unten rechts ändert die Größe."
+"\n"
+"• Pfeiltasten verschieben um 0,5 mm (mit Umschalt um 0,1 mm), Entf löscht.\n"
+"• Doppelklick springt in das Textfeld, Rechtsklick öffnet das Kontextmenü.\n"
+"• Mausrad scrollt, Strg+Mausrad zoomt.\n"
+"• Grau schattierte Bereiche werden nicht gedruckt (Bandrand und Ränder).\n"
+"• Die Vorschau zeigt die Farben des eingelegten Bandes."
+

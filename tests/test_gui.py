@@ -1,11 +1,6 @@
-import os
 import tempfile
 import unittest
 from unittest import mock
-
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-_config_home = tempfile.TemporaryDirectory()
-os.environ["XDG_CONFIG_HOME"] = _config_home.name  # keep the user's config and font cache untouched
 
 try:
     from PySide6.QtWidgets import QApplication
@@ -13,7 +8,8 @@ except ImportError:  # pragma: no cover
     QApplication = None
 
 if QApplication is not None:
-    from ptlabel.gui import window
+    from ptlabel import webfonts
+    from ptlabel.gui import fontui, window
     from ptlabel.gui.qtutil import PAD
     from ptlabel.model import LabelDocument, TextObject
     from ptlabel.printer import PrinterStatus
@@ -94,6 +90,30 @@ class MainWindowTest(unittest.TestCase):
             self.assertTrue(win.save_document())
             self.assertEqual(LabelDocument.load(win.path).to_json(), win.doc.to_json())
             self.assertFalse(win._is_modified())
+
+    def test_font_dropdown_previews_each_family(self):
+        win = self.win
+        win.select(win.doc.objects[0])
+        combo = win._fields["font"].widget
+        self.assertIsInstance(combo.itemDelegate(), fontui.FontPreviewDelegate)
+        index = combo.findText("Barlow Condensed")
+        self.assertGreaterEqual(index, 0)
+        self.assertEqual(fontui.PREVIEWS.qt_family("Barlow Condensed"), "Barlow Condensed")
+        option = fontui.QStyleOptionViewItem()
+        combo.itemDelegate().initStyleOption(option, combo.model().index(index, 0))
+        self.assertEqual(option.font.family(), "Barlow Condensed")
+
+    def test_web_font_dialog_lists_and_filters(self):
+        fonts_ = [webfonts.WebFont("a", "Alpha Sans", "sans-serif", (400,), ("normal",), "OFL-1.1"),
+                  webfonts.WebFont("b", "Beta Serif", "serif", (400,), ("normal",), "OFL-1.1")]
+        with mock.patch.object(fontui.BackgroundRunner, "run"):  # no network
+            dialog = fontui.WebFontDialog(self.win)
+        self.addCleanup(dialog.deleteLater)
+        with mock.patch.object(fontui.BackgroundRunner, "run"):
+            dialog._on_list(fonts_, None)
+            self.assertEqual(dialog.list.count(), 2)
+            dialog.category.setCurrentIndex(dialog.category.findData("serif"))
+            self.assertEqual([dialog.list.item(i).text() for i in range(dialog.list.count())], ["Beta Serif"])
 
 
 if __name__ == "__main__":

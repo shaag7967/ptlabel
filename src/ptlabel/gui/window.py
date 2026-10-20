@@ -7,13 +7,14 @@ import io
 from pathlib import Path
 
 from PIL import Image, ImageDraw
-from PySide6.QtCore import QByteArray, QSignalBlocker, Qt, QTimer
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import QByteArray, QSignalBlocker, Qt, QTimer, QUrl
+from PySide6.QtGui import QAction, QDesktopServices, QKeySequence
 from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog, QGridLayout, QGroupBox, QLabel,
                                QListWidget, QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea,
                                QSizePolicy, QSplitter, QToolBar, QVBoxLayout, QWidget)
 
 from .. import __version__, config, fonts
+from ..i18n import ntr, tr
 from ..model import (PLACEHOLDER_HELP, BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject,
                      LineObject, Prop, QRCodeObject, TextObject)
 from ..printer import (NetworkPrinter, PrinterError, PrinterStatus, discover_printers, open_printer,
@@ -22,22 +23,23 @@ from ..raster import build_job
 from ..render import Placed, RenderResult, image_aspect, print_pages, render
 from ..tapes import DPI, MM_PER_INCH, TAPES
 from .canvas import LabelCanvas
+from .fontui import PREVIEWS, WebFontDialog
 from .panels import LabelPanel, PrintPanel, PropField, image_row, print_button
 from .qtutil import (APP_NAME, COLOR_ERROR, COLOR_INFO, COLOR_OK, COLOR_WARN, HANDLE, MAX_IMAGE_PX, SHADE,
                      STATUS_INTERVAL_MS, BackgroundRunner, index_of, pil_to_qimage, rgb, set_color)
 
-FILE_FILTER = "PT-Label-Etikett (*.ptlabel);;Alle Dateien (*)"
-IMAGE_FILTER = "Bilder (*.png *.jpg *.jpeg *.bmp *.gif *.tif *.tiff *.webp);;Alle Dateien (*)"
-INSERT_ITEMS = [("Text", "text"), ("QR-Code", "qrcode"), ("Barcode", "barcode"), ("Bild…", "image"),
-                ("Rahmen", "frame"), ("Linie", "line")]
-USAGE = (
-    "• Objekte über die Werkzeugleiste oder „Einfügen“ hinzufügen.\n"
-    "• Objekt anklicken und mit der Maus verschieben; das weiße Quadrat unten rechts ändert die Größe.\n"
-    "• Pfeiltasten verschieben um 0,5 mm (mit Umschalt um 0,1 mm), Entf löscht.\n"
-    "• Doppelklick springt in das Textfeld, Rechtsklick öffnet das Kontextmenü.\n"
-    "• Mausrad scrollt, Strg+Mausrad zoomt.\n"
-    "• Grau schattierte Bereiche werden nicht gedruckt (Bandrand und Ränder).\n"
-    "• Die Vorschau zeigt die Farben des eingelegten Bandes.")
+FILE_FILTER = tr("PT-Label label") + " (*.ptlabel);;" + tr("All files") + " (*)"
+IMAGE_FILTER = tr("Images") + " (*.png *.jpg *.jpeg *.bmp *.gif *.tif *.tiff *.webp);;" + tr("All files") + " (*)"
+INSERT_ITEMS = [(tr("Text"), "text"), (tr("QR code"), "qrcode"), (tr("Barcode"), "barcode"),
+                (tr("Image…"), "image"), (tr("Frame"), "frame"), (tr("Line"), "line")]
+USAGE = tr(
+    "• Add objects with the toolbar or the “Insert” menu.\n"
+    "• Click an object and drag it with the mouse; the white square at the bottom right changes its size.\n"
+    "• Arrow keys move by 0.5 mm (0.1 mm with Shift), Del deletes.\n"
+    "• Double-click jumps to the text field, right-click opens the context menu.\n"
+    "• The mouse wheel scrolls, Ctrl+wheel zooms.\n"
+    "• Gray shaded areas are not printed (tape edges and margins).\n"
+    "• The preview shows the colors of the loaded tape.")
 
 
 class MainWindow(QMainWindow):
@@ -93,7 +95,7 @@ class MainWindow(QMainWindow):
         column = QVBoxLayout(side)
         self.label_panel = LabelPanel()
         self.label_panel.connect(self._on_label_panel)
-        self.props_box = QGroupBox("Objekt")
+        self.props_box = QGroupBox(tr("Object"))
         self.props_layout = QVBoxLayout(self.props_box)
         self._props_inner: QWidget | None = None
         self.print_panel = PrintPanel()
@@ -131,60 +133,68 @@ class MainWindow(QMainWindow):
 
     def _build_actions(self) -> None:
         S = QKeySequence.StandardKey
-        self.act_new = self._action("Neu", self.new_document, S.New)
-        self.act_open = self._action("Öffnen…", self.open_document, S.Open)
-        self.act_save = self._action("Speichern", self.save_document, S.Save)
-        self.act_save_as = self._action("Speichern unter…", self.save_document_as, "Ctrl+Shift+S")
-        self.act_export = self._action("Als PNG exportieren…", self.export_png)
-        self.act_quit = self._action("Beenden", self.close, S.Quit)
-        self.act_undo = self._action("Rückgängig", self.undo, S.Undo)
-        self.act_redo = self._action("Wiederholen", self.redo, ["Ctrl+Y", "Ctrl+Shift+Z"])
-        self.act_duplicate = self._action("Duplizieren", self.duplicate, "Ctrl+D")
+        self.act_new = self._action(tr("New"), self.new_document, S.New)
+        self.act_open = self._action(tr("Open…"), self.open_document, S.Open)
+        self.act_save = self._action(tr("Save"), self.save_document, S.Save)
+        self.act_save_as = self._action(tr("Save as…"), self.save_document_as, "Ctrl+Shift+S")
+        self.act_export = self._action(tr("Export as PNG…"), self.export_png)
+        self.act_quit = self._action(tr("Quit"), self.close, S.Quit)
+        self.act_undo = self._action(tr("Undo"), self.undo, S.Undo)
+        self.act_redo = self._action(tr("Redo"), self.redo, ["Ctrl+Y", "Ctrl+Shift+Z"])
+        self.act_duplicate = self._action(tr("Duplicate"), self.duplicate, "Ctrl+D")
         # Delete only acts while the canvas has the focus; text fields keep their own Delete key
-        self.act_delete = self._action("Löschen", self.delete_selected, S.Delete)
+        self.act_delete = self._action(tr("Delete"), self.delete_selected, S.Delete)
         self.act_delete.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
         self.canvas.addAction(self.act_delete)
-        self.act_front = self._action("Nach vorne", lambda: self.restack(1))
-        self.act_back = self._action("Nach hinten", lambda: self.restack(-1))
-        self.act_center = self._action("Vertikal zentrieren", self.center_vertically)
-        self.act_zoom_in = self._action("Vergrößern", lambda: self.set_zoom(self.current_zoom() + 1),
+        self.act_front = self._action(tr("Bring forward"), lambda: self.restack(1))
+        self.act_back = self._action(tr("Send backward"), lambda: self.restack(-1))
+        self.act_center = self._action(tr("Center vertically"), self.center_vertically)
+        self.act_zoom_in = self._action(tr("Zoom in"), lambda: self.set_zoom(self.current_zoom() + 1),
                                         ["Ctrl++", "Ctrl+="])
-        self.act_zoom_out = self._action("Verkleinern", lambda: self.set_zoom(self.current_zoom() - 1), "Ctrl+-")
-        self.act_zoom_auto = self._action("Automatisch", lambda: self.set_zoom(0))
-        self.act_print = self._action("Drucken", self.print_label, S.Print)
-        self.act_status = self._action("Status abfragen", lambda: self.refresh_status(manual=True))
-        self.act_discover = self._action("Drucker suchen…", self.discover)
+        self.act_zoom_out = self._action(tr("Zoom out"), lambda: self.set_zoom(self.current_zoom() - 1), "Ctrl+-")
+        self.act_zoom_auto = self._action(tr("Automatic"), lambda: self.set_zoom(0))
+        self.act_print = self._action(tr("Print"), self.print_label, S.Print)
+        self.act_status = self._action(tr("Query status"), lambda: self.refresh_status(manual=True))
+        self.act_discover = self._action(tr("Find printers…"), self.discover)
+        self.act_add_fonts = self._action(tr("Add font files…"), self.add_font_files)
+        self.act_web_fonts = self._action(tr("Download Google Fonts…"), self.download_fonts)
+        self.act_font_folder = self._action(tr("Open font folder"), self.open_font_folder)
 
     def _build_menu(self) -> None:
         bar = self.menuBar()
-        file = bar.addMenu("&Datei")
+        file = bar.addMenu(tr("&File"))
         file.addActions([self.act_new, self.act_open, self.act_save, self.act_save_as])
         file.addSeparator()
         file.addAction(self.act_export)
         file.addSeparator()
         file.addAction(self.act_quit)
 
-        edit = bar.addMenu("&Bearbeiten")
+        edit = bar.addMenu(tr("&Edit"))
         edit.addActions([self.act_undo, self.act_redo])
         edit.addSeparator()
         self._fill_object_menu(edit)
 
-        insert = bar.addMenu("&Einfügen")
+        insert = bar.addMenu(tr("&Insert"))
         for label, kind in INSERT_ITEMS:
             insert.addAction(self._action(label, lambda k=kind: self.insert(k)))
 
-        view = bar.addMenu("&Ansicht")
+        view = bar.addMenu(tr("&View"))
         view.addActions([self.act_zoom_in, self.act_zoom_out, self.act_zoom_auto])
 
-        printer = bar.addMenu("D&rucker")
+        font_menu = bar.addMenu(tr("F&onts"))
+        font_menu.addActions([self.act_add_fonts, self.act_web_fonts])
+        font_menu.addSeparator()
+        font_menu.addAction(self.act_font_folder)
+
+        printer = bar.addMenu(tr("&Printer"))
         printer.addActions([self.act_print, self.act_status, self.act_discover])
 
-        help_menu = bar.addMenu("&Hilfe")
-        help_menu.addAction(self._action("Platzhalter…", lambda: QMessageBox.information(
-            self, "Platzhalter", "In Texten, QR-Codes und Barcodes verwendbar:\n\n" + PLACEHOLDER_HELP)))
-        help_menu.addAction(self._action("Bedienung…", lambda: QMessageBox.information(self, APP_NAME, USAGE)))
-        help_menu.addAction(self._action("Über…", lambda: QMessageBox.about(
-            self, APP_NAME, f"{APP_NAME} {__version__}\nEtiketten-Editor für Brother PT-P750W")))
+        help_menu = bar.addMenu(tr("&Help"))
+        help_menu.addAction(self._action(tr("Placeholders…"), lambda: QMessageBox.information(
+            self, tr("Placeholders"), tr("Usable in texts, QR codes and barcodes:") + "\n\n" + PLACEHOLDER_HELP)))
+        help_menu.addAction(self._action(tr("Usage…"), lambda: QMessageBox.information(self, APP_NAME, USAGE)))
+        help_menu.addAction(self._action(tr("About…"), lambda: QMessageBox.about(
+            self, APP_NAME, f"{APP_NAME} {__version__}\n" + tr("Label editor for the Brother PT-P750W"))))
 
         self.context_menu = QMenu(self)
         self._fill_object_menu(self.context_menu)
@@ -195,19 +205,19 @@ class MainWindow(QMainWindow):
         menu.addActions([self.act_front, self.act_back, self.act_center])
 
     def _build_toolbar(self) -> None:
-        bar = QToolBar("Werkzeuge")
+        bar = QToolBar(tr("Tools"))
         bar.setMovable(False)
         bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
         self.addToolBar(bar)
-        bar.addAction(self._action("Neu", self.new_document))
-        bar.addAction(self._action("Öffnen", self.open_document))
-        bar.addAction(self._action("Speichern", self.save_document))
+        bar.addAction(self._action(tr("New"), self.new_document))
+        bar.addAction(self._action(tr("Open"), self.open_document))
+        bar.addAction(self._action(tr("Save"), self.save_document))
         bar.addSeparator()
         for label, kind in INSERT_ITEMS:
             bar.addAction(self._action("+ " + label.rstrip("…"), lambda k=kind: self.insert(k)))
         bar.addSeparator()
-        bar.addAction(self._action("Duplizieren", self.duplicate))
-        bar.addAction(self._action("Löschen", self.delete_selected))
+        bar.addAction(self._action(tr("Duplicate"), self.duplicate))
+        bar.addAction(self._action(tr("Delete"), self.delete_selected))
         bar.addSeparator()
         bar.addAction(self._action("−", lambda: self.set_zoom(self.current_zoom() - 1)))
         self.lbl_zoom = QLabel()
@@ -224,8 +234,8 @@ class MainWindow(QMainWindow):
 
     def _build_statusbar(self) -> None:
         bar = self.statusBar()
-        self.lbl_printer = QLabel("Drucker: –")
-        self.btn_adopt = QPushButton("Band übernehmen")
+        self.lbl_printer = QLabel(tr("Printer: –"))
+        self.btn_adopt = QPushButton(tr("Use tape"))
         self.btn_adopt.clicked.connect(self.adopt_tape)
         self.btn_adopt.hide()
         self.lbl_message = QLabel()
@@ -274,14 +284,14 @@ class MainWindow(QMainWindow):
         if not self._is_modified():
             return True
         B = QMessageBox.StandardButton
-        answer = QMessageBox.question(self, APP_NAME, "Das Etikett wurde geändert. Änderungen speichern?",
+        answer = QMessageBox.question(self, APP_NAME, tr("The label has been modified. Save changes?"),
                                       B.Yes | B.No | B.Cancel, B.Yes)
         if answer == B.Cancel:
             return False
         return self.save_document() if answer == B.Yes else True
 
     def _update_title(self) -> None:
-        name = self.path.name if self.path else "Unbenannt"
+        name = self.path.name if self.path else tr("Untitled")
         self.setWindowTitle(f"{'*' if self._is_modified() else ''}{name} – {APP_NAME}")
 
     def changed(self) -> None:
@@ -337,13 +347,13 @@ class MainWindow(QMainWindow):
     def open_document(self) -> None:
         if not self._confirm_discard():
             return
-        name, _ = QFileDialog.getOpenFileName(self, "Etikett öffnen", self._initial_dir(), FILE_FILTER)
+        name, _ = QFileDialog.getOpenFileName(self, tr("Open label"), self._initial_dir(), FILE_FILTER)
         if not name:
             return
         try:
             doc = LabelDocument.load(name)
         except (OSError, ValueError, KeyError, TypeError) as exc:
-            QMessageBox.critical(self, APP_NAME, f"Datei kann nicht geöffnet werden:\n{exc}")
+            QMessageBox.critical(self, APP_NAME, tr("The file cannot be opened:\n{error}").format(error=exc))
             return
         self.doc = doc
         self.path = Path(name)
@@ -357,11 +367,11 @@ class MainWindow(QMainWindow):
         try:
             self.doc.save(self.path)
         except OSError as exc:
-            QMessageBox.critical(self, APP_NAME, f"Speichern fehlgeschlagen:\n{exc}")
+            QMessageBox.critical(self, APP_NAME, tr("Saving failed:\n{error}").format(error=exc))
             return False
         self._saved_state = self.doc.to_json()
         self._update_title()
-        self._set_message(f"Gespeichert: {self.path.name}", COLOR_OK)
+        self._set_message(tr("Saved: {name}").format(name=self.path.name), COLOR_OK)
         return True
 
     def _ask_save_name(self, title: str, file_filter: str, suffix: str) -> Path | None:
@@ -372,7 +382,7 @@ class MainWindow(QMainWindow):
         return path if path.suffix else path.with_suffix(suffix)
 
     def save_document_as(self) -> bool:
-        path = self._ask_save_name("Etikett speichern", FILE_FILTER, ".ptlabel")
+        path = self._ask_save_name(tr("Save label"), FILE_FILTER, ".ptlabel")
         if path is None:
             return False
         self.path = path
@@ -380,7 +390,7 @@ class MainWindow(QMainWindow):
         return self.save_document()
 
     def export_png(self) -> None:
-        path = self._ask_save_name("Als PNG exportieren", "PNG (*.png)", ".png")
+        path = self._ask_save_name(tr("Export as PNG"), "PNG (*.png)", ".png")
         if path is None:
             return
         res = render(self.doc)
@@ -391,9 +401,9 @@ class MainWindow(QMainWindow):
         try:
             img.save(path, dpi=(DPI * 4, DPI * 4))
         except OSError as exc:
-            QMessageBox.critical(self, APP_NAME, f"Export fehlgeschlagen:\n{exc}")
+            QMessageBox.critical(self, APP_NAME, tr("Export failed:\n{error}").format(error=exc))
             return
-        self._set_message(f"Exportiert: {path.name}", COLOR_OK)
+        self._set_message(tr("Exported: {name}").format(name=path.name), COLOR_OK)
 
     def closeEvent(self, event) -> None:
         if not self._confirm_discard():
@@ -418,7 +428,7 @@ class MainWindow(QMainWindow):
         for blocker in blockers:
             blocker.unblock()
         panel.length.setEnabled(not doc.auto_length)
-        panel.print_area.setText(f"Druckbereich: {doc.tape.print_mm:.1f} mm hoch")
+        panel.print_area.setText(tr("Printable area: {height:.1f} mm high").format(height=doc.tape.print_mm))
 
     def _on_label_panel(self, *_) -> None:
         panel, doc = self.label_panel, self.doc
@@ -433,7 +443,7 @@ class MainWindow(QMainWindow):
         doc.length_mm = panel.length.value()
         doc.margin_mm = panel.margin.value()
         panel.length.setEnabled(not doc.auto_length)
-        panel.print_area.setText(f"Druckbereich: {doc.tape.print_mm:.1f} mm hoch")
+        panel.print_area.setText(tr("Printable area: {height:.1f} mm high").format(height=doc.tape.print_mm))
         self._update_tape_warning()
         self.changed()
 
@@ -470,8 +480,8 @@ class MainWindow(QMainWindow):
         grid.setColumnStretch(1, 1)
         obj = self.selected
         if obj is None:
-            self.props_box.setTitle("Objekt")
-            hint = QLabel("Kein Objekt ausgewählt.\nObjekt anklicken oder über „Einfügen“\nein neues hinzufügen.")
+            self.props_box.setTitle(tr("Object"))
+            hint = QLabel(tr("No object selected.\nClick an object or add a new one\nwith “Insert”."))
             set_color(hint, COLOR_INFO)
             grid.addWidget(hint, 0, 0)
             return
@@ -615,14 +625,14 @@ class MainWindow(QMainWindow):
         self.commit()
 
     def _read_image_dialog(self):
-        name, _ = QFileDialog.getOpenFileName(self, "Bild laden", self._initial_dir(), IMAGE_FILTER)
+        name, _ = QFileDialog.getOpenFileName(self, tr("Load image"), self._initial_dir(), IMAGE_FILTER)
         if not name:
             return None
         try:
             img = Image.open(name)
             img.load()
         except OSError as exc:
-            QMessageBox.critical(self, APP_NAME, f"Bild kann nicht geladen werden:\n{exc}")
+            QMessageBox.critical(self, APP_NAME, tr("The image cannot be loaded:\n{error}").format(error=exc))
             return None
         img.thumbnail((MAX_IMAGE_PX, MAX_IMAGE_PX))
         if img.mode not in ("1", "L", "LA", "RGB", "RGBA"):
@@ -727,11 +737,11 @@ class MainWindow(QMainWindow):
         try:
             res = render(self.doc)
         except Exception as exc:
-            self._set_message(f"Fehler bei der Darstellung: {exc}", COLOR_ERROR)
+            self._set_message(tr("Rendering error: {error}").format(error=exc), COLOR_ERROR)
             return
         self.result = res
         z = self.current_zoom()
-        self.lbl_zoom.setText(f"{z}×" + ("" if self.zoom else " auto"))
+        self.lbl_zoom.setText(f"{z}×" + ("" if self.zoom else " " + tr("auto")))
 
         tape_rgb, ink_rgb = self._preview_colors()
         mask = res.image
@@ -854,6 +864,41 @@ class MainWindow(QMainWindow):
             self.select(hit)
             self.context_menu.exec(global_pos)
 
+    # ------------------------------------------------------------------ fonts
+
+    def add_font_files(self) -> None:
+        names, _ = QFileDialog.getOpenFileNames(
+            self, tr("Add font files"), self._initial_dir(),
+            tr("Fonts") + " (*.ttf *.otf *.ttc *.otc);;" + tr("All files") + " (*)")
+        if not names:
+            return
+        try:
+            families = fonts.install_font_files(names)
+        except OSError as exc:
+            QMessageBox.critical(self, APP_NAME, tr("The fonts cannot be added:\n{error}").format(error=exc))
+            return
+        if not families:
+            QMessageBox.warning(self, APP_NAME, tr("The selected files are not usable fonts."))
+            return
+        self._fonts_changed(families)
+
+    def download_fonts(self) -> None:
+        dialog = WebFontDialog(self)
+        dialog.installed.connect(self._fonts_changed)
+        dialog.exec()
+
+    def open_font_folder(self) -> None:
+        folder = fonts.user_font_dir()
+        folder.mkdir(parents=True, exist_ok=True)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
+
+    def _fonts_changed(self, families: list[str]) -> None:
+        self._font_families = fonts.REGISTRY.families()
+        PREVIEWS.clear()
+        self._build_props()
+        self.redraw()
+        self._set_message(tr("Fonts added: {families}").format(families=", ".join(families)), COLOR_OK)
+
     # ------------------------------------------------------------------ printer
 
     def _set_message(self, text: str, color: str = COLOR_INFO) -> None:
@@ -884,14 +929,13 @@ class MainWindow(QMainWindow):
     def refresh_status(self, manual: bool = False) -> None:
         target = self._printer_target()
         if not target:
-            self._show_printer_text("Kein Drucker eingestellt – Drucker einschalten und „Suchen…“ klicken "
-                                    "oder Hostname/IP eintragen", COLOR_WARN)
+            self._show_printer_text(tr("No printer set – switch the printer on and click “Search…” or enter its host name/IP"), COLOR_WARN)
             return
         if self._status_pending or self._busy:
             return
         self._status_pending = True
         if manual:
-            self._show_printer_text(f"Frage {target} ab …", COLOR_INFO)
+            self._show_printer_text(tr("Querying {printer} …").format(printer=target), COLOR_INFO)
 
         def done(status, error):
             self._status_pending = False
@@ -930,7 +974,7 @@ class MainWindow(QMainWindow):
     def _update_tape_warning(self) -> None:
         tape = self.status.tape if self.status else None
         if tape and tape.code != self.doc.tape.code:
-            self.btn_adopt.setText(f"Eingelegtes Band ({tape.label}) übernehmen")
+            self.btn_adopt.setText(tr("Use loaded tape ({tape})").format(tape=tape.label))
             self.btn_adopt.show()
         else:
             self.btn_adopt.hide()
@@ -944,21 +988,20 @@ class MainWindow(QMainWindow):
 
     def discover(self, silent: bool = False, then=None) -> None:
         if not silent:
-            self._set_message("Suche Brother-Drucker im Netzwerk …")
+            self._set_message(tr("Searching the network for Brother printers …"))
 
         def done(found, error):
             self._set_message("")
             found = found or []
             label_printers = [p for p in found if p.model.upper().startswith(("PT", "QL"))]
             if error is not None and not silent:
-                QMessageBox.critical(self, APP_NAME, f"Suche fehlgeschlagen:\n{error}")
+                QMessageBox.critical(self, APP_NAME, tr("Search failed:\n{error}").format(error=error))
             elif len(label_printers) == 1:
                 self._use_printer(label_printers[0].address)
             elif found and not silent:
                 self._choose_printer(found)
             elif not silent:
-                QMessageBox.information(self, APP_NAME, "Kein Brother-Drucker gefunden.\n"
-                                                        "Bitte Hostname oder IP-Adresse von Hand eintragen.")
+                QMessageBox.information(self, APP_NAME, tr("No Brother printer found.\nPlease enter the host name or IP address by hand."))
             if then:
                 then()
 
@@ -970,16 +1013,16 @@ class MainWindow(QMainWindow):
 
     def _choose_printer(self, printers) -> None:
         dialog = QDialog(self)
-        dialog.setWindowTitle("Drucker auswählen")
+        dialog.setWindowTitle(tr("Select printer"))
         layout = QVBoxLayout(dialog)
-        layout.addWidget(QLabel("Gefundene Brother-Drucker:"))
+        layout.addWidget(QLabel(tr("Brother printers found:")))
         listbox = QListWidget()
         listbox.addItems([f"{p.model}  {p.address}  ({p.ip})" for p in printers])
         listbox.setCurrentRow(0)
         listbox.itemDoubleClicked.connect(dialog.accept)
         layout.addWidget(listbox)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Übernehmen")
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText(tr("Use"))
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
@@ -993,24 +1036,25 @@ class MainWindow(QMainWindow):
         self._flush_commit()
         target = self._printer_target()
         if not target:
-            if QMessageBox.question(self, APP_NAME, "Es ist kein Drucker eingestellt. Jetzt im Netzwerk suchen?") \
+            if QMessageBox.question(self, APP_NAME, tr("No printer is set. Search the network now?")) \
                     == QMessageBox.StandardButton.Yes:
                 self.discover()
             return
         doc = self.doc
         tape = self.status.tape if self.status else None
         if tape and tape.code != doc.tape.code and QMessageBox.question(
-                self, APP_NAME, f"Im Drucker ist {tape.label}-Band eingelegt, das Etikett ist für {doc.tape.label} "
-                                "angelegt.\n\nTrotzdem drucken?") != QMessageBox.StandardButton.Yes:
+                self, APP_NAME, tr("The printer has {loaded} tape loaded, the label is designed for {label}.\n\nPrint anyway?").format(
+                    loaded=tape.label, label=doc.tape.label)) != QMessageBox.StandardButton.Yes:
             return
         try:
             pages = print_pages(doc)
             job = build_job(pages, doc.tape, doc.print_options())
         except Exception as exc:
-            QMessageBox.critical(self, APP_NAME, f"Etikett kann nicht erzeugt werden:\n{exc}")
+            QMessageBox.critical(self, APP_NAME, tr("The label cannot be created:\n{error}").format(error=exc))
             return
         self._busy = True
-        self._set_message(f"Sende {len(pages)} Etikett(en) an {target} …")
+        self._set_message(ntr("Sending {count} label to {printer} …", "Sending {count} labels to {printer} …", len(pages)).format(
+            count=len(pages), printer=target))
 
         def work():
             printer = open_printer(target)
@@ -1025,15 +1069,15 @@ class MainWindow(QMainWindow):
         def done(status, error):
             self._busy = False
             if error is not None:
-                self._set_message("Druck fehlgeschlagen", COLOR_ERROR)
-                QMessageBox.critical(self, APP_NAME, f"Druck fehlgeschlagen:\n{error}")
+                self._set_message(tr("Printing failed"), COLOR_ERROR)
+                QMessageBox.critical(self, APP_NAME, tr("Printing failed:\n{error}").format(error=error))
                 return
             if status is not None:
                 self._apply_status(status)
             if status is not None and status.errors:
-                self._set_message("Drucker meldet Fehler", COLOR_ERROR)
-                QMessageBox.critical(self, APP_NAME, "Der Drucker meldet:\n" + "\n".join(status.errors))
+                self._set_message(tr("The printer reports an error"), COLOR_ERROR)
+                QMessageBox.critical(self, APP_NAME, tr("The printer reports:") + "\n" + "\n".join(status.errors))
             else:
-                self._set_message(f"{len(pages)} Etikett(en) gedruckt", COLOR_OK)
+                self._set_message(ntr("{count} label printed", "{count} labels printed", len(pages)).format(count=len(pages)), COLOR_OK)
 
         self._bg.run(work, done)

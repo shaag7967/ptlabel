@@ -112,13 +112,13 @@ class StatusTest(unittest.TestCase):
         self.assertEqual(st.model, "PT-P750W")
         self.assertEqual(st.errors, [])
         self.assertEqual(st.tape.width_mm, 12)
-        self.assertIn("Gelb / Schwarz", st.describe_media())
-        self.assertIn("laminiert", st.describe_media())
+        self.assertIn("Yellow / Black", st.describe_media())
+        self.assertIn("laminated", st.describe_media())
 
     def test_errors(self):
         raw = bytearray(REAL_STATUS)
         raw[8], raw[9] = 0x01, 0x10
-        self.assertEqual(PrinterStatus.parse(bytes(raw)).errors, ["Kein Band eingelegt", "Abdeckung offen"])
+        self.assertEqual(PrinterStatus.parse(bytes(raw)).errors, ["No tape loaded", "Cover open"])
 
     def test_transient_error_is_ignored(self):
         flicker = bytearray(REAL_STATUS)
@@ -127,7 +127,7 @@ class StatusTest(unittest.TestCase):
         cover_open[9] = 0x10
         cases = [
             ([flicker, REAL_STATUS], []),
-            ([cover_open, cover_open, cover_open], ["Abdeckung offen"]),
+            ([cover_open, cover_open, cover_open], ["Cover open"]),
         ]
         for reads, expected in cases:
             printer = NetworkPrinter("test")

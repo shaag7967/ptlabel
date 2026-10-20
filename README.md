@@ -1,139 +1,186 @@
-# PT-Label – Etiketten-Editor für den Brother PT-P750W
+# PT-Label – label editor for the Brother PT-P750W
 
-Python-Anwendung zum Gestalten und Drucken von Etiketten auf dem Brother PT-P750W über WLAN.
-Läuft unter Windows und Linux und braucht weder P-touch Editor noch den Brother-Treiber.
+Design and print labels on a Brother PT-P750W over Wi-Fi. Runs on Windows and Linux and needs
+neither P-touch Editor nor the Brother driver. The user interface is available in English and German.
 
-## Funktionen
+## Features
 
-- Editor mit WYSIWYG-Vorschau in den Farben des eingelegten Bandes; nicht druckbare Bereiche sind grau.
-- Objekte: Text (mehrzeilig, Schriftart, fett/kursiv/unterstrichen, invertiert, Ausrichtung, automatische
-  Größe), QR-Code, Barcode (Code 128, Code 39, EAN-13, EAN-8, UPC-A, ITF, Codabar), Bild (PNG/JPG/…,
-  Schwellwert oder Rasterung), Rahmen, Linie. Objekte lassen sich um 90°-Schritte drehen.
-- Verschieben mit der Maus oder den Pfeiltasten; Größe über den Anfasser unten rechts ändern;
-  Rückgängig/Wiederholen.
-- Bandbreiten 3,5 / 6 / 9 / 12 / 18 / 24 mm, automatische oder feste Etikettlänge, Ränder.
-- Druckoptionen: Kopien, automatisch schneiden, Halbschnitt, Kettendruck, Spiegeln, hohe Auflösung.
-- Platzhalter für Seriennummern und Datum: `{nr}`, `{nr:03}`, `{datum}`, `{zeit}`.
-- Druckerstatus (Band, Farben, Fehler wie „Abdeckung offen“) wird live abgefragt.
-- Drucker werden im Netzwerk automatisch gefunden.
-- Etiketten werden als `.ptlabel` gespeichert (JSON, Bilder eingebettet). Export als PNG.
-- Kommandozeile für schnelle Etiketten und Skripte.
+- WYSIWYG editor that previews the colors of the loaded tape; non-printable areas are shaded gray.
+- Objects: text (multi-line, font, bold/italic/underline, inverted, alignment, automatic size),
+  QR code, barcode (Code 128, Code 39, EAN-13, EAN-8, UPC-A, ITF, Codabar), image (PNG/JPG/…,
+  threshold or dithering), frame, line. Objects can be rotated in 90° steps.
+- Move objects with the mouse or the arrow keys, resize them with the handle at the bottom right,
+  undo/redo.
+- Tape widths 3.5 / 6 / 9 / 12 / 18 / 24 mm, automatic or fixed label length, margins.
+- Print options: copies, automatic cut, half cut, chain printing, mirror, high resolution.
+- Placeholders for serial numbers and dates: `{nr}`, `{nr:03}`, `{date}`, `{time}`.
+- The printer status (tape, colors, errors such as “cover open”) is queried continuously.
+- Printers on the network are found automatically.
+- Fonts: all system fonts plus three bundled ones; more can be added from files or downloaded from
+  Google Fonts. The font list shows every font in its own typeface.
+- Labels are saved as `.ptlabel` files (JSON, images embedded) and can be exported as PNG.
+- Command line interface for quick labels and scripts.
 
-## Installation und Start
+## Installation
 
-Python 3.10 oder neuer wird benötigt, unter Windows und Linux gleich:
+Python 3.10 or newer is required, on Windows and Linux alike:
 
 ```sh
-pipx install ptlabel        # oder: pip install ptlabel
-ptlabel                     # startet die Oberfläche
+pipx install ptlabel        # or: pip install ptlabel
+ptlabel                     # starts the user interface
 ```
 
-Unter Windows startet `ptlabel-gui` die Oberfläche ohne Konsolenfenster.
+On Windows, `ptlabel-gui` starts the user interface without a console window.
 
-Die Oberfläche nutzt Qt (PySide6), das mit installiert wird. Unter Linux brauchen manche Distributionen
-zusätzlich die Bibliothek `libxcb-cursor0` (Debian/Ubuntu: `sudo apt install libxcb-cursor0`).
-Für neue Texte wird Arial, DejaVu Sans, Liberation Sans o. Ä. verwendet, je nachdem, was installiert ist.
+The user interface uses Qt (PySide6), which is installed automatically. Some Linux distributions
+additionally need the `libxcb-cursor0` library (Debian/Ubuntu: `sudo apt install libxcb-cursor0`).
 
-### Entwicklung
+### Language
+
+The language follows the system settings. To choose it explicitly, set the environment variable
+`LANGUAGE` (e.g. `LANGUAGE=en ptlabel`) or add `"language": "de"` to the settings file
+(`~/.config/ptlabel/config.json` on Linux, `%APPDATA%\ptlabel\config.json` on Windows).
+
+### Printer setup
+
+The printer must be switched on and connected to the network. On first start PT-Label searches for
+it. Otherwise enter its host name (`BRW…` followed by its MAC address, printed on the network
+configuration report) or its IP address under “Print → Printer”. The PT-P750W switches itself off
+after a while without use; the status line then reports that it does not respond until it is
+switched on again.
+
+## Usage
+
+| Action | How |
+|---|---|
+| Insert an object | toolbar “+ Text”, “+ QR code” … or the “Insert” menu |
+| Move | drag with the mouse, arrow keys 0.5 mm, Shift+arrow 0.1 mm |
+| Resize | drag the white square at the bottom right of the selected object |
+| Edit text | double-click the object or use the “Text” field on the right |
+| Delete / duplicate | Del / Ctrl+D, right-click for the context menu |
+| Zoom | Ctrl+mouse wheel, Ctrl++ / Ctrl+- |
+| Print | Ctrl+P or “Print” |
+
+With “Automatic size” switched on, the text fills the tape height and is centered vertically.
+Changing the size by hand switches the automatic off.
+
+An empty frame can only be clicked on its outline, so the objects inside it stay reachable.
+
+### Placeholders
+
+| Placeholder | Result |
+|---|---|
+| `{nr}` | running number; start value under “Start {nr} at”, every copy counts up by one |
+| `{nr:03}` | with leading zeros: 001, 002, … |
+| `{date}` / `{date:%d/%m/%y}` | today's date (format codes as in Python's `strftime`) |
+| `{time}` / `{time:%H:%M:%S}` | time of day |
+
+The German names `{datum}` and `{zeit}` work as well.
+
+### Fonts
+
+All fonts installed on the system are available. PT-Label also ships with three fonts under the
+SIL Open Font License that suit labels well: **Atkinson Hyperlegible** (very legible),
+**Barlow Condensed** (narrow, fits more text) and **JetBrains Mono** (monospaced, for serial numbers).
+
+The “Fonts” menu adds more:
+
+- **Add font files…** copies `.ttf`/`.otf` files into PT-Label's own font folder, without installing
+  them system-wide.
+- **Download Google Fonts…** searches the Google Fonts collection (via [Fontsource](https://fontsource.org)),
+  shows a preview and installs the regular and bold styles, upright and italic. The files contain the
+  Latin character set (Western and Central European languages incl. umlauts and €).
+- **Open font folder** shows that folder (`~/.local/share/ptlabel/fonts` on Linux,
+  `%APPDATA%\ptlabel\fonts` on Windows).
+
+## Command line
+
+```sh
+ptlabel                                   # user interface
+ptlabel discover                          # search the network for printers
+ptlabel status                            # tape, colors, errors
+ptlabel text "Hello world"                # text label sized to the loaded tape
+ptlabel text "Line 1" "Line 2" --bold
+ptlabel text "Server 1" --qr "https://intranet/server1"
+ptlabel text "Test" --preview preview.png         # preview only, no printing
+ptlabel print cable.ptlabel --copies 10 --start 1
+```
+
+Without `--printer` the printer set in the user interface is used. `--printer` also accepts
+`file:job.bin` (write the print data to a file) and, on Linux, `/dev/usb/lp0` for a printer
+connected via USB.
+
+## Development
 
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
-.venv/bin/ptlabel           # Programm starten
-.venv/bin/pytest            # Tests
-.venv/bin/python -m build   # Pakete für PyPI nach dist/
+.venv/bin/ptlabel           # run the program
+.venv/bin/pytest            # tests
+.venv/bin/python -m build   # packages for PyPI in dist/
 ```
 
-### Drucker
+### Translations
 
-Der Drucker muss eingeschaltet und im WLAN sein. Beim ersten Start sucht PT-Label ihn selbst.
-Sonst unter „Drucken → Drucker“ den Hostnamen (`BRW…` gefolgt von der MAC-Adresse, steht auf dem
-Netzwerk-Konfigurationsausdruck) oder die IP-Adresse eintragen. Der PT-P750W schaltet sich nach einiger Zeit ohne Nutzung ab.
-Danach meldet die Statuszeile „antwortet nicht“, bis er wieder eingeschaltet ist.
-
-## Bedienung
-
-| Aktion | Wie |
-|---|---|
-| Objekt einfügen | Werkzeugleiste „+ Text“, „+ QR-Code“ … oder Menü „Einfügen“ |
-| Verschieben | Ziehen mit der Maus, Pfeiltasten 0,5 mm, Umschalt+Pfeil 0,1 mm |
-| Größe ändern | weißes Quadrat unten rechts am markierten Objekt ziehen |
-| Text bearbeiten | Doppelklick auf das Objekt oder Feld „Text“ rechts |
-| Löschen / Duplizieren | Entf / Strg+D, Rechtsklick für Kontextmenü |
-| Zoom | Strg+Mausrad, Strg++ / Strg+- |
-| Drucken | Strg+P oder „Drucken“ |
-
-Ist „Größe automatisch“ eingeschaltet, füllt der Text die Bandhöhe und wird senkrecht zentriert.
-Sobald Sie die Größe von Hand ändern, wird die Automatik abgeschaltet.
-
-Ein leerer Rahmen lässt sich nur an seiner Linie anklicken. So bleiben die Objekte darin erreichbar.
-
-### Platzhalter
-
-| Platzhalter | Ergebnis |
-|---|---|
-| `{nr}` | laufende Nummer; Startwert unter „Nummer {nr} ab“, jede Kopie zählt eins weiter |
-| `{nr:03}` | mit führenden Nullen: 001, 002, … |
-| `{datum}` / `{datum:%d.%m.%y}` | heutiges Datum (Format wie bei Python `strftime`) |
-| `{zeit}` / `{zeit:%H:%M:%S}` | Uhrzeit |
-
-## Kommandozeile
+Texts in the code are English and wrapped in `tr()` (or `ntr()` for plurals) from
+`ptlabel.i18n`. Translations are gettext catalogs in `src/ptlabel/locale`. After changing texts:
 
 ```sh
-ptlabel                                   # grafische Oberfläche
-ptlabel discover                          # Drucker im Netzwerk suchen
-ptlabel status                            # Band, Farben, Fehler
-ptlabel text "Hallo Welt"                 # Text-Etikett, Größe passend zum eingelegten Band
-ptlabel text "Zeile 1" "Zeile 2" --bold
-ptlabel text "Server 1" --qr "https://intranet/server1"
-ptlabel text "Probe" --preview vorschau.png       # nur Vorschau, kein Druck
-ptlabel print kabel.ptlabel --copies 10 --start 1
+.venv/bin/pybabel extract -k tr -k ntr:1,2 --no-location --sort-output -o src/ptlabel/locale/ptlabel.pot src/ptlabel
+.venv/bin/pybabel update -i src/ptlabel/locale/ptlabel.pot -d src/ptlabel/locale -D ptlabel
+# translate the new entries in src/ptlabel/locale/de/LC_MESSAGES/ptlabel.po, then:
+.venv/bin/pybabel compile -d src/ptlabel/locale -D ptlabel
 ```
 
-Ohne `--printer` wird der in der Oberfläche eingestellte Drucker benutzt.
-`--printer` akzeptiert außerdem `file:job.bin` (Druckdaten in eine Datei schreiben) und unter Linux
-`/dev/usb/lp0` für einen per USB angeschlossenen Drucker.
+A new language is added with `pybabel init -i src/ptlabel/locale/ptlabel.pot -d src/ptlabel/locale -D ptlabel -l <code>`.
+The compiled `.mo` files are part of the repository, so no build step is needed.
 
-## Technik
+## Technical notes
 
-- **Druck:** Brother-Raster-Protokoll („Raster Command Reference PT-E550W/P750W/P710BT“) als Rohdaten
-  an TCP-Port 9100. Pro Druckpunkt in Bandrichtung wird eine Rasterzeile mit 128 Nadeln gesendet,
-  komprimiert mit TIFF PackBits. Druckauflösung 180 dpi, mit „Hohe Auflösung“ 360 dpi in Bandrichtung.
-  Der Rand wird dann ebenfalls in 360-dpi-Punkten angegeben; das ist am Gerät nachgemessen.
-- **Status:** SNMP (UDP 161, Community `public`), Brother-OID `1.3.6.1.4.1.2435.3.3.9.1.6.1.0`.
-  Sie liefert den 32-Byte-Statusblock des Raster-Protokolls. Die Druckersuche sendet eine
-  SNMP-Anfrage per Broadcast.
-- **Druckbereich je Band** (Nadeln von 128): 3,5 mm → 24, 6 mm → 32, 9 mm → 50, 12 mm → 70,
+- **Printing:** Brother raster protocol (“Raster Command Reference PT-E550W/P750W/P710BT”) sent as
+  raw data to TCP port 9100. Every dot in feed direction is one raster line of 128 pins, compressed
+  with TIFF PackBits. Resolution 180 dpi, with “High resolution” 360 dpi in feed direction. The
+  margin is then also given in 360 dpi dots; this was measured on the device.
+- **Status:** SNMP (UDP 161, community `public`), Brother OID `1.3.6.1.4.1.2435.3.3.9.1.6.1.0`,
+  which returns the 32-byte status block of the raster protocol. Printer discovery sends an SNMP
+  request as broadcast.
+- **Printable area per tape** (pins out of 128): 3.5 mm → 24, 6 mm → 32, 9 mm → 50, 12 mm → 70,
   18 mm → 112, 24 mm → 128.
-- Abhängigkeiten: Pillow (Rendering), segno (QR-Codes), python-barcode (Barcode-Muster),
-  PySide6 (Oberfläche).
+- Dependencies: Pillow (rendering), segno (QR codes), python-barcode (barcode patterns),
+  PySide6 (user interface).
 
-### Aufbau
+### Project layout
 
 ```
 src/ptlabel/
-  tapes.py    Bandbreiten, Druckbereich, Farbcodes
-  raster.py   Druckauftrag im Brother-Raster-Format, PackBits
-  snmp.py     minimaler SNMP-Client (GET, Broadcast-Suche)
-  printer.py  Status-Auswertung, Senden über TCP 9100 / Datei
-  model.py    Etikett und Objekte, Dateiformat, Platzhalter
-  render.py   Etikett → Bitmap
-  fonts.py    Schriftarten unter Windows und Linux finden
-  cli.py      Kommandozeile
-  gui/        PySide6-Oberfläche
-    window.py   Hauptfenster, Rückgängig, Dateien, Drucker
-    canvas.py   Vorschau mit Lineal, Auswahl, Maus und Tastatur
-    panels.py   Seitenleiste und Eigenschaften-Editoren
-tests/        Unit-Tests: pytest
+  tapes.py     tape widths, printable area, color codes
+  raster.py    print jobs in Brother raster format, PackBits
+  snmp.py      minimal SNMP client (GET, broadcast discovery)
+  printer.py   status decoding, sending via TCP 9100 / file
+  model.py     label and objects, file format, placeholders
+  render.py    label → bitmap
+  fonts.py     font discovery (system, bundled and user fonts)
+  webfonts.py  Google Fonts download via Fontsource
+  i18n.py      translations (gettext)
+  cli.py       command line interface
+  gui/         PySide6 user interface
+    window.py    main window, undo, files, printer
+    canvas.py    preview with ruler, selection, mouse and keyboard
+    panels.py    side panel and property editors
+    fontui.py    font previews and Google Fonts dialog
+  data/fonts/  bundled fonts (SIL Open Font License, see OFL.txt in each folder)
+  locale/      translations
+tests/         unit tests: pytest
 ```
 
-## Bekannte Grenzen
+## Known limitations
 
-- Getestet mit dem PT-P750W. Modelle mit demselben Raster-Protokoll (PT-E550W, PT-P710BT) sollten
-  ebenfalls funktionieren; PT-P900W/P950NW (360 dpi) und die QL-Serie werden nicht unterstützt.
-- P-touch-Editor-Dateien (`.lbx`) können nicht importiert werden.
-- Unter Windows wird nur über das Netzwerk gedruckt, nicht über USB.
+- Tested with the PT-P750W. Models with the same raster protocol (PT-E550W, PT-P710BT) should
+  work as well; the PT-P900W/P950NW (360 dpi) and the QL series are not supported.
+- P-touch Editor files (`.lbx`) cannot be imported.
+- On Windows printing works over the network only, not via USB.
 
-## Lizenz
+## License
 
-MIT-Lizenz, siehe Datei `LICENSE`.
+MIT, see `LICENSE`. The bundled fonts are licensed under the SIL Open Font License 1.1
+(see the `OFL.txt` next to each font).

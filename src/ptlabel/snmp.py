@@ -6,6 +6,8 @@ import os
 import socket
 import time
 
+from .i18n import tr
+
 OID_SYS_DESCR = "1.3.6.1.2.1.1.1.0"
 OID_SYS_NAME = "1.3.6.1.2.1.1.5.0"
 OID_DEVICE_DESCR = "1.3.6.1.2.1.25.3.2.1.3.1"
@@ -99,7 +101,7 @@ def get(host: str, oid: str, community: str = "public", timeout: float = 1.5, re
     try:
         address = socket.getaddrinfo(host, PORT, socket.AF_INET, socket.SOCK_DGRAM)[0][4]
     except socket.gaierror as exc:
-        raise SnmpError(f"Host {host!r} nicht gefunden") from exc
+        raise SnmpError(tr("Host {host!r} not found").format(host=host)) from exc
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         for _ in range(retries + 1):
             sock.sendto(message, address)
@@ -116,7 +118,7 @@ def get(host: str, oid: str, community: str = "public", timeout: float = 1.5, re
                     continue
                 if rid == request_id:
                     return None if error else value
-    raise SnmpError(f"Keine SNMP-Antwort von {host}")
+    raise SnmpError(tr("No SNMP response from {host}").format(host=host))
 
 
 def _broadcast_addresses() -> list[str]:

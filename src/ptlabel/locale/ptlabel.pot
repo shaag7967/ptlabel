@@ -1,0 +1,849 @@
+# Translations template for ptlabel.
+# Copyright (C) 2026 shaag7967
+# This file is distributed under the same license as the ptlabel project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ptlabel 1.0.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-20 21:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "&Edit"
+msgstr ""
+
+msgid "&File"
+msgstr ""
+
+msgid "&Help"
+msgstr ""
+
+msgid "&Insert"
+msgstr ""
+
+msgid "&Printer"
+msgstr ""
+
+msgid "&View"
+msgstr ""
+
+msgid "(no image)"
+msgstr ""
+
+msgid "About…"
+msgstr ""
+
+msgid "Add font files"
+msgstr ""
+
+msgid "Add font files…"
+msgstr ""
+
+msgid "Alignment"
+msgstr ""
+
+msgid "All categories"
+msgstr ""
+
+msgid "All files"
+msgstr ""
+
+msgid "Automatic"
+msgstr ""
+
+msgid "Automatic length"
+msgstr ""
+
+msgid "Automatic size (fill tape height)"
+msgstr ""
+
+msgid "Barcode"
+msgstr ""
+
+msgid "Battery low"
+msgstr ""
+
+msgid "Berry pink"
+msgstr ""
+
+msgid "Black"
+msgstr ""
+
+msgid "Blue"
+msgstr ""
+
+msgid "Bold"
+msgstr ""
+
+msgid "Bring forward"
+msgstr ""
+
+msgid "Brother printers found:"
+msgstr ""
+
+msgid "COMMAND"
+msgstr ""
+
+msgid "CONTENT"
+msgstr ""
+
+msgid "Center vertically"
+msgstr ""
+
+msgid "Centered"
+msgstr ""
+
+msgid "Chain printing (saves tape, the last\\nlabel stays in the printer)"
+msgstr ""
+
+msgid "Cleaning"
+msgstr ""
+
+msgid "Cleaning tape"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Content"
+msgstr ""
+
+msgid "Copies"
+msgstr ""
+
+msgid "Corner radius (mm)"
+msgstr ""
+
+msgid "Cover open"
+msgstr ""
+
+msgid "Cut automatically"
+msgstr ""
+
+msgid "Cutter jammed"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid ""
+"Design and print labels for the Brother PT-P750W. Without a command the "
+"graphical user interface starts."
+msgstr ""
+
+msgid "Display"
+msgstr ""
+
+msgid "Dither (for photos)"
+msgstr ""
+
+msgid "Download Google Fonts"
+msgstr ""
+
+msgid "Download Google Fonts…"
+msgstr ""
+
+msgid "Duplicate"
+msgstr ""
+
+msgid "Error correction"
+msgstr ""
+
+#, python-brace-format
+msgid "Error: {error}"
+msgstr ""
+
+msgid "Expansion buffer full"
+msgstr ""
+
+msgid "Export as PNG"
+msgstr ""
+
+msgid "Export as PNG…"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Export failed:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid "Exported: {name}"
+msgstr ""
+
+msgid "F&onts"
+msgstr ""
+
+msgid "FILE"
+msgstr ""
+
+msgid "Filled"
+msgstr ""
+
+msgid "Find printers…"
+msgstr ""
+
+msgid "Fluorescent orange"
+msgstr ""
+
+msgid "Fluorescent yellow"
+msgstr ""
+
+msgid "Font"
+msgstr ""
+
+msgid "Fonts"
+msgstr ""
+
+#, python-brace-format
+msgid "Fonts added: {families}"
+msgstr ""
+
+msgid ""
+"Fonts are installed for PT-Label only (regular and bold, upright and "
+"italic)."
+msgstr ""
+
+msgid "Frame"
+msgstr ""
+
+msgid "Gold"
+msgstr ""
+
+msgid "Green"
+msgstr ""
+
+msgid "Half cut between labels"
+msgstr ""
+
+msgid "Handwriting"
+msgstr ""
+
+msgid "Height (mm)"
+msgstr ""
+
+msgid "Height incl. text (mm)"
+msgstr ""
+
+msgid "High resolution 180×360 dpi"
+msgstr ""
+
+#, python-brace-format
+msgid "Host {host!r} not found"
+msgstr ""
+
+msgid "ITF (2 of 5)"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Images"
+msgstr ""
+
+msgid "Image…"
+msgstr ""
+
+msgid "Install"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Installation failed:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid "Installed: {families}"
+msgstr ""
+
+#, python-brace-format
+msgid "Installing {family} …"
+msgstr ""
+
+msgid "Invalid status response"
+msgstr ""
+
+msgid "Invert"
+msgstr ""
+
+msgid "Inverted (white on black)"
+msgstr ""
+
+msgid "Italic"
+msgstr ""
+
+msgid "Keep aspect ratio"
+msgstr ""
+
+msgid "Label"
+msgstr ""
+
+msgid "Label editor for the Brother PT-P750W"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Left/right margin (mm)"
+msgstr ""
+
+msgid "Length (mm)"
+msgstr ""
+
+msgid "Light gray"
+msgstr ""
+
+msgid "Lime green"
+msgstr ""
+
+msgid "Line"
+msgstr ""
+
+msgid "Line spacing"
+msgstr ""
+
+msgid "Line width (mm)"
+msgstr ""
+
+msgid "Load image"
+msgstr ""
+
+msgid "Load image…"
+msgstr ""
+
+#, python-brace-format
+msgid "Loaded tape ({loaded}) does not match the label ({label})"
+msgstr ""
+
+msgid "Loading preview …"
+msgstr ""
+
+msgid "Loading the font list …"
+msgstr ""
+
+msgid "Matte clear"
+msgstr ""
+
+msgid "Matte silver"
+msgstr ""
+
+msgid "Matte white"
+msgstr ""
+
+msgid "Mirror"
+msgstr ""
+
+#, python-brace-format
+msgid "Model 0x{code:02X}"
+msgstr ""
+
+msgid "Module width (dots)"
+msgstr ""
+
+msgid "Monospace"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "No Brother printer found."
+msgstr ""
+
+msgid ""
+"No Brother printer found.\n"
+"Please enter the host name or IP address by hand."
+msgstr ""
+
+#, python-brace-format
+msgid "No SNMP response from {host}"
+msgstr ""
+
+#, python-brace-format
+msgid "No downloadable files for {family}"
+msgstr ""
+
+msgid ""
+"No object selected.\n"
+"Click an object or add a new one\n"
+"with “Insert”."
+msgstr ""
+
+msgid "No preview available"
+msgstr ""
+
+msgid "No printer given (--printer HOST) and none set in the GUI"
+msgstr ""
+
+msgid "No printer is set. Search the network now?"
+msgstr ""
+
+msgid "No printer set"
+msgstr ""
+
+msgid ""
+"No printer set – switch the printer on and click “Search…” or enter its "
+"host name/IP"
+msgstr ""
+
+msgid "No tape loaded"
+msgstr ""
+
+msgid "Not a PT-Label file"
+msgstr ""
+
+msgid "Object"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+msgid "Open font folder"
+msgstr ""
+
+msgid "Open label"
+msgstr ""
+
+msgid "Open…"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Overheating"
+msgstr ""
+
+msgid "PT-Label label"
+msgstr ""
+
+msgid "Pink"
+msgstr ""
+
+msgid "Placeholders"
+msgstr ""
+
+msgid "Placeholders…"
+msgstr ""
+
+#, python-brace-format
+msgid "Preview saved: {path}"
+msgstr ""
+
+msgid "Print"
+msgstr ""
+
+#, python-brace-format
+msgid "Print data saved: {path} ({size} bytes)"
+msgstr ""
+
+#, python-brace-format
+msgid "Printable area: {height:.1f} mm high"
+msgstr ""
+
+msgid "Printer"
+msgstr ""
+
+#, python-brace-format
+msgid "Printer: {model}"
+msgstr ""
+
+msgid "Printer: –"
+msgstr ""
+
+msgid "Printing failed"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Printing failed:\n"
+"{error}"
+msgstr ""
+
+msgid "QR code"
+msgstr ""
+
+msgid "QR code: modules smaller than 2 dots – make the QR code larger"
+msgstr ""
+
+msgid "Query status"
+msgstr ""
+
+#, python-brace-format
+msgid "Querying {printer} …"
+msgstr ""
+
+msgid "Quit"
+msgstr ""
+
+msgid "Red"
+msgstr ""
+
+msgid "Redo"
+msgstr ""
+
+#, python-brace-format
+msgid "Rendering error: {error}"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Rotation"
+msgstr ""
+
+msgid "Sans serif"
+msgstr ""
+
+msgid "Satin gold"
+msgstr ""
+
+msgid "Satin silver"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save as…"
+msgstr ""
+
+msgid "Save label"
+msgstr ""
+
+#, python-brace-format
+msgid "Saved: {name}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Saving failed:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Search failed:\n"
+"{error}"
+msgstr ""
+
+msgid "Searching the network for Brother printers …"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Select printer"
+msgstr ""
+
+msgid "Send backward"
+msgstr ""
+
+#, python-brace-format
+msgid "Sending to {host}:{port} failed ({error})"
+msgstr ""
+
+#, python-brace-format
+msgid "Sending {count} label to {printer} …"
+msgid_plural "Sending {count} labels to {printer} …"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Serif"
+msgstr ""
+
+msgid "Show text"
+msgstr ""
+
+msgid "Size (mm)"
+msgstr ""
+
+msgid "Size (pt)"
+msgstr ""
+
+#, python-brace-format
+msgid "Start {nr} at"
+msgstr ""
+
+#, python-brace-format
+msgid "State:   {state}"
+msgstr ""
+
+msgid "Status is only available over the network"
+msgstr ""
+
+msgid "Stencil"
+msgstr ""
+
+msgid "System error"
+msgstr ""
+
+msgid "Tape width"
+msgstr ""
+
+#, python-brace-format
+msgid "Tape:    {media}"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Text size (pt)"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The file cannot be opened:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The font list cannot be loaded:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The fonts cannot be added:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The image cannot be loaded:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The label cannot be created:\n"
+"{error}"
+msgstr ""
+
+msgid "The label has been modified. Save changes?"
+msgstr ""
+
+msgid "The printer does not report a Brother status"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The printer has {loaded} tape loaded, the label is designed for {label}.\n"
+"\n"
+"Print anyway?"
+msgstr ""
+
+msgid "The printer reports an error"
+msgstr ""
+
+msgid "The printer reports:"
+msgstr ""
+
+msgid "The selected files are not usable fonts."
+msgstr ""
+
+msgid "Threshold (0–255)"
+msgstr ""
+
+msgid "Tools"
+msgstr ""
+
+msgid "Transmission buffer full"
+msgstr ""
+
+msgid "Transmission error"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Underline"
+msgstr ""
+
+msgid "Undo"
+msgstr ""
+
+msgid "Untitled"
+msgstr ""
+
+msgid "Usable in texts, QR codes and barcodes:"
+msgstr ""
+
+msgid "Usage…"
+msgstr ""
+
+msgid "Use"
+msgstr ""
+
+#, python-brace-format
+msgid "Use loaded tape ({tape})"
+msgstr ""
+
+msgid "Use tape"
+msgstr ""
+
+msgid "Vertical"
+msgstr ""
+
+msgid "White"
+msgstr ""
+
+msgid "Width (mm)"
+msgstr ""
+
+#, python-brace-format
+msgid "Writing to {path} failed ({error})"
+msgstr ""
+
+msgid "Wrong power adapter"
+msgstr ""
+
+msgid "Wrong tape – please change the tape"
+msgstr ""
+
+msgid "X (mm)"
+msgstr ""
+
+msgid "Y (mm)"
+msgstr ""
+
+msgid "Yellow"
+msgstr ""
+
+msgid "Zoom in"
+msgstr ""
+
+msgid "Zoom out"
+msgstr ""
+
+msgid "auto"
+msgstr ""
+
+msgid "fixed label length in mm"
+msgstr ""
+
+msgid "font size in pt (default: automatic)"
+msgstr ""
+
+msgid "font, e.g. Arial"
+msgstr ""
+
+msgid "heat-shrink tube 2:1"
+msgstr ""
+
+msgid "heat-shrink tube 3:1"
+msgstr ""
+
+msgid "host name/IP of the printer"
+msgstr ""
+
+msgid "host name/IP, file:PATH or /dev/usb/lp0"
+msgstr ""
+
+msgid "incompatible"
+msgstr ""
+
+#, python-brace-format
+msgid "invalid data for {symbology}: {error}"
+msgstr ""
+
+msgid "laminated"
+msgstr ""
+
+msgid "margin in mm (default 2)"
+msgstr ""
+
+msgid "no tape"
+msgstr ""
+
+msgid "non-laminated"
+msgstr ""
+
+msgid "print a label file (.ptlabel)"
+msgstr ""
+
+msgid "printing"
+msgstr ""
+
+msgid "put a QR code in front of the text"
+msgstr ""
+
+msgid "quickly print a text label (one argument per line)"
+msgstr ""
+
+msgid "ready"
+msgstr ""
+
+msgid "save a preview as PNG (prints only with --printer)"
+msgstr ""
+
+msgid "search the network for Brother printers"
+msgstr ""
+
+msgid "show the printer status"
+msgstr ""
+
+msgid "start the graphical user interface (default)"
+msgstr ""
+
+#, python-brace-format
+msgid "start value for {nr}"
+msgstr ""
+
+msgid "tape width in mm (default: loaded tape)"
+msgstr ""
+
+#, python-brace-format
+msgid "type 0x{code:02X}"
+msgstr ""
+
+msgid "write the print data to a file (prints only with --printer)"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} label printed"
+msgid_plural "{count} labels printed"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} label printed."
+msgid_plural "{count} labels printed."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{error} – is the printer switched on and connected to the network?"
+msgstr ""
+
+#, python-brace-format, python-format
+msgid ""
+"{nr}  running number (e.g. {nr:03} → 001)\n"
+"{date}  today's date (e.g. {date:%d/%m/%y})\n"
+"{time}  time of day (e.g. {time:%H:%M:%S})"
+msgstr ""
+
+#, python-brace-format
+msgid "{object} extends beyond the printable area"
+msgstr ""
+
+msgid ""
+"• Add objects with the toolbar or the “Insert” menu.\n"
+"• Click an object and drag it with the mouse; the white square at the "
+"bottom right changes its size.\n"
+"• Arrow keys move by 0.5 mm (0.1 mm with Shift), Del deletes.\n"
+"• Double-click jumps to the text field, right-click opens the context "
+"menu.\n"
+"• The mouse wheel scrolls, Ctrl+wheel zooms.\n"
+"• Gray shaded areas are not printed (tape edges and margins).\n"
+"• The preview shows the colors of the loaded tape."
+msgstr ""
+

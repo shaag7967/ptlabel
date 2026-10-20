@@ -1,8 +1,8 @@
 import unittest
 
 from ptlabel import barcodes
-from ptlabel.model import BarcodeObject, LabelDocument
-from ptlabel.render import render
+from ptlabel.model import BarcodeObject, LabelDocument, QRCodeObject
+from ptlabel.render import print_pages, render
 
 
 class BarcodeTest(unittest.TestCase):
@@ -38,6 +38,32 @@ class BarcodeTest(unittest.TestCase):
         column_heights = [sum(1 for y in range(y0, y1) if img.getpixel((x, y))) for x in range(x0, x1)]
         bars = sorted(set(h for h in column_heights if h))
         self.assertGreater(bars[-1], bars[0])  # guards reach into the text line
+
+
+class QRCodeTest(unittest.TestCase):
+    def test_high_resolution_keeps_modules_on_whole_pins(self):
+        # at 360 dpi the rows are merged in pairs later; module rows must start on even rows of the band
+        for size in (9.0, 8.67, 8.29):
+            for rotation in (0, 90, 180, 270):
+                doc = LabelDocument(tape_mm=12, high_res=True)
+                doc.objects.append(QRCodeObject(x=2.13, y=1.17, size=size, rotation=rotation,
+                                                data="https://example.com/inventar/server-01"))
+                result = render(doc, dpi=360)
+                top = result.band[0]
+                ink = result.image.crop((0, top, result.image.width, result.band[1])).getbbox()
+                self.assertEqual(ink[1] % 2, 0, (size, rotation))
+                self.assertEqual((ink[3] - ink[1]) % 2, 0, (size, rotation))
+                page = print_pages(doc)[0]
+                histogram = page.histogram()
+                self.assertEqual(sum(histogram) - histogram[0] - histogram[255], 0)  # pure black and white
+
+    def test_dense_code_warns(self):
+        doc = LabelDocument(tape_mm=6)
+        doc.objects.append(QRCodeObject(size=4.5, data="https://intranet.example.org/" + "x" * 120))
+        self.assertTrue(any("QR code" in w for w in render(doc).warnings))
+        doc = LabelDocument(tape_mm=12)
+        doc.objects.append(QRCodeObject(y=doc.tape.band_top_mm, size=9.9, data="PT-Label"))
+        self.assertEqual(render(doc).warnings, [])
 
 
 if __name__ == "__main__":

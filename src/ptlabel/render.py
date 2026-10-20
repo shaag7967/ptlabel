@@ -54,6 +54,7 @@ class _Ctx:
     now: datetime
     band_h: int
     warnings: list[str]
+    step: int = 1  # rendered pixels per print head pin (2 at high resolution, see _band)
 
 
 def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
@@ -63,7 +64,8 @@ def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
     tape_px = round(tape.width_mm * scale)
     band_top = round(tape.band_top_mm * scale)
     band_h = round(tape.print_pins * dpi / DPI)
-    ctx = _Ctx(doc.counter_start if counter is None else counter, now or datetime.now(), band_h, [])
+    ctx = _Ctx(doc.counter_start if counter is None else counter, now or datetime.now(), band_h, [],
+               max(1, dpi // DPI))
 
     items = []
     for obj in doc.objects:
@@ -79,6 +81,8 @@ def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
             y = band_top + (band_h - img.height) // 2
         else:
             y = round(obj.y * scale)
+        if isinstance(obj, QRCodeObject) and ctx.step > 1:
+            y -= (y - band_top) % ctx.step  # module rows must not straddle two head pins
         items.append([obj, img, x, y, opaque, size_pt])
 
     margin_px = round(doc.margin_mm * scale)
@@ -231,16 +235,22 @@ def _render_text(obj: TextObject, scale: float, ctx: _Ctx):
 
 def _render_qr(obj: QRCodeObject, scale: float, ctx: _Ctx) -> Image.Image:
     data = expand(obj.data, ctx.counter, ctx.now) or " "
-    qr = segno.make_qr(data, error=obj.error.lower(), boost_error=False)
+    # boost_error: use a higher error correction if it fits into the same symbol size
+    qr = segno.make_qr(data, error=obj.error.lower(), boost_error=True)
     n = qr.symbol_size(border=0)[0]
     box = max(1, round(obj.size * scale))
-    module = max(1, box // n)  # whole dots per module keep the code readable
+    # whole dots per module keep the code readable; at high resolution the module height is
+    # halved later, so it has to be even to stay square and uniform
+    module = max(ctx.step, box // n // ctx.step * ctx.step)
     if module * DPI / (scale * MM_PER_INCH) < 2:
-        ctx.warnings.append(tr("QR code: modules smaller than 2 dots – make the QR code larger"))
+        ctx.warnings.append(tr("QR code too dense to scan reliably (modules smaller than 2 dots): make it larger, "
+                               "shorten the content or lower the error correction"))
     raw = bytes(255 if v else 0 for row in qr.matrix for v in row)
     symbol = Image.frombytes("L", (n, n), raw).resize((n * module, n * module), Image.Resampling.NEAREST)
-    img = Image.new("L", (max(box, symbol.width),) * 2, 0)
-    offset = (img.width - symbol.width) // 2
+    side = max(box, symbol.width)
+    side += -side % ctx.step  # a rotated code must stay on whole head pins as well
+    img = Image.new("L", (side, side), 0)
+    offset = (img.width - symbol.width) // 2 // ctx.step * ctx.step  # keep rows on whole head pins
     img.paste(symbol, (offset, offset))
     return img
 

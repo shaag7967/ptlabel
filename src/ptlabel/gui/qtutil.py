@@ -10,18 +10,11 @@ from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import QWidget
 
 APP_NAME = "PT-Label"
-RULER_H = 24
-PAD = 24
-HANDLE = 9
 STATUS_INTERVAL_MS = 20000
 MAX_IMAGE_PX = 1200
-SHADE = (40, 40, 40)
-CANVAS_BG = "#7d838b"
-ACCENT = "#0a64d8"
-COLOR_OK = "#1e7b34"
-COLOR_ERROR = "#b00020"
-COLOR_INFO = "#444444"
-COLOR_WARN = "#9a5b00"
+
+# Semantic text colors, styled in theme.py: info, ok, warn, error
+TONES = ("info", "ok", "warn", "error")
 
 
 def fmt(value: float) -> str:
@@ -38,8 +31,12 @@ def index_of(items: list, obj) -> int | None:
     return next((i for i, item in enumerate(items) if item is obj), None)
 
 
-def set_color(widget: QWidget, color: str) -> None:
-    widget.setStyleSheet(f"color: {color};")
+def set_tone(widget: QWidget, tone: str) -> None:
+    """Color a label by meaning; the colors come from the style sheet of the theme."""
+    if widget.property("tone") != tone:
+        widget.setProperty("tone", tone)
+        widget.style().unpolish(widget)
+        widget.style().polish(widget)
 
 
 def pil_to_qimage(img: Image.Image) -> QImage:

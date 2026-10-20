@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:48+0200\n"
-"PO-Revision-Date: 2026-10-20 19:48+0000\n"
+"POT-Creation-Date: 2026-10-20 22:19+0200\n"
+"PO-Revision-Date: 2026-10-20 20:19+0000\n"
 "Last-Translator: shaag7967\n"
 "Language: de\n"
 "Language-Team: German\n"
@@ -36,6 +36,9 @@ msgstr "&Ansicht"
 msgid "(no image)"
 msgstr "(kein Bild)"
 
+msgid "180×360 dpi: finer, but slower"
+msgstr "180×360 dpi: feiner, aber langsamer"
+
 msgid "About…"
 msgstr "Über…"
 
@@ -44,6 +47,15 @@ msgstr "Schriftdateien hinzufügen"
 
 msgid "Add font files…"
 msgstr "Schriftdateien hinzufügen…"
+
+msgid "Align left"
+msgstr "Linksbündig"
+
+msgid "Align objects with the tape center, the margins and other objects while dragging (Alt: off)"
+msgstr "Objekte beim Ziehen an Bandmitte, Rändern und anderen Objekten ausrichten (Alt: aus)"
+
+msgid "Align right"
+msgstr "Rechtsbündig"
 
 msgid "Alignment"
 msgstr "Ausrichtung"
@@ -54,14 +66,14 @@ msgstr "Alle Kategorien"
 msgid "All files"
 msgstr "Alle Dateien"
 
-msgid "Automatic"
-msgstr "Automatisch"
-
 msgid "Automatic length"
 msgstr "Länge automatisch"
 
 msgid "Automatic size (fill tape height)"
 msgstr "Größe automatisch (Bandhöhe füllen)"
+
+msgid "Automatic zoom"
+msgstr "Automatischer Zoom"
 
 msgid "Barcode"
 msgstr "Barcode"
@@ -93,14 +105,17 @@ msgstr "BEFEHL"
 msgid "CONTENT"
 msgstr "INHALT"
 
+msgid "Center"
+msgstr "Zentriert"
+
 msgid "Center vertically"
 msgstr "Vertikal zentrieren"
 
 msgid "Centered"
 msgstr "Zentriert"
 
-msgid "Chain printing (saves tape, the last\\nlabel stays in the printer)"
-msgstr "Kettendruck (spart Band, letztes\\nEtikett bleibt im Gerät)"
+msgid "Chain printing"
+msgstr "Kettendruck"
 
 msgid "Cleaning"
 msgstr "Reinigung"
@@ -110,6 +125,9 @@ msgstr "Reinigungsband"
 
 msgid "Clear"
 msgstr "Transparent"
+
+msgid "Clear list"
+msgstr "Liste leeren"
 
 msgid "Content"
 msgstr "Inhalt"
@@ -123,11 +141,20 @@ msgstr "Eckenradius (mm)"
 msgid "Cover open"
 msgstr "Abdeckung offen"
 
+msgid "Cut after every label"
+msgstr "Nach jedem Etikett schneiden"
+
 msgid "Cut automatically"
 msgstr "Automatisch schneiden"
 
+msgid "Cut only through the tape, not the backing"
+msgstr "Nur das Band anschneiden, nicht die Trägerfolie"
+
 msgid "Cutter jammed"
 msgstr "Schneidemesser blockiert"
+
+msgid "Dark"
+msgstr "Dunkel"
 
 msgid "Delete"
 msgstr "Löschen"
@@ -150,6 +177,9 @@ msgstr "Google Fonts herunterladen"
 
 msgid "Download Google Fonts…"
 msgstr "Google Fonts herunterladen…"
+
+msgid "Drag entries to change which object is in front"
+msgstr "Einträge ziehen, um festzulegen, welches Objekt vorne liegt"
 
 msgid "Duplicate"
 msgstr "Duplizieren"
@@ -203,6 +233,9 @@ msgstr "Neon Gelb"
 msgid "Font"
 msgstr "Schriftart"
 
+msgid "Font size; changing it switches the automatic size off"
+msgstr "Schriftgröße; eine Änderung schaltet die automatische Größe ab"
+
 msgid "Fonts"
 msgstr "Schriften"
 
@@ -212,6 +245,9 @@ msgstr "Schriften hinzugefügt: {families}"
 
 msgid "Fonts are installed for PT-Label only (regular and bold, upright and italic)."
 msgstr "Schriften werden nur für PT-Label installiert (normal und fett, aufrecht und kursiv)."
+
+msgid "Format"
+msgstr "Format"
 
 msgid "Frame"
 msgstr "Rahmen"
@@ -234,8 +270,11 @@ msgstr "Höhe (mm)"
 msgid "Height incl. text (mm)"
 msgstr "Höhe inkl. Klartext (mm)"
 
-msgid "High resolution 180×360 dpi"
-msgstr "Hohe Auflösung 180×360 dpi"
+msgid "High resolution"
+msgstr "Hohe Auflösung"
+
+msgid "Host name or IP address"
+msgstr "Hostname oder IP-Adresse"
 
 #, python-brace-format
 msgid "Host {host!r} not found"
@@ -243,6 +282,9 @@ msgstr "Host {host!r} nicht gefunden"
 
 msgid "ITF (2 of 5)"
 msgstr "ITF (2 aus 5)"
+
+msgid "Icons: Lucide (ISC license). Bundled fonts: SIL Open Font License."
+msgstr "Icons: Lucide (ISC-Lizenz). Mitgelieferte Schriften: SIL Open Font License."
 
 msgid "Image"
 msgstr "Bild"
@@ -252,6 +294,10 @@ msgstr "Bilder"
 
 msgid "Image…"
 msgstr "Bild…"
+
+#, python-brace-format
+msgid "Insert {object}"
+msgstr "{object} einfügen"
 
 msgid "Install"
 msgstr "Installieren"
@@ -296,11 +342,14 @@ msgstr "Etiketten-Editor für Brother PT-P750W"
 msgid "Left"
 msgstr "Links"
 
-msgid "Left/right margin (mm)"
-msgstr "Rand links/rechts (mm)"
+msgid "Length"
+msgstr "Länge"
 
 msgid "Length (mm)"
 msgstr "Länge (mm)"
+
+msgid "Light"
+msgstr "Hell"
 
 msgid "Light gray"
 msgstr "Hellgrau"
@@ -332,6 +381,12 @@ msgstr "Lade Vorschau …"
 
 msgid "Loading the font list …"
 msgstr "Lade Schriftenliste …"
+
+msgid "Main toolbar"
+msgstr "Hauptwerkzeugleiste"
+
+msgid "Margin left/right"
+msgstr "Rand links/rechts"
 
 msgid "Matte clear"
 msgstr "Matt Transparent"
@@ -400,17 +455,17 @@ msgstr "Kein Drucker eingestellt"
 msgid "No printer set – switch the printer on and click “Search…” or enter its host name/IP"
 msgstr "Kein Drucker eingestellt – Drucker einschalten und „Suchen…“ klicken oder Hostname/IP eintragen"
 
+msgid "No recent files"
+msgstr "Keine zuletzt geöffneten Dateien"
+
 msgid "No tape loaded"
 msgstr "Kein Band eingelegt"
 
 msgid "Not a PT-Label file"
 msgstr "Keine PT-Label-Datei"
 
-msgid "Object"
-msgstr "Objekt"
-
-msgid "Open"
-msgstr "Öffnen"
+msgid "Objects"
+msgstr "Objekte"
 
 msgid "Open font folder"
 msgstr "Schriftordner öffnen"
@@ -418,8 +473,14 @@ msgstr "Schriftordner öffnen"
 msgid "Open label"
 msgstr "Etikett öffnen"
 
+msgid "Open recent"
+msgstr "Zuletzt geöffnet"
+
 msgid "Open…"
 msgstr "Öffnen…"
+
+msgid "Options"
+msgstr "Optionen"
 
 msgid "Other"
 msgstr "Andere"
@@ -430,6 +491,9 @@ msgstr "Überhitzung"
 msgid "PT-Label label"
 msgstr "PT-Label-Etikett"
 
+msgid "Panels and toolbars"
+msgstr "Bereiche und Werkzeugleisten"
+
 msgid "Pink"
 msgstr "Pink"
 
@@ -438,6 +502,9 @@ msgstr "Platzhalter"
 
 msgid "Placeholders…"
 msgstr "Platzhalter…"
+
+msgid "Position"
+msgstr "Position"
 
 #, python-brace-format
 msgid "Preview saved: {path}"
@@ -450,6 +517,9 @@ msgstr "Drucken"
 msgid "Print data saved: {path} ({size} bytes)"
 msgstr "Druckdaten gespeichert: {path} ({size} Bytes)"
 
+msgid "Print mirror-inverted, e.g. for transparent tape on glass"
+msgstr "Spiegelverkehrt drucken, z. B. für transparentes Band auf Glas"
+
 #, python-brace-format
 msgid "Printable area: {height:.1f} mm high"
 msgstr "Druckbereich: {height:.1f} mm hoch"
@@ -461,9 +531,6 @@ msgstr "Drucker"
 msgid "Printer: {model}"
 msgstr "Drucker: {model}"
 
-msgid "Printer: –"
-msgstr "Drucker: –"
-
 msgid "Printing failed"
 msgstr "Druck fehlgeschlagen"
 
@@ -474,6 +541,9 @@ msgid ""
 msgstr ""
 "Druck fehlgeschlagen:\n"
 "{error}"
+
+msgid "Properties"
+msgstr "Eigenschaften"
 
 msgid "QR code"
 msgstr "QR-Code"
@@ -500,6 +570,9 @@ msgstr "Wiederholen"
 #, python-brace-format
 msgid "Rendering error: {error}"
 msgstr "Fehler bei der Darstellung: {error}"
+
+msgid "Reset panel layout"
+msgstr "Anordnung zurücksetzen"
 
 msgid "Right"
 msgstr "Rechts"
@@ -529,6 +602,9 @@ msgstr "Etikett speichern"
 msgid "Saved: {name}"
 msgstr "Gespeichert: {name}"
 
+msgid "Saves tape: the last label stays in the printer until the next job"
+msgstr "Spart Band: Das letzte Etikett bleibt bis zum nächsten Auftrag im Gerät"
+
 #, python-brace-format
 msgid ""
 "Saving failed:\n"
@@ -544,6 +620,9 @@ msgid ""
 msgstr ""
 "Suche fehlgeschlagen:\n"
 "{error}"
+
+msgid "Search the network for Brother printers"
+msgstr "Brother-Drucker im Netzwerk suchen"
 
 msgid "Searching the network for Brother printers …"
 msgstr "Suche Brother-Drucker im Netzwerk …"
@@ -570,6 +649,9 @@ msgstr[1] "Sende {count} Etiketten an {printer} …"
 msgid "Serif"
 msgstr "Serif"
 
+msgid "Settings"
+msgstr "Einstellungen"
+
 msgid "Show text"
 msgstr "Klartext anzeigen"
 
@@ -578,6 +660,12 @@ msgstr "Größe (mm)"
 
 msgid "Size (pt)"
 msgstr "Größe (pt)"
+
+msgid "Snap to guides"
+msgstr "An Hilfslinien einrasten"
+
+msgid "Space before and after the content; objects move along"
+msgstr "Abstand vor und nach dem Inhalt; Objekte werden mitverschoben"
 
 #, python-brace-format
 msgid "Start {nr} at"
@@ -593,8 +681,14 @@ msgstr "Status ist nur über das Netzwerk verfügbar"
 msgid "Stencil"
 msgstr "Schablone"
 
+msgid "System"
+msgstr "System"
+
 msgid "System error"
 msgstr "Systemfehler"
+
+msgid "Tape"
+msgstr "Band"
 
 msgid "Tape width"
 msgstr "Bandbreite"
@@ -674,11 +768,11 @@ msgstr "Der Drucker meldet:"
 msgid "The selected files are not usable fonts."
 msgstr "Die ausgewählten Dateien sind keine verwendbaren Schriften."
 
+msgid "Theme"
+msgstr "Design"
+
 msgid "Threshold (0–255)"
 msgstr "Schwellwert (0–255)"
-
-msgid "Tools"
-msgstr "Werkzeuge"
 
 msgid "Transmission buffer full"
 msgstr "Übertragungspuffer voll"
@@ -701,6 +795,9 @@ msgstr "Unbenannt"
 msgid "Usable in texts, QR codes and barcodes:"
 msgstr "In Texten, QR-Codes und Barcodes verwendbar:"
 
+msgid "Usage"
+msgstr "Bedienung"
+
 msgid "Usage…"
 msgstr "Bedienung…"
 
@@ -711,11 +808,19 @@ msgstr "Übernehmen"
 msgid "Use loaded tape ({tape})"
 msgstr "Eingelegtes Band ({tape}) übernehmen"
 
-msgid "Use tape"
-msgstr "Band übernehmen"
+#, python-brace-format
+msgid "Value of the {nr} placeholder on the first label"
+msgstr "Wert des Platzhalters {nr} auf dem ersten Etikett"
 
 msgid "Vertical"
 msgstr "Senkrecht"
+
+msgid ""
+"While dragging, objects snap to the tape center, the margins and other objects. Hold Alt to move "
+"freely."
+msgstr ""
+"Beim Ziehen rasten Objekte an Bandmitte, Rändern und anderen Objekten ein. Mit gedrückter Alt-"
+"Taste frei verschieben."
 
 msgid "White"
 msgstr "Weiß"
@@ -747,9 +852,6 @@ msgstr "Vergrößern"
 
 msgid "Zoom out"
 msgstr "Verkleinern"
-
-msgid "auto"
-msgstr "auto"
 
 msgid "fixed label length in mm"
 msgstr "feste Etikettlänge in mm"

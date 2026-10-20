@@ -10,7 +10,9 @@ neither P-touch Editor nor the Brother driver. The user interface is available i
   QR code, barcode (Code 128, Code 39, EAN-13, EAN-8, UPC-A, ITF, Codabar), image (PNG/JPG/…,
   threshold or dithering), frame, line. Objects can be rotated in 90° steps.
 - Move objects with the mouse or the arrow keys, resize them with the handle at the bottom right,
-  undo/redo.
+  undo/redo. While dragging, objects snap to the tape center, the margins and other objects.
+- Modern Qt interface with icons, light and dark theme, dockable panels (properties, label, print,
+  object list) and a format toolbar for texts; the panel layout is remembered.
 - Tape widths 3.5 / 6 / 9 / 12 / 18 / 24 mm, automatic or fixed label length, margins.
 - Print options: copies, automatic cut, half cut, chain printing, mirror, high resolution.
 - Placeholders for serial numbers and dates: `{nr}`, `{nr:03}`, `{date}`, `{time}`.
@@ -51,15 +53,25 @@ switched on again.
 
 ## Usage
 
+The window consists of the label preview in the middle, two toolbars and four panels:
+**Objects** (all objects; drag entries to change which one is in front), **Properties** (settings of
+the selected object), **Label** (tape width, length, margins) and **Print** (printer, copies, cutting).
+Panels can be moved, stacked as tabs, detached or closed; “View → Panels and toolbars” brings them
+back and resets the layout. “View → Theme” switches between system, light and dark.
+
 | Action | How |
 |---|---|
-| Insert an object | toolbar “+ Text”, “+ QR code” … or the “Insert” menu |
+| Insert an object | toolbar “Text”, “QR code” … or the “Insert” menu |
 | Move | drag with the mouse, arrow keys 0.5 mm, Shift+arrow 0.1 mm |
+| Align | objects snap to tape center, margins and other objects (magenta guides); Alt moves freely, the magnet button switches snapping off |
 | Resize | drag the white square at the bottom right of the selected object |
-| Edit text | double-click the object or use the “Text” field on the right |
+| Edit text | double-click the object, the “Text” field in the properties or the format toolbar (font, size, Ctrl+B/I/U, alignment) |
 | Delete / duplicate | Del / Ctrl+D, right-click for the context menu |
-| Zoom | Ctrl+mouse wheel, Ctrl++ / Ctrl+- |
-| Print | Ctrl+P or “Print” |
+| Stacking order | Ctrl+] / Ctrl+[ or drag in the object list |
+| Zoom | Ctrl+mouse wheel, Ctrl++ / Ctrl+- / Ctrl+0 (automatic), slider in the status bar |
+| Print | Ctrl+P or the blue “Print” button |
+
+Changing the left/right margin moves all objects along, so they keep their distance from it.
 
 With “Automatic size” switched on, the text fills the tape height and is centered vertically.
 Changing the size by hand switches the automatic off.
@@ -164,11 +176,22 @@ src/ptlabel/
   i18n.py      translations (gettext)
   cli.py       command line interface
   gui/         PySide6 user interface
-    window.py    main window, undo, files, printer
-    canvas.py    preview with ruler, selection, mouse and keyboard
-    panels.py    side panel and property editors
-    fontui.py    font previews and Google Fonts dialog
+    document.py        DocumentController: the edited label, undo, selection, commands
+    printing.py        PrinterController: status polling, discovery, print jobs
+    print_workflow.py  confirmations and messages around printing
+    window.py          main window: assembles everything, files, fonts
+    menus.py           menu bar, context menu, main toolbar
+    actions.py         all actions with icons and shortcuts
+    canvas.py          label preview: ruler, selection, dragging, resizing
+    snapping.py        guides and snapping while dragging
+    properties.py      property editor of the selected object
+    label_panel.py, print_panel.py, objects_panel.py   dock contents
+    format_toolbar.py  font, size, style and alignment of texts
+    statusbar.py       printer state, tape, label size, zoom
+    theme.py, icons.py light/dark theme, SVG icons in the palette color
+    fontui.py          font previews and Google Fonts dialog
   data/fonts/  bundled fonts (SIL Open Font License, see OFL.txt in each folder)
+  data/icons/  Lucide icons (ISC license)
   locale/      translations
 tests/         unit tests: pytest
 ```
@@ -183,4 +206,5 @@ tests/         unit tests: pytest
 ## License
 
 MIT, see `LICENSE`. The bundled fonts are licensed under the SIL Open Font License 1.1
-(see the `OFL.txt` next to each font).
+(see the `OFL.txt` next to each font), the icons come from [Lucide](https://lucide.dev) (ISC license,
+see `src/ptlabel/data/icons/LICENSE`).

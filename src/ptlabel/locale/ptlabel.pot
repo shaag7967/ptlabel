@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-20 21:48+0200\n"
+"POT-Creation-Date: 2026-10-20 22:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,6 +38,9 @@ msgstr ""
 msgid "(no image)"
 msgstr ""
 
+msgid "180×360 dpi: finer, but slower"
+msgstr ""
+
 msgid "About…"
 msgstr ""
 
@@ -45,6 +48,17 @@ msgid "Add font files"
 msgstr ""
 
 msgid "Add font files…"
+msgstr ""
+
+msgid "Align left"
+msgstr ""
+
+msgid ""
+"Align objects with the tape center, the margins and other objects while "
+"dragging (Alt: off)"
+msgstr ""
+
+msgid "Align right"
 msgstr ""
 
 msgid "Alignment"
@@ -56,13 +70,13 @@ msgstr ""
 msgid "All files"
 msgstr ""
 
-msgid "Automatic"
-msgstr ""
-
 msgid "Automatic length"
 msgstr ""
 
 msgid "Automatic size (fill tape height)"
+msgstr ""
+
+msgid "Automatic zoom"
 msgstr ""
 
 msgid "Barcode"
@@ -95,13 +109,16 @@ msgstr ""
 msgid "CONTENT"
 msgstr ""
 
+msgid "Center"
+msgstr ""
+
 msgid "Center vertically"
 msgstr ""
 
 msgid "Centered"
 msgstr ""
 
-msgid "Chain printing (saves tape, the last\\nlabel stays in the printer)"
+msgid "Chain printing"
 msgstr ""
 
 msgid "Cleaning"
@@ -111,6 +128,9 @@ msgid "Cleaning tape"
 msgstr ""
 
 msgid "Clear"
+msgstr ""
+
+msgid "Clear list"
 msgstr ""
 
 msgid "Content"
@@ -125,10 +145,19 @@ msgstr ""
 msgid "Cover open"
 msgstr ""
 
+msgid "Cut after every label"
+msgstr ""
+
 msgid "Cut automatically"
 msgstr ""
 
+msgid "Cut only through the tape, not the backing"
+msgstr ""
+
 msgid "Cutter jammed"
+msgstr ""
+
+msgid "Dark"
 msgstr ""
 
 msgid "Delete"
@@ -149,6 +178,9 @@ msgid "Download Google Fonts"
 msgstr ""
 
 msgid "Download Google Fonts…"
+msgstr ""
+
+msgid "Drag entries to change which object is in front"
 msgstr ""
 
 msgid "Duplicate"
@@ -201,6 +233,9 @@ msgstr ""
 msgid "Font"
 msgstr ""
 
+msgid "Font size; changing it switches the automatic size off"
+msgstr ""
+
 msgid "Fonts"
 msgstr ""
 
@@ -211,6 +246,9 @@ msgstr ""
 msgid ""
 "Fonts are installed for PT-Label only (regular and bold, upright and "
 "italic)."
+msgstr ""
+
+msgid "Format"
 msgstr ""
 
 msgid "Frame"
@@ -234,7 +272,10 @@ msgstr ""
 msgid "Height incl. text (mm)"
 msgstr ""
 
-msgid "High resolution 180×360 dpi"
+msgid "High resolution"
+msgstr ""
+
+msgid "Host name or IP address"
 msgstr ""
 
 #, python-brace-format
@@ -244,6 +285,9 @@ msgstr ""
 msgid "ITF (2 of 5)"
 msgstr ""
 
+msgid "Icons: Lucide (ISC license). Bundled fonts: SIL Open Font License."
+msgstr ""
+
 msgid "Image"
 msgstr ""
 
@@ -251,6 +295,10 @@ msgid "Images"
 msgstr ""
 
 msgid "Image…"
+msgstr ""
+
+#, python-brace-format
+msgid "Insert {object}"
 msgstr ""
 
 msgid "Install"
@@ -294,10 +342,13 @@ msgstr ""
 msgid "Left"
 msgstr ""
 
-msgid "Left/right margin (mm)"
+msgid "Length"
 msgstr ""
 
 msgid "Length (mm)"
+msgstr ""
+
+msgid "Light"
 msgstr ""
 
 msgid "Light gray"
@@ -329,6 +380,12 @@ msgid "Loading preview …"
 msgstr ""
 
 msgid "Loading the font list …"
+msgstr ""
+
+msgid "Main toolbar"
+msgstr ""
+
+msgid "Margin left/right"
 msgstr ""
 
 msgid "Matte clear"
@@ -395,16 +452,16 @@ msgid ""
 "host name/IP"
 msgstr ""
 
+msgid "No recent files"
+msgstr ""
+
 msgid "No tape loaded"
 msgstr ""
 
 msgid "Not a PT-Label file"
 msgstr ""
 
-msgid "Object"
-msgstr ""
-
-msgid "Open"
+msgid "Objects"
 msgstr ""
 
 msgid "Open font folder"
@@ -413,7 +470,13 @@ msgstr ""
 msgid "Open label"
 msgstr ""
 
+msgid "Open recent"
+msgstr ""
+
 msgid "Open…"
+msgstr ""
+
+msgid "Options"
 msgstr ""
 
 msgid "Other"
@@ -425,6 +488,9 @@ msgstr ""
 msgid "PT-Label label"
 msgstr ""
 
+msgid "Panels and toolbars"
+msgstr ""
+
 msgid "Pink"
 msgstr ""
 
@@ -432,6 +498,9 @@ msgid "Placeholders"
 msgstr ""
 
 msgid "Placeholders…"
+msgstr ""
+
+msgid "Position"
 msgstr ""
 
 #, python-brace-format
@@ -445,6 +514,9 @@ msgstr ""
 msgid "Print data saved: {path} ({size} bytes)"
 msgstr ""
 
+msgid "Print mirror-inverted, e.g. for transparent tape on glass"
+msgstr ""
+
 #, python-brace-format
 msgid "Printable area: {height:.1f} mm high"
 msgstr ""
@@ -456,9 +528,6 @@ msgstr ""
 msgid "Printer: {model}"
 msgstr ""
 
-msgid "Printer: –"
-msgstr ""
-
 msgid "Printing failed"
 msgstr ""
 
@@ -466,6 +535,9 @@ msgstr ""
 msgid ""
 "Printing failed:\n"
 "{error}"
+msgstr ""
+
+msgid "Properties"
 msgstr ""
 
 msgid "QR code"
@@ -492,6 +564,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Rendering error: {error}"
+msgstr ""
+
+msgid "Reset panel layout"
 msgstr ""
 
 msgid "Right"
@@ -522,6 +597,9 @@ msgstr ""
 msgid "Saved: {name}"
 msgstr ""
 
+msgid "Saves tape: the last label stays in the printer until the next job"
+msgstr ""
+
 #, python-brace-format
 msgid ""
 "Saving failed:\n"
@@ -532,6 +610,9 @@ msgstr ""
 msgid ""
 "Search failed:\n"
 "{error}"
+msgstr ""
+
+msgid "Search the network for Brother printers"
 msgstr ""
 
 msgid "Searching the network for Brother printers …"
@@ -559,6 +640,9 @@ msgstr[1] ""
 msgid "Serif"
 msgstr ""
 
+msgid "Settings"
+msgstr ""
+
 msgid "Show text"
 msgstr ""
 
@@ -566,6 +650,12 @@ msgid "Size (mm)"
 msgstr ""
 
 msgid "Size (pt)"
+msgstr ""
+
+msgid "Snap to guides"
+msgstr ""
+
+msgid "Space before and after the content; objects move along"
 msgstr ""
 
 #, python-brace-format
@@ -582,7 +672,13 @@ msgstr ""
 msgid "Stencil"
 msgstr ""
 
+msgid "System"
+msgstr ""
+
 msgid "System error"
+msgstr ""
+
+msgid "Tape"
 msgstr ""
 
 msgid "Tape width"
@@ -650,10 +746,10 @@ msgstr ""
 msgid "The selected files are not usable fonts."
 msgstr ""
 
-msgid "Threshold (0–255)"
+msgid "Theme"
 msgstr ""
 
-msgid "Tools"
+msgid "Threshold (0–255)"
 msgstr ""
 
 msgid "Transmission buffer full"
@@ -677,6 +773,9 @@ msgstr ""
 msgid "Usable in texts, QR codes and barcodes:"
 msgstr ""
 
+msgid "Usage"
+msgstr ""
+
 msgid "Usage…"
 msgstr ""
 
@@ -687,10 +786,16 @@ msgstr ""
 msgid "Use loaded tape ({tape})"
 msgstr ""
 
-msgid "Use tape"
+#, python-brace-format
+msgid "Value of the {nr} placeholder on the first label"
 msgstr ""
 
 msgid "Vertical"
+msgstr ""
+
+msgid ""
+"While dragging, objects snap to the tape center, the margins and other "
+"objects. Hold Alt to move freely."
 msgstr ""
 
 msgid "White"
@@ -722,9 +827,6 @@ msgid "Zoom in"
 msgstr ""
 
 msgid "Zoom out"
-msgstr ""
-
-msgid "auto"
 msgstr ""
 
 msgid "fixed label length in mm"

@@ -48,7 +48,7 @@ where = ["src"]
 namespaces = false
 
 [tool.setuptools.package-data]
-ptlabel = ["locale/*.pot", "locale/*/LC_MESSAGES/*.po", "locale/*/LC_MESSAGES/*.mo", "data/fonts/*/*"]
+ptlabel = ["locale/*.pot", "locale/*/LC_MESSAGES/*.po", "locale/*/LC_MESSAGES/*.mo", "data/fonts/*/*", "data/icons/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

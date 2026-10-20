@@ -10,6 +10,10 @@ from pathlib import Path
 DEFAULTS = {
     "printer": "",
     "window_geometry": "",
+    "window_state": "",
+    "theme": "system",
+    "snapping": True,
+    "recent": [],
     "zoom": 0,
     "last_dir": "",
     "language": "",  # empty: follow the system

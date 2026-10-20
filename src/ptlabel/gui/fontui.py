@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogBut
 
 from .. import fonts, webfonts
 from ..i18n import tr
-from .qtutil import COLOR_ERROR, COLOR_INFO, BackgroundRunner, set_color
+from .qtutil import BackgroundRunner, set_tone
 
 PREVIEW_SAMPLE = "AaBbCc 0123 ÄÖÜ €"
 
@@ -118,7 +118,7 @@ class WebFontDialog(QDialog):
         self.preview = QLabel()
         self.preview.setMinimumHeight(64)
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.preview.setStyleSheet("QLabel { background: white; color: black; border: 1px solid #c5c9ce; }")
+        self.preview.setStyleSheet("QLabel { background: white; color: black; border-radius: 8px; }")
         layout.addWidget(self.preview)
         self.info = QLabel()
         self.info.setWordWrap(True)
@@ -142,13 +142,13 @@ class WebFontDialog(QDialog):
         self._show_info(tr("Loading the font list …"))
         self._bg.run(webfonts.list_fonts, self._on_list)
 
-    def _show_info(self, text: str, color: str = COLOR_INFO) -> None:
+    def _show_info(self, text: str, tone: str = "info") -> None:
         self.info.setText(text)
-        set_color(self.info, color)
+        set_tone(self.info, tone)
 
     def _on_list(self, result, error) -> None:
         if error is not None:
-            self._show_info(tr("The font list cannot be loaded:\n{error}").format(error=error), COLOR_ERROR)
+            self._show_info(tr("The font list cannot be loaded:\n{error}").format(error=error), "error")
             return
         self._fonts = result
         self._show_info(tr("Fonts are installed for PT-Label only (regular and bold, upright and italic)."))
@@ -209,7 +209,7 @@ class WebFontDialog(QDialog):
         def done(families, error):
             self.install_button.setEnabled(True)
             if error is not None:
-                self._show_info(tr("Installation failed:\n{error}").format(error=error), COLOR_ERROR)
+                self._show_info(tr("Installation failed:\n{error}").format(error=error), "error")
                 return
             self._show_info(tr("Installed: {families}").format(families=", ".join(families)))
             PREVIEWS.clear()

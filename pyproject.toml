@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ptlabel"
+version = "1.0.0"
+description = "Etiketten-Editor und Druck für den Brother PT-P750W (WLAN)"
+requires-python = ">=3.10"
+dependencies = ["pillow>=10.1", "segno>=1.5", "python-barcode>=0.15"]
+
+[project.scripts]
+ptlabel = "ptlabel.cli:main"
+
+[tool.setuptools]
+packages = ["ptlabel"]

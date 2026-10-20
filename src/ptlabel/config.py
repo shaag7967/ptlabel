@@ -9,7 +9,7 @@ from pathlib import Path
 
 DEFAULTS = {
     "printer": "",
-    "geometry": "",
+    "window_geometry": "",
     "zoom": 0,
     "last_dir": "",
 }

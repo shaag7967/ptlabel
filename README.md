@@ -21,20 +21,28 @@ Läuft unter Windows und Linux und braucht weder P-touch Editor noch den Brother
 
 ## Installation und Start
 
-### Windows
-
-Python 3.10 oder neuer installieren und dann **`PT-Label.bat`** doppelklicken.
-Beim ersten Start wird `.venv` angelegt und die Pakete aus `requirements.txt` werden installiert.
-
-### Linux (Debian/Ubuntu)
+Python 3.10 oder neuer wird benötigt, unter Windows und Linux gleich:
 
 ```sh
-sudo apt install python3-venv python3-tk fonts-dejavu
-chmod +x pt-label.sh
-./pt-label.sh
+pipx install ptlabel        # oder: pip install ptlabel
+ptlabel                     # startet die Oberfläche
 ```
 
-Alternativ systemweit: `pip install .` – danach steht der Befehl `ptlabel` zur Verfügung.
+Unter Windows startet `ptlabel-gui` die Oberfläche ohne Konsolenfenster.
+
+Die Oberfläche nutzt Qt (PySide6), das mit installiert wird. Unter Linux brauchen manche Distributionen
+zusätzlich die Bibliothek `libxcb-cursor0` (Debian/Ubuntu: `sudo apt install libxcb-cursor0`).
+Für neue Texte wird Arial, DejaVu Sans, Liberation Sans o. Ä. verwendet, je nachdem, was installiert ist.
+
+### Entwicklung
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -e ".[dev]"
+.venv/bin/ptlabel           # Programm starten
+.venv/bin/pytest            # Tests
+.venv/bin/python -m build   # Pakete für PyPI nach dist/
+```
 
 ### Drucker
 
@@ -71,8 +79,6 @@ Ein leerer Rahmen lässt sich nur an seiner Linie anklicken. So bleiben die Obje
 
 ## Kommandozeile
 
-Unter Windows `.venv\Scripts\python.exe -m ptlabel …`, unter Linux `.venv-linux/bin/python -m ptlabel …`.
-
 ```sh
 ptlabel                                   # grafische Oberfläche
 ptlabel discover                          # Drucker im Netzwerk suchen
@@ -99,13 +105,13 @@ Ohne `--printer` wird der in der Oberfläche eingestellte Drucker benutzt.
   SNMP-Anfrage per Broadcast.
 - **Druckbereich je Band** (Nadeln von 128): 3,5 mm → 24, 6 mm → 32, 9 mm → 50, 12 mm → 70,
   18 mm → 112, 24 mm → 128.
-- Abhängigkeiten: Pillow (Rendering), segno (QR-Codes), python-barcode (Barcode-Muster). Die
-  Oberfläche nutzt Tkinter aus der Standardbibliothek.
+- Abhängigkeiten: Pillow (Rendering), segno (QR-Codes), python-barcode (Barcode-Muster),
+  PySide6 (Oberfläche).
 
 ### Aufbau
 
 ```
-ptlabel/
+src/ptlabel/
   tapes.py    Bandbreiten, Druckbereich, Farbcodes
   raster.py   Druckauftrag im Brother-Raster-Format, PackBits
   snmp.py     minimaler SNMP-Client (GET, Broadcast-Suche)
@@ -113,12 +119,21 @@ ptlabel/
   model.py    Etikett und Objekte, Dateiformat, Platzhalter
   render.py   Etikett → Bitmap
   fonts.py    Schriftarten unter Windows und Linux finden
-  gui.py      Tkinter-Oberfläche
   cli.py      Kommandozeile
-tests/        Unit-Tests: python -m unittest discover -s tests
+  gui/        PySide6-Oberfläche
+    window.py   Hauptfenster, Rückgängig, Dateien, Drucker
+    canvas.py   Vorschau mit Lineal, Auswahl, Maus und Tastatur
+    panels.py   Seitenleiste und Eigenschaften-Editoren
+tests/        Unit-Tests: pytest
 ```
 
 ## Bekannte Grenzen
 
+- Getestet mit dem PT-P750W. Modelle mit demselben Raster-Protokoll (PT-E550W, PT-P710BT) sollten
+  ebenfalls funktionieren; PT-P900W/P950NW (360 dpi) und die QL-Serie werden nicht unterstützt.
 - P-touch-Editor-Dateien (`.lbx`) können nicht importiert werden.
 - Unter Windows wird nur über das Netzwerk gedruckt, nicht über USB.
+
+## Lizenz
+
+MIT-Lizenz, siehe Datei `LICENSE`.

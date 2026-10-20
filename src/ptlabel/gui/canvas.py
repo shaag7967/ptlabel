@@ -112,8 +112,12 @@ class LabelCanvas(QWidget):
     # ------------------------------------------------------------------ coordinates
 
     def origin(self) -> tuple[int, int]:
-        height = self._image.height() * self.effective_zoom() if self._image else 0
-        return PAD, max(RULER_H + PAD, round((self.height() - height) / 2))
+        """Top left corner of the label on screen: centered, but never closer than PAD to the edge."""
+        z = self.effective_zoom()
+        width = self._image.width() * z if self._image else 0
+        height = self._image.height() * z if self._image else 0
+        return (max(PAD, round((self.width() - width) / 2)),
+                max(RULER_H + PAD, round((self.height() - height) / 2)))
 
     def to_screen(self, box) -> QRectF:
         z = self.effective_zoom()

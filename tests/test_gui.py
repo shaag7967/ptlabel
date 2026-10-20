@@ -251,6 +251,13 @@ class MainWindowTest(unittest.TestCase):
         self.win.print_panel.flags["mirror"].setChecked(True)
         self.assertTrue(self.doc.doc.mirror)
 
+    def test_label_is_centered_in_the_view(self):
+        canvas = self.win.canvas
+        canvas.set_zoom(1)
+        self.app.processEvents()
+        label = canvas.to_screen((0, 0, *self.doc.result.image.size))
+        self.assertAlmostEqual(label.center().x(), canvas.width() / 2, delta=1)
+
     def test_drag_with_mouse_snaps_to_center(self):
         self.win.canvas.set_zoom(4)
         qr = self.insert("qrcode")

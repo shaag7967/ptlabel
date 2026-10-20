@@ -141,8 +141,8 @@ class PropertyEditor(QWidget):
         self._hint = QLabel()
         self._hint.setWordWrap(True)
         set_tone(self._hint, "info")
+        column.addWidget(self._hint)  # parent first: a visible widget without parent becomes a window
         self._hint.setVisible(isinstance(obj, BarcodeObject))
-        column.addWidget(self._hint)
         column.addWidget(section_label(tr("Position")))
         column.addLayout(self._form(obj, position))
         column.addStretch(1)

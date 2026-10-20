@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest import mock
 
 try:
-    from PySide6.QtCore import QPoint, Qt
+    from PySide6.QtCore import QEvent, QObject, QPoint, Qt
     from PySide6.QtTest import QTest
 except ImportError:  # pragma: no cover
     QTest = None
@@ -175,6 +175,26 @@ class MainWindowTest(unittest.TestCase):
         self.assertGreaterEqual(self.win.properties_dock.width(), 300)
         self.win.reset_layout()
         self.assertFalse(any(dock.isFloating() for dock in self.win.docks))
+
+    def test_no_stray_windows_when_selecting_objects(self):
+        # a widget shown before it has a parent becomes a top-level window for a moment; on GNOME
+        # this starts a startup notification with a busy cursor (seen with the barcode hint)
+        shown = []
+
+        class Spy(QObject):
+            def eventFilter(self, obj, event):
+                if event.type() == QEvent.Type.Show and obj.isWidgetType() and obj.isWindow():
+                    shown.append(type(obj).__name__)
+                return False
+
+        spy = Spy()
+        self.app.installEventFilter(spy)
+        self.addCleanup(self.app.removeEventFilter, spy)
+        for kind in ("text", "qrcode", "barcode", "frame", "line"):
+            self.insert(kind)
+        for row in range(self.win.objects_panel.list.count()):
+            self.win.objects_panel.list.setCurrentRow(row)
+        self.assertEqual(shown, [])
 
     def test_objects_panel_follows_document(self):
         qr = self.insert("qrcode")

@@ -27,7 +27,9 @@ class Prop:
 
 
 ROTATIONS = ((0, "0°"), (90, "90°"), (180, "180°"), (270, "270°"))
+H_ALIGNS = (("free", tr("Free (X)")), ("center", tr("Centered on the label")), ("right", tr("At the right margin")))
 POSITION_PROPS = [
+    Prop("h_align", tr("Horizontal"), "choice", H_ALIGNS),
     Prop("x", tr("X (mm)"), "float", (-50, 1000, 0.5)),
     Prop("y", tr("Y (mm)"), "float", (-50, 50, 0.5)),
     Prop("rotation", tr("Rotation"), "choice", ROTATIONS),
@@ -43,6 +45,7 @@ class LabelObject:
     x: float = 2.0  # mm from the left label edge
     y: float = 1.0  # mm from the upper tape edge
     rotation: int = 0  # counter-clockwise, multiple of 90
+    h_align: str = "free"  # "free": at x; "center"/"right": placed on the label, x is ignored
 
     @classmethod
     def props(cls) -> list[Prop]:

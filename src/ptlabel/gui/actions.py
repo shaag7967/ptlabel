@@ -41,6 +41,8 @@ SPECS = [
     ActionSpec("front", tr("Bring forward"), "bring-to-front", "Ctrl+]"),
     ActionSpec("back", tr("Send backward"), "send-to-back", "Ctrl+["),
     ActionSpec("center", tr("Center vertically"), "align-vertical-justify-center"),
+    ActionSpec("center_h", tr("Center horizontally"), "align-horizontal-justify-center",
+               tip=tr("Keep the object centered on the label, also when it changes")),
     *(ActionSpec(f"insert_{kind}", text, name, tip=tr("Insert {object}").format(object=text.rstrip("…")))
       for kind, text, name in INSERT_KINDS),
     ActionSpec("zoom_in", tr("Zoom in"), "zoom-in", ["Ctrl++", "Ctrl+="]),

@@ -26,8 +26,8 @@ DARK = {
     R.Accent: "#4c8dff",
 }
 TONE_COLORS = {
-    False: {"info": "#5f6670", "ok": "#1e7b34", "warn": "#9a5b00", "error": "#c01c28"},
-    True: {"info": "#9aa1ab", "ok": "#57c27a", "warn": "#e6a23c", "error": "#ff6b6b"},
+    False: {"info": "#5f6670", "ok": "#1e7b34", "warn": "#9a5b00", "error": "#c01c28", "busy": "#2f6fe4"},
+    True: {"info": "#9aa1ab", "ok": "#57c27a", "warn": "#e6a23c", "error": "#ff6b6b", "busy": "#6ea2ff"},
 }
 CANVAS_BACKGROUND = {False: "#d5d9df", True: "#111214"}
 
@@ -45,7 +45,7 @@ QPushButton#primary {{
     border-radius: 6px; padding: 7px 16px; font-weight: 600;
 }}
 QPushButton#primary:hover {{ background: {accent_hover}; }}
-QPushButton#primary:disabled {{ background: palette(mid); }}
+QPushButton#primary:disabled {{ background: palette(mid); color: palette(window-text); }}
 QLabel#section {{ color: palette(placeholder-text); font-weight: 600; padding-top: 6px; }}
 QLabel#heading {{ font-size: 13pt; font-weight: 600; }}
 QFrame#card {{ background: palette(base); border: 1px solid palette(mid); border-radius: 8px; }}
@@ -53,6 +53,7 @@ QLabel[tone="info"] {{ color: {info}; }}
 QLabel[tone="ok"] {{ color: {ok}; }}
 QLabel[tone="warn"] {{ color: {warn}; }}
 QLabel[tone="error"] {{ color: {error}; }}
+QLabel[tone="busy"] {{ color: {busy}; }}
 """
 
 

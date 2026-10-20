@@ -5,7 +5,7 @@ from __future__ import annotations
 from PySide6.QtCore import QObject, QTimer, Signal
 
 from .. import config
-from ..i18n import tr
+from ..i18n import ntr, tr
 from ..model import LabelDocument
 from ..printer import (NetworkPrinter, PrinterError, PrinterInfo, PrinterStatus, discover_printers, open_printer,
                        wait_for_completion)
@@ -19,6 +19,7 @@ class PrinterController(QObject):
     discovery_finished = Signal(list, object, bool)  # printers, error, silent
     print_started = Signal(int)                # number of labels
     print_finished = Signal(int, object, object)  # number of labels, final status or None, error or None
+    _progress = Signal(object)                 # status read while a job runs (from the worker thread)
 
     def __init__(self, cfg: dict, parent: QObject | None = None):
         super().__init__(parent)
@@ -32,6 +33,7 @@ class PrinterController(QObject):
         self._bg = BackgroundRunner(self)
         self._timer = QTimer(self, interval=STATUS_INTERVAL_MS)
         self._timer.timeout.connect(self.refresh)
+        self._progress.connect(self.apply_status)  # queued into the GUI thread
 
     # ------------------------------------------------------------------ setup
 
@@ -86,7 +88,16 @@ class PrinterController(QObject):
 
     def apply_status(self, status: PrinterStatus) -> None:
         self.status = status
-        self._set_state(f"{status.model}: {status.summary()}", "error" if status.errors else "ok")
+        tone = "error" if status.errors else "busy" if status.printing or self.busy else "ok"
+        self._set_state(f"{status.model}: {status.summary()}", tone)
+
+    @property
+    def activity(self) -> str | None:
+        """What the printer is doing right now, or None if it can take a job."""
+        printing = self.status is not None and self.status.printing
+        if self.busy:
+            return tr("Printing …") if printing else tr("Sending …")
+        return tr("Printing …") if printing else None
 
     @property
     def tape(self):
@@ -116,6 +127,8 @@ class PrinterController(QObject):
         target = self.target
         self.busy = True
         self.print_started.emit(len(pages))
+        self._set_state(ntr("Sending {count} label …", "Sending {count} labels …", len(pages)).format(
+            count=len(pages)), "busy")
 
         def work():
             printer = open_printer(target)
@@ -123,7 +136,7 @@ class PrinterController(QObject):
             if not isinstance(printer, NetworkPrinter):
                 return None
             try:
-                return wait_for_completion(printer)
+                return wait_for_completion(printer, on_status=self._progress.emit)
             except PrinterError:  # the job was sent, only the follow-up status failed
                 return None
 
@@ -131,6 +144,10 @@ class PrinterController(QObject):
             self.busy = False
             if status is not None:
                 self.apply_status(status)
+            elif error is not None:
+                self._set_state(str(error), "error")
+            else:
+                self.status_changed.emit()
             self.print_finished.emit(len(pages), status, error)
 
         self._bg.run(work, done)

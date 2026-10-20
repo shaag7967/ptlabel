@@ -248,7 +248,8 @@ class LabelCanvas(QWidget):
         if hit is not None:
             placed = document.placed_of(hit)
             others = [p.box for p in document.result.placed if p.obj is not hit]
-            self._drag = {"mode": "move", "obj": hit, "start": (px, py), "orig": (hit.x, hit.y),
+            x_now = placed.box[0] / document.result.scale  # differs from x for anchored objects
+            self._drag = {"mode": "move", "obj": hit, "start": (px, py), "orig": (x_now, hit.y),
                           "box": placed.box, "others": others, "moved": False}
 
     def mouseMoveEvent(self, event) -> None:
@@ -278,7 +279,10 @@ class LabelCanvas(QWidget):
             sx, sy, self._guides = snap(moved, result, drag["others"], SNAP_PX / self.effective_zoom(),
                                         snap_y=not fixed_y)
             dx, dy = dx + sx, dy + sy
-        obj.x = round(drag["orig"][0] + dx / result.scale, 1 if not snapping else 2)
+        if obj.h_align != "free" and abs(dx) * self.effective_zoom() >= 3:
+            obj.h_align = "free"  # dragged sideways: no longer centered / right-aligned
+        if obj.h_align == "free":
+            obj.x = round(drag["orig"][0] + dx / result.scale, 1 if not snapping else 2)
         if not fixed_y:
             obj.y = round(drag["orig"][1] + dy / result.scale, 1 if not snapping else 2)
 

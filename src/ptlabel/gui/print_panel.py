@@ -11,7 +11,7 @@ from .document import DocumentController
 from .icons import icon
 from .printing import PrinterController
 from .qtutil import set_tone
-from .widgets import ColorSwatch, StatusDot, card, primary_button, section_label
+from .widgets import ColorSwatch, PrintButton, StatusDot, card, section_label
 
 PRINT_FLAGS = [  # attribute, label, tooltip
     ("auto_cut", tr("Cut automatically"), tr("Cut after every label")),
@@ -94,7 +94,7 @@ class PrintPanel(QWidget):
         for attr, text, tip in PRINT_FLAGS:
             self.flags[attr] = QCheckBox(text)
             self.flags[attr].setToolTip(tip)
-        self.print_button = primary_button(tr("Print"), icon("printer", "white"))
+        self.print_button = PrintButton(printer, tr("Print"), icon("printer", "white"))
         self.print_button.clicked.connect(self.print_requested)
 
         column = QVBoxLayout(self)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QSignalBlocker, QSize, Qt
+from PySide6.QtCore import QSignalBlocker, QSize, Qt, QTimer
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (QComboBox, QCompleter, QDoubleSpinBox, QFrame, QLabel, QPushButton, QScrollArea,
                                QSizePolicy, QWidget)
@@ -67,6 +67,46 @@ def section_label(text: str) -> QLabel:
     label = QLabel(text.upper())
     label.setObjectName("section")
     return label
+
+
+class PrintButton(QPushButton):
+    """Prominent print button that shows what the printer is doing and is locked meanwhile."""
+
+    def __init__(self, printer, text: str, icon=None):
+        super().__init__(text)
+        self.printer, self.idle_text = printer, text
+        self.setObjectName("primary")
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        if icon is not None:
+            self.setIcon(icon)
+        self._dots = 0
+        self._timer = QTimer(self, interval=450)
+        self._timer.timeout.connect(self._animate)
+        printer.status_changed.connect(self.refresh)
+        self.refresh()
+
+    def refresh(self) -> None:
+        activity = self.printer.activity
+        self.setEnabled(activity is None)
+        if activity is None:
+            self._timer.stop()
+            self.setText(self.idle_text)
+        else:
+            if not self._timer.isActive():
+                self._dots = 1
+                self._timer.start()
+            self._show(activity)
+
+    def _animate(self) -> None:
+        activity = self.printer.activity
+        if activity is None:
+            self.refresh()
+            return
+        self._dots = self._dots % 3 + 1
+        self._show(activity)
+
+    def _show(self, activity: str) -> None:
+        self.setText(activity.rstrip(" …") + " " + "." * self._dots + " " * (3 - self._dots))
 
 
 def primary_button(text: str, icon=None) -> QPushButton:

@@ -103,6 +103,7 @@ class MainWindow(QMainWindow):
             "save_as": self.save_document_as, "export": self.export_png, "quit": self.close,
             "undo": doc.undo, "redo": doc.redo, "duplicate": doc.duplicate_selected, "delete": doc.delete_selected,
             "front": lambda: doc.restack(1), "back": lambda: doc.restack(-1), "center": doc.center_vertically,
+            "center_h": doc.center_horizontally,
             "zoom_in": lambda: canvas.zoom_by(1), "zoom_out": lambda: canvas.zoom_by(-1),
             "zoom_auto": lambda: canvas.set_zoom(0), "reset_layout": self.reset_layout,
             "print": workflow.print_label, "status": lambda: self.printer.refresh(manual=True),
@@ -127,6 +128,7 @@ class MainWindow(QMainWindow):
         self.status.printer_clicked.connect(lambda: self.printer.refresh(manual=True))
         self.recent.open_requested.connect(self.open_document)
         self.printer.status_changed.connect(self._show_tape_colors)
+        self.printer.status_changed.connect(lambda: a["print"].setEnabled(self.printer.activity is None))
         doc.state_changed.connect(self._update_state)
         doc.selection_changed.connect(self._update_state)
 
@@ -160,7 +162,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(f"{'*' if doc.is_modified() else ''}{doc.name} – {APP_NAME}")
         self.actions["undo"].setEnabled(doc.history.can_undo())
         self.actions["redo"].setEnabled(doc.history.can_redo())
-        for key in ("duplicate", "delete", "front", "back", "center"):
+        for key in ("duplicate", "delete", "front", "back", "center", "center_h"):
             self.actions[key].setEnabled(doc.selected is not None)
 
     def _edit_text(self) -> None:

@@ -14,7 +14,7 @@ from .icons import icon
 from .qtutil import set_tone
 from .widgets import FontComboBox, NumberSpin, section_label
 
-POSITION_ATTRS = ("x", "y", "rotation")
+POSITION_ATTRS = ("h_align", "x", "y", "rotation")
 KIND_ICONS = {"text": "type", "qrcode": "qr-code", "barcode": "barcode", "image": "image", "frame": "square",
               "line": "minus"}
 
@@ -198,7 +198,7 @@ class PropertyEditor(QWidget):
             return
         for attr, field in self._fields.items():
             field.show_value(getattr(obj, attr))
-        rules = {}
+        rules = {"x": obj.h_align == "free"}
         if isinstance(obj, ImageObject):
             rules["threshold"] = not obj.dither
         if isinstance(obj, BarcodeObject):

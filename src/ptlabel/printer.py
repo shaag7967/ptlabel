@@ -190,13 +190,18 @@ def open_printer(target: str) -> NetworkPrinter | FilePrinter:
     return NetworkPrinter(host, int(port) if port.isdigit() else RAW_PORT)
 
 
-def wait_for_completion(printer: NetworkPrinter, timeout: float = 30.0) -> PrinterStatus:
-    """Poll the status until the printer is idle again or reports an error."""
+def wait_for_completion(printer: NetworkPrinter, timeout: float = 30.0, on_status=None) -> PrinterStatus:
+    """Poll the status until the printer is idle again or reports an error.
+
+    ``on_status`` is called with every status read meanwhile (e.g. to show progress).
+    """
     start = time.monotonic()
     seen_printing = False
     time.sleep(1.0)
     while True:
         status = printer.status()
+        if on_status is not None:
+            on_status(status)
         if status.errors:
             return status
         if status.printing:

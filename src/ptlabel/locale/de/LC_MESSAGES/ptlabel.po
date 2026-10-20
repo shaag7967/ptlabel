@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 22:19+0200\n"
-"PO-Revision-Date: 2026-10-20 20:19+0000\n"
+"POT-Creation-Date: 2026-10-20 22:59+0200\n"
+"PO-Revision-Date: 2026-10-20 20:59+0000\n"
 "Last-Translator: shaag7967\n"
 "Language: de\n"
 "Language-Team: German\n"
@@ -48,14 +48,14 @@ msgstr "Schriftdateien hinzufügen"
 msgid "Add font files…"
 msgstr "Schriftdateien hinzufügen…"
 
-msgid "Align left"
-msgstr "Linksbündig"
+msgid "Align at the right margin"
+msgstr "Am rechten Rand ausrichten"
+
+msgid "Align left (free position)"
+msgstr "Linksbündig (freie Position)"
 
 msgid "Align objects with the tape center, the margins and other objects while dragging (Alt: off)"
 msgstr "Objekte beim Ziehen an Bandmitte, Rändern und anderen Objekten ausrichten (Alt: aus)"
-
-msgid "Align right"
-msgstr "Rechtsbündig"
 
 msgid "Alignment"
 msgstr "Ausrichtung"
@@ -65,6 +65,9 @@ msgstr "Alle Kategorien"
 
 msgid "All files"
 msgstr "Alle Dateien"
+
+msgid "At the right margin"
+msgstr "Am rechten Rand"
 
 msgid "Automatic length"
 msgstr "Länge automatisch"
@@ -105,14 +108,20 @@ msgstr "BEFEHL"
 msgid "CONTENT"
 msgstr "INHALT"
 
-msgid "Center"
-msgstr "Zentriert"
+msgid "Center horizontally"
+msgstr "Horizontal zentrieren"
+
+msgid "Center on the label"
+msgstr "Auf dem Etikett zentrieren"
 
 msgid "Center vertically"
 msgstr "Vertikal zentrieren"
 
 msgid "Centered"
 msgstr "Zentriert"
+
+msgid "Centered on the label"
+msgstr "Auf dem Etikett zentriert"
 
 msgid "Chain printing"
 msgstr "Kettendruck"
@@ -252,6 +261,9 @@ msgstr "Format"
 msgid "Frame"
 msgstr "Rahmen"
 
+msgid "Free (X)"
+msgstr "Frei (X)"
+
 msgid "Gold"
 msgstr "Gold"
 
@@ -272,6 +284,9 @@ msgstr "Höhe inkl. Klartext (mm)"
 
 msgid "High resolution"
 msgstr "Hohe Auflösung"
+
+msgid "Horizontal"
+msgstr "Horizontal"
 
 msgid "Host name or IP address"
 msgstr "Hostname oder IP-Adresse"
@@ -332,6 +347,9 @@ msgstr "Kursiv"
 
 msgid "Keep aspect ratio"
 msgstr "Seitenverhältnis beibehalten"
+
+msgid "Keep the object centered on the label, also when it changes"
+msgstr "Objekt auf dem Etikett zentriert halten, auch wenn es sich ändert"
 
 msgid "Label"
 msgstr "Etikett"
@@ -542,6 +560,9 @@ msgstr ""
 "Druck fehlgeschlagen:\n"
 "{error}"
 
+msgid "Printing …"
+msgstr "Druckt …"
+
 msgid "Properties"
 msgstr "Eigenschaften"
 
@@ -645,6 +666,15 @@ msgid "Sending {count} label to {printer} …"
 msgid_plural "Sending {count} labels to {printer} …"
 msgstr[0] "Sende {count} Etikett an {printer} …"
 msgstr[1] "Sende {count} Etiketten an {printer} …"
+
+#, python-brace-format
+msgid "Sending {count} label …"
+msgid_plural "Sending {count} labels …"
+msgstr[0] "Sende {count} Etikett …"
+msgstr[1] "Sende {count} Etiketten …"
+
+msgid "Sending …"
+msgstr "Sende …"
 
 msgid "Serif"
 msgstr "Serif"

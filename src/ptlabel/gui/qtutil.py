@@ -13,8 +13,8 @@ APP_NAME = "PT-Label"
 STATUS_INTERVAL_MS = 20000
 MAX_IMAGE_PX = 1200
 
-# Semantic text colors, styled in theme.py: info, ok, warn, error
-TONES = ("info", "ok", "warn", "error")
+# Semantic text colors, styled in theme.py
+TONES = ("info", "ok", "warn", "error", "busy")
 
 
 def fmt(value: float) -> str:

@@ -13,8 +13,13 @@ from .document import DocumentController
 from .icons import icon
 from .widgets import FontComboBox, NumberSpin
 
-ALIGNMENTS = [("left", "text-align-start", tr("Align left")), ("center", "text-align-center", tr("Center")),
-              ("right", "text-align-end", tr("Align right"))]
+# alignment on the label: (text alignment, position on the label, icon, tooltip)
+ALIGNMENTS = [("left", "free", "text-align-start", tr("Align left (free position)")),
+              ("center", "center", "text-align-center", tr("Center on the label")),
+              ("right", "right", "text-align-end", tr("Align at the right margin"))]
+
+
+POSITION_TO_ALIGN = {position: align for align, position, *_ in ALIGNMENTS}
 
 
 class FormatToolBar(QToolBar):
@@ -39,10 +44,10 @@ class FormatToolBar(QToolBar):
         self.addSeparator()
         group = QActionGroup(self)
         self.align: dict[str, QAction] = {}
-        for value, name, text in ALIGNMENTS:
+        for value, position, name, text in ALIGNMENTS:
             action = QAction(icon(name), text, self)
             action.setCheckable(True)
-            action.triggered.connect(lambda _=False, v=value: self._set("align", v))
+            action.triggered.connect(lambda _=False, v=value, p=position: self._align(v, p))
             group.addAction(action)
             self.addAction(action)
             self.align[value] = action
@@ -72,6 +77,14 @@ class FormatToolBar(QToolBar):
         if obj is not None and getattr(obj, attr) != value:
             self.document.set_property(obj, attr, value)
 
+    def _align(self, align: str, position: str) -> None:
+        """Align the lines and place the whole text on the label."""
+        obj = self._text()
+        if obj is not None and (obj.align, obj.h_align) != (align, position):
+            obj.align = align
+            self.document.set_property(obj, "h_align", position)
+            self.document.commit()
+
     def _font_changed(self, name: str) -> None:
         family = fonts.REGISTRY.find_family(name)
         if family:
@@ -91,7 +104,7 @@ class FormatToolBar(QToolBar):
         size = placed.size_pt if obj.auto_size and placed and placed.size_pt else obj.size
         self.size.set_quietly(round(size, 1))
         for action, on in ((self.auto_size, obj.auto_size), (self.bold, obj.bold), (self.italic, obj.italic),
-                           (self.underline, obj.underline), *((a, obj.align == v) for v, a in self.align.items())):
+                           (self.underline, obj.underline), *((a, POSITION_TO_ALIGN.get(obj.h_align) == v) for v, a in self.align.items())):
             if action.isChecked() != on:
                 with QSignalBlocker(action):
                     action.setChecked(on)

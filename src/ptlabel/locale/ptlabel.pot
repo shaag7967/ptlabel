@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-20 22:21+0200\n"
+"POT-Creation-Date: 2026-10-20 22:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,15 +50,15 @@ msgstr ""
 msgid "Add font files…"
 msgstr ""
 
-msgid "Align left"
+msgid "Align at the right margin"
+msgstr ""
+
+msgid "Align left (free position)"
 msgstr ""
 
 msgid ""
 "Align objects with the tape center, the margins and other objects while "
 "dragging (Alt: off)"
-msgstr ""
-
-msgid "Align right"
 msgstr ""
 
 msgid "Alignment"
@@ -68,6 +68,9 @@ msgid "All categories"
 msgstr ""
 
 msgid "All files"
+msgstr ""
+
+msgid "At the right margin"
 msgstr ""
 
 msgid "Automatic length"
@@ -109,13 +112,19 @@ msgstr ""
 msgid "CONTENT"
 msgstr ""
 
-msgid "Center"
+msgid "Center horizontally"
+msgstr ""
+
+msgid "Center on the label"
 msgstr ""
 
 msgid "Center vertically"
 msgstr ""
 
 msgid "Centered"
+msgstr ""
+
+msgid "Centered on the label"
 msgstr ""
 
 msgid "Chain printing"
@@ -254,6 +263,9 @@ msgstr ""
 msgid "Frame"
 msgstr ""
 
+msgid "Free (X)"
+msgstr ""
+
 msgid "Gold"
 msgstr ""
 
@@ -273,6 +285,9 @@ msgid "Height incl. text (mm)"
 msgstr ""
 
 msgid "High resolution"
+msgstr ""
+
+msgid "Horizontal"
 msgstr ""
 
 msgid "Host name or IP address"
@@ -331,6 +346,9 @@ msgid "Italic"
 msgstr ""
 
 msgid "Keep aspect ratio"
+msgstr ""
+
+msgid "Keep the object centered on the label, also when it changes"
 msgstr ""
 
 msgid "Label"
@@ -537,6 +555,9 @@ msgid ""
 "{error}"
 msgstr ""
 
+msgid "Printing …"
+msgstr ""
+
 msgid "Properties"
 msgstr ""
 
@@ -636,6 +657,15 @@ msgid "Sending {count} label to {printer} …"
 msgid_plural "Sending {count} labels to {printer} …"
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "Sending {count} label …"
+msgid_plural "Sending {count} labels …"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Sending …"
+msgstr ""
 
 msgid "Serif"
 msgstr ""

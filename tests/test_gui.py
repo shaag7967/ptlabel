@@ -83,6 +83,25 @@ class DocumentControllerTest(unittest.TestCase):
         self.doc.restack(1)
         self.assertIs(self.doc.doc.objects[-1], qr)
 
+    def test_center_horizontally_follows_the_label(self):
+        text = self.doc.doc.objects[0]
+        self.doc.set_label(auto_length=False, length_mm=60)
+        self.doc.select(text)
+        self.doc.center_horizontally()
+        self.doc.render_now()
+        x0, _, x1, _ = self.doc.placed_of(text).box
+        width = self.doc.result.image.width
+        self.assertAlmostEqual((x0 + x1) / 2, width / 2, delta=1)
+        self.doc.set_property(text, "text", "A much longer text")  # stays centered
+        self.doc.render_now()
+        x0, _, x1, _ = self.doc.placed_of(text).box
+        self.assertAlmostEqual((x0 + x1) / 2, width / 2, delta=1)
+        self.doc.set_property(text, "h_align", "free")  # back to free: keeps its place
+        self.assertAlmostEqual(text.x, x0 / self.doc.result.scale, places=1)
+        self.doc.set_property(text, "h_align", "right")
+        self.doc.render_now()
+        self.assertEqual(self.doc.placed_of(text).box[2], width - self.doc.result.margin_px)
+
     def test_editing_size_freezes_auto_text(self):
         text = self.doc.doc.objects[0]
         self.assertTrue(text.auto_size)
@@ -168,6 +187,32 @@ class MainWindowTest(unittest.TestCase):
         self.assertEqual(text.align, "center")
         self.insert("qrcode")
         self.assertFalse(bar.bold.isEnabled())
+
+    def test_format_toolbar_centers_text_on_label(self):
+        text = self.doc.doc.objects[0]
+        self.doc.select(text)
+        self.win.format_bar.align["center"].trigger()
+        self.assertEqual((text.align, text.h_align), ("center", "center"))
+        self.assertFalse(self.win.properties._fields["x"].widget.isEnabled())
+        self.win.format_bar.align["left"].trigger()
+        self.assertEqual((text.align, text.h_align), ("left", "free"))
+
+    def test_print_buttons_locked_while_printing(self):
+        printer = self.win.printer
+        button = self.win.print_panel.print_button
+        self.assertTrue(button.isEnabled())
+        printer.busy = True
+        printer.status_changed.emit()
+        self.assertFalse(button.isEnabled())
+        self.assertFalse(self.win.actions["print"].isEnabled())
+        self.assertTrue(button.text().startswith("Sending"))
+        printer.apply_status(PrinterStatus.parse(REAL_STATUS[:19] + b"\x01" + REAL_STATUS[20:]))  # phase: printing
+        self.assertTrue(button.text().startswith("Printing"))
+        self.assertEqual(printer.tone, "busy")
+        printer.busy = False
+        printer.apply_status(PrinterStatus.parse(REAL_STATUS))
+        self.assertTrue(button.isEnabled())
+        self.assertEqual(button.text(), "Print")
 
     def test_property_editor_and_panels(self):
         qr = self.insert("qrcode")

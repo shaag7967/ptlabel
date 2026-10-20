@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QMenu, QSizePolicy, QToolBar, QWidget
 from ..i18n import tr
 from .actions import INSERT_KINDS
 from .icons import icon
-from .widgets import primary_button
+from .widgets import PrintButton
 
 if TYPE_CHECKING:
     from .window import MainWindow
@@ -35,7 +35,7 @@ def build_main_toolbar(window: MainWindow) -> QToolBar:
     spacer = QWidget()
     spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
     bar.addWidget(spacer)
-    print_button = primary_button(tr("Print"), icon("printer", "white"))
+    print_button = PrintButton(window.printer, tr("Print"), icon("printer", "white"))
     print_button.setToolTip(a["print"].toolTip())
     print_button.clicked.connect(a["print"].trigger)
     bar.addWidget(print_button)
@@ -46,7 +46,9 @@ def fill_object_menu(menu: QMenu, window: MainWindow) -> None:
     a = window.actions
     menu.addActions([a["duplicate"], a["delete"]])
     menu.addSeparator()
-    menu.addActions([a["front"], a["back"], a["center"]])
+    menu.addActions([a["front"], a["back"]])
+    menu.addSeparator()
+    menu.addActions([a["center_h"], a["center"]])
 
 
 def build_menu_bar(window: MainWindow) -> None:

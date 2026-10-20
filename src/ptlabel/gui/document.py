@@ -259,9 +259,23 @@ class DocumentController(QObject):
         obj.y = round((top + (bottom - top - height) / 2) / self.result.scale, 2)
         self.edited(commit=True)
 
+    def center_horizontally(self) -> None:
+        if self.selected is not None:
+            self.set_property(self.selected, "h_align", "center")
+            self.commit()
+
+    def release_anchor(self, obj: LabelObject) -> None:
+        """Make a centered or right-aligned object free again, at the place where it is now."""
+        placed = self.placed_of(obj)
+        if obj.h_align != "free" and placed and self.result:
+            obj.x = round(placed.box[0] / self.result.scale, 2)
+        obj.h_align = "free"
+
     def nudge(self, dx: float, dy: float) -> None:
         obj = self.selected
         if obj is not None:
+            if dx:
+                self.release_anchor(obj)
             obj.x = round(obj.x + dx, 2)
             if not (isinstance(obj, TextObject) and obj.auto_size):
                 obj.y = round(obj.y + dy, 2)
@@ -270,6 +284,8 @@ class DocumentController(QObject):
     def set_property(self, obj: LabelObject, attr: str, value) -> None:
         if isinstance(obj, TextObject) and (attr == "size" or (attr == "auto_size" and not value)):
             self.freeze_auto_text(obj)
+        if attr == "h_align" and value == "free":
+            self.release_anchor(obj)
         setattr(obj, attr, value)
         if isinstance(obj, ImageObject) and obj.keep_aspect and attr in ("width", "height", "keep_aspect"):
             aspect = image_aspect(obj)

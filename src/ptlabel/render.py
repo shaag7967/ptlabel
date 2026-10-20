@@ -80,15 +80,24 @@ def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
             y = band_top + (band_h - img.height) // 2
         else:
             y = round(obj.y * scale)
-        items.append((obj, img, x, y, opaque, size_pt))
+        items.append([obj, img, x, y, opaque, size_pt])
 
     margin_px = round(doc.margin_mm * scale)
     min_length = 2 * margin_px + round(MIN_CONTENT_MM * scale)
+    free = [item for item in items if item[0].h_align not in ("center", "right")]
+    anchored = [item for item in items if item[0].h_align in ("center", "right")]
     if doc.auto_length:
-        right = max((x + img.width for _, img, x, *_ in items), default=0)
-        length_px = max(right + margin_px, min_length)
+        right = max((x + img.width for _, img, x, *_ in free), default=0)
+        widest = max((img.width + 2 * margin_px for _, img, *_ in anchored), default=0)
+        length_px = max(right + margin_px, widest, min_length)
     else:
         length_px = max(round(doc.length_mm * scale), 2 * margin_px + 1)
+    for item in anchored:  # placed on the label once its length is known
+        width = item[1].width
+        if item[0].h_align == "center":
+            item[2] = (length_px - width) // 2
+        else:
+            item[2] = length_px - margin_px - width
 
     canvas = Image.new("L", (length_px, tape_px), 0)
     placed = []

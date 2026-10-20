@@ -57,6 +57,8 @@ SPECS = [
     ActionSpec("add_fonts", tr("Add font files…"), "file-type"),
     ActionSpec("web_fonts", tr("Download Google Fonts…"), "download"),
     ActionSpec("font_folder", tr("Open font folder"), "folder"),
+    ActionSpec("all_fonts", tr("Show all fonts"), checkable=True,
+               tip=tr("Also list symbol fonts and fonts without Latin letters, which usually only print boxes")),
     ActionSpec("placeholders", tr("Placeholders…"), "braces"),
     ActionSpec("usage", tr("Usage…"), "book-open"),
     ActionSpec("about", tr("About…"), "info"),

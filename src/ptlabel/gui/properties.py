@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject, QSignalBlocker, Qt, Signal
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
                                QPushButton, QVBoxLayout, QWidget)
 
-from .. import fonts
+from .. import barcodes, fonts
 from ..i18n import tr
 from ..model import BarcodeObject, ImageObject, LabelObject, Prop, TextObject
 from .document import DocumentController
@@ -138,6 +138,11 @@ class PropertyEditor(QWidget):
         position = [p for p in obj.props() if p.attr in POSITION_ATTRS]
         column.addWidget(section_label(tr("Settings")))
         column.addLayout(self._form(obj, own))
+        self._hint = QLabel()
+        self._hint.setWordWrap(True)
+        set_tone(self._hint, "info")
+        self._hint.setVisible(isinstance(obj, BarcodeObject))
+        column.addWidget(self._hint)
         column.addWidget(section_label(tr("Position")))
         column.addLayout(self._form(obj, position))
         column.addStretch(1)
@@ -208,6 +213,8 @@ class PropertyEditor(QWidget):
         for attr, enabled in rules.items():
             if attr in self._fields:
                 self._fields[attr].widget.setEnabled(enabled)
+        if isinstance(obj, BarcodeObject):
+            self._hint.setText(tr("Content: {rule}").format(rule=barcodes.rule(obj.symbology)))
         self._show_effective_size()
 
     def _show_effective_size(self) -> None:
@@ -226,8 +233,3 @@ class PropertyEditor(QWidget):
                 field.widget.selectAll()
                 return
 
-    def reload_fonts(self) -> None:
-        for field in self._fields.values():
-            if isinstance(field.widget, FontComboBox):
-                field.widget.reload()
-        self.refresh()

@@ -86,6 +86,7 @@ def build_menu_bar(window: MainWindow) -> None:
     fonts = bar.addMenu(tr("F&onts"))
     fonts.addActions([a["add_fonts"], a["web_fonts"]])
     fonts.addSeparator()
+    fonts.addAction(a["all_fonts"])
     fonts.addAction(a["font_folder"])
 
     printer = bar.addMenu(tr("&Printer"))

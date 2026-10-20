@@ -17,7 +17,7 @@ from . import dialogs, menus
 from .actions import INSERT_KINDS, Actions
 from .canvas import LabelCanvas
 from .document import DocumentController
-from .fontui import PREVIEWS, WebFontDialog
+from .fontui import FONT_LIST, WebFontDialog
 from .format_toolbar import FormatToolBar
 from .label_panel import LabelPanel
 from .objects_panel import ObjectsPanel
@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.document = DocumentController(self)
         self.printer = PrinterController(self.cfg, self)
         self.recent = RecentFiles(self.cfg, self)
+        FONT_LIST.set_show_all(bool(self.cfg.get("show_all_fonts", False)))
         self.actions = Actions(self)
 
         self.canvas = LabelCanvas(self.document, theme)
@@ -113,6 +114,8 @@ class MainWindow(QMainWindow):
             "about": lambda: dialogs.show_about(self),
             **{f"insert_{kind}": (lambda k=kind: self.insert(k)) for kind, _, _ in INSERT_KINDS},
         })
+        a["all_fonts"].setChecked(FONT_LIST.show_all)
+        a["all_fonts"].toggled.connect(self._show_all_fonts)
         a["snap"].setChecked(canvas.snapping)
         a["snap"].toggled.connect(lambda on: setattr(canvas, "snapping", on))
         # Delete only acts on the canvas; text fields keep their own Delete key
@@ -299,9 +302,12 @@ class MainWindow(QMainWindow):
         folder.mkdir(parents=True, exist_ok=True)
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
 
+    def _show_all_fonts(self, show_all: bool) -> None:
+        FONT_LIST.set_show_all(show_all)
+        self.cfg["show_all_fonts"] = show_all
+
     def _fonts_changed(self, families: list[str]) -> None:
-        PREVIEWS.clear()
-        self.properties.reload_fonts()
-        self.format_bar.font_box.reload()
+        FONT_LIST.refresh()
+        self.properties.refresh()
         self.document.schedule_render()
         self.status.show_message(tr("Fonts added: {families}").format(families=", ".join(families)), "ok")

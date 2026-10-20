@@ -7,8 +7,7 @@ from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (QComboBox, QCompleter, QDoubleSpinBox, QFrame, QLabel, QPushButton, QScrollArea,
                                QSizePolicy, QWidget)
 
-from .. import fonts
-from .fontui import add_font_previews
+from .fontui import FONT_LIST, add_font_previews
 from .qtutil import fmt
 
 
@@ -43,9 +42,10 @@ class FontComboBox(QComboBox):
         self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.setMinimumContentsLength(14)
         self.reload()
+        FONT_LIST.changed.connect(self.reload)
 
     def reload(self) -> None:
-        families = fonts.REGISTRY.families()
+        families = FONT_LIST.families()
         current = self.currentText()
         with QSignalBlocker(self):
             self.clear()

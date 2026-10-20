@@ -102,6 +102,14 @@ class DocumentControllerTest(unittest.TestCase):
         self.doc.render_now()
         self.assertEqual(self.doc.placed_of(text).box[2], width - self.doc.result.margin_px)
 
+    def test_changing_barcode_type_keeps_valid_data(self):
+        code = self.add("barcode")
+        self.doc.set_property(code, "symbology", "ean13")
+        self.assertEqual(code.data, "400638133393")
+        self.doc.set_property(code, "data", "123456789012")
+        self.doc.set_property(code, "symbology", "code128")  # still valid: kept
+        self.assertEqual(code.data, "123456789012")
+
     def test_editing_size_freezes_auto_text(self):
         text = self.doc.doc.objects[0]
         self.assertTrue(text.auto_size)
@@ -260,6 +268,17 @@ class MainWindowTest(unittest.TestCase):
         option = fontui.QStyleOptionViewItem()
         combo.itemDelegate().initStyleOption(option, combo.model().index(index, 0))
         self.assertEqual(option.font.family(), "Barlow Condensed")
+
+    def test_symbol_fonts_hidden_unless_requested(self):
+        combo = self.win.format_bar.font_box
+        with mock.patch.object(fontui.PREVIEWS, "is_text_font", side_effect=lambda f: f != "Barlow Condensed"):
+            fontui.FONT_LIST.refresh()
+            self.assertEqual(combo.findText("Barlow Condensed"), -1)
+            self.win.actions["all_fonts"].setChecked(True)
+            self.assertGreaterEqual(combo.findText("Barlow Condensed"), 0)
+            self.win.actions["all_fonts"].setChecked(False)
+        fontui.FONT_LIST.refresh()
+        self.assertGreaterEqual(combo.findText("Barlow Condensed"), 0)
 
     def test_web_font_dialog_lists_and_filters(self):
         fonts_ = [webfonts.WebFont("a", "Alpha Sans", "sans-serif", (400,), ("normal",), "OFL-1.1"),

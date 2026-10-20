@@ -24,6 +24,8 @@ PREFERRED_DEFAULTS = ["Arial", "DejaVu Sans", "Liberation Sans", "Noto Sans", "H
                       "FreeSans", "Ubuntu", "Cantarell"]
 STANDARD_STYLES = {"regular", "normal", "book", "roman", "bold", "italic", "oblique",
                    "bold italic", "bold oblique"}
+LATIN_SAMPLE = "AaBbEeHhMmRrSs0123"
+CACHE_VERSION = 2  # bump when the cached information per face changes
 SPECIAL_WEIGHTS = ("semi", "demi", "light", "thin", "narrow", "condensed", "black", "medium",
                    "extra", "ultra", "heavy", "hairline")
 
@@ -60,6 +62,7 @@ class Face:
     index: int
     family: str
     style: str
+    latin: bool = True  # draws Latin letters (not only a script like Arabic, symbols or empty boxes)
 
     @property
     def is_bold(self) -> bool:
@@ -72,7 +75,21 @@ class Face:
         return "italic" in s or "oblique" in s
 
 
+def _draws_latin(font: ImageFont.FreeTypeFont) -> bool:
+    """True if the font has its own glyphs for Latin letters and digits.
+
+    Fonts for other scripts draw the same placeholder box (or nothing) for every missing letter,
+    so most sample characters come out identical.
+    """
+    try:
+        shapes = {(font.getmask(c).size, bytes(font.getmask(c))) for c in LATIN_SAMPLE}
+    except Exception:
+        return False
+    return len(shapes) >= len(LATIN_SAMPLE) * 3 // 4
+
+
 def _scan_file(path: str) -> list[list]:
+    """[index, family, style, latin] for every face in the file."""
     faces = []
     count = 16 if path.lower().endswith((".ttc", ".otc")) else 1
     for index in range(count):
@@ -82,7 +99,8 @@ def _scan_file(path: str) -> list[list]:
         except Exception:
             break
         if family:
-            faces.append([index, family, style or "Regular"])
+            latin = _draws_latin(ImageFont.truetype(path, 32, index=index))
+            faces.append([index, family, style or "Regular", latin])
     return faces
 
 
@@ -125,13 +143,13 @@ class FontRegistry:
                         st = os.stat(path)
                     except OSError:
                         continue
-                    key = f"{st.st_mtime_ns}:{st.st_size}"
+                    key = f"{CACHE_VERSION}:{st.st_mtime_ns}:{st.st_size}"
                     entry = cache.get(path)
                     if not isinstance(entry, dict) or entry.get("key") != key:
                         entry = {"key": key, "faces": _scan_file(path)}
                     new_cache[path] = entry
-                    for index, family, style in entry["faces"]:
-                        families.setdefault(family, []).append(Face(path, index, family, style))
+                    for index, family, style, latin in entry["faces"]:
+                        families.setdefault(family, []).append(Face(path, index, family, style, latin))
         self._families = families
         self._lookup = {name.casefold(): name for name in families}
         if self.cache_file and new_cache != cache:
@@ -141,9 +159,14 @@ class FontRegistry:
             except OSError:
                 pass
 
-    def families(self) -> list[str]:
+    def families(self, include_all: bool = False) -> list[str]:
+        """Font families sorted by name; without ``include_all`` only those that draw Latin text."""
         self.ensure_loaded()
-        return sorted(self._families, key=str.casefold)
+        names = [name for name in self._families if include_all or self.is_latin(name)]
+        return sorted(names, key=str.casefold)
+
+    def is_latin(self, family: str) -> bool:
+        return any(face.latin for face in self._families.get(family, ()))
 
     def find_family(self, name: str) -> str | None:
         self.ensure_loaded()
@@ -154,7 +177,7 @@ class FontRegistry:
         for name in PREFERRED_DEFAULTS:
             if name.casefold() in self._lookup:
                 return self._lookup[name.casefold()]
-        return next(iter(sorted(self._families)), "")
+        return next(iter(self.families()), "")
 
     def resolve(self, family: str, bold: bool, italic: bool) -> Face | None:
         self.ensure_loaded()
@@ -187,7 +210,7 @@ def install_font_files(paths, target: Path | None = None) -> list[str]:
         target.mkdir(parents=True, exist_ok=True)
         if path.resolve().parent != target.resolve():
             shutil.copy2(path, target / path.name)
-        families += [family for _, family, _ in faces if family not in families]
+        families += [family for _, family, *_ in faces if family not in families]
     REGISTRY.reload()
     return families
 

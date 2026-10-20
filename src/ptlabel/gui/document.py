@@ -10,10 +10,10 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
-from .. import fonts
+from .. import barcodes, fonts
 from ..i18n import tr
 from ..model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
-                     QRCodeObject, TextObject)
+                     QRCodeObject, TextObject, expand)
 from ..render import Placed, RenderResult, image_aspect, render
 from .qtutil import index_of
 
@@ -286,6 +286,8 @@ class DocumentController(QObject):
             self.freeze_auto_text(obj)
         if attr == "h_align" and value == "free":
             self.release_anchor(obj)
+        if attr == "symbology" and not barcodes.is_valid(value, expand(obj.data, self.doc.counter_start)):
+            obj.data = barcodes.SAMPLES.get(value, obj.data)  # the old data does not fit the new type
         setattr(obj, attr, value)
         if isinstance(obj, ImageObject) and obj.keep_aspect and attr in ("width", "height", "keep_aspect"):
             aspect = image_aspect(obj)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QModelIndex, QSize, Qt, QTimer, Signal
+from PySide6.QtCore import QModelIndex, QObject, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
                                QLineEdit, QListWidget, QListWidgetItem, QPushButton, QStyledItemDelegate,
@@ -19,15 +19,14 @@ class FontPreviews:
     """Maps font family names of the registry to Qt families, loading font files on demand."""
 
     def __init__(self):
-        self._cache: dict[str, str | None] = {}
+        self._cache: dict[str, tuple[str | None, bool]] = {}  # family -> (Qt family, is a text font)
         self._known: dict[str, str] | None = None
 
     def clear(self) -> None:
         self._cache.clear()
         self._known = None
 
-    def qt_family(self, family: str) -> str | None:
-        """Qt family that shows ``family``; None for unknown, symbol and non-Latin fonts."""
+    def _lookup(self, family: str) -> tuple[str | None, bool]:
         if family in self._cache:
             return self._cache[family]
         if self._known is None:
@@ -37,13 +36,22 @@ class FontPreviews:
             face = fonts.REGISTRY.resolve(family, False, False)
             if face is not None and face.family.casefold() == family.casefold():
                 name = self.load_file(face.path, family)
+        text_font = True
         if name is not None:
             systems = QFontDatabase.writingSystems(name)
             WS = QFontDatabase.WritingSystem
-            if WS.Latin not in systems or WS.Symbol in systems:
-                name = None  # e.g. Dingbats: its name would only show pictograms
-        self._cache[family] = name
-        return name
+            text_font = WS.Latin in systems and WS.Symbol not in systems
+        self._cache[family] = (name, text_font)
+        return self._cache[family]
+
+    def qt_family(self, family: str) -> str | None:
+        """Qt family that shows ``family``; None for unknown, symbol and non-Latin fonts."""
+        name, text_font = self._lookup(family)
+        return name if text_font else None  # e.g. Dingbats: its name would only show pictograms
+
+    def is_text_font(self, family: str) -> bool:
+        """False for symbol fonts and fonts for other scripts, as far as Qt can tell."""
+        return self._lookup(family)[1]
 
     @staticmethod
     def load_file(path: str, family: str = "") -> str | None:
@@ -53,6 +61,39 @@ class FontPreviews:
 
 
 PREVIEWS = FontPreviews()
+
+
+class FontList(QObject):
+    """The font families offered in all drop-down lists."""
+
+    changed = Signal()
+
+    def __init__(self):
+        super().__init__()
+        self.show_all = False
+        self._families: list[str] | None = None
+
+    def set_show_all(self, show_all: bool) -> None:
+        if show_all != self.show_all:
+            self.show_all = show_all
+            self.refresh()
+
+    def refresh(self) -> None:
+        """Call after fonts were added."""
+        PREVIEWS.clear()
+        self._families = None
+        self.changed.emit()
+
+    def families(self) -> list[str]:
+        if self._families is None:
+            names = fonts.REGISTRY.families(include_all=self.show_all)
+            if not self.show_all:  # the registry already dropped fonts without Latin glyphs
+                names = [name for name in names if PREVIEWS.is_text_font(name)]
+            self._families = names
+        return self._families
+
+
+FONT_LIST = FontList()
 
 
 class FontPreviewDelegate(QStyledItemDelegate):

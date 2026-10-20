@@ -13,6 +13,7 @@ DEFAULTS = {
     "window_state": "",
     "theme": "system",
     "snapping": True,
+    "show_all_fonts": False,
     "recent": [],
     "zoom": 0,
     "last_dir": "",

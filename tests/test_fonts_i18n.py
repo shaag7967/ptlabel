@@ -7,6 +7,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from PIL import Image, ImageFont
+
 from ptlabel import fonts, i18n, webfonts
 
 FIELD = re.compile(r"\{(\w*)")
@@ -36,6 +38,22 @@ class FontTest(unittest.TestCase):
         for family in ("Atkinson Hyperlegible", "Barlow Condensed", "JetBrains Mono"):
             self.assertEqual(fonts.REGISTRY.find_family(family.lower()), family)
             self.assertTrue(fonts.REGISTRY.resolve(family, True, True).is_bold)
+
+    def test_fonts_without_latin_glyphs_are_hidden(self):
+        class BoxFont:  # draws the same placeholder box for every character
+            def getmask(self, _char):
+                return Image.new("L", (5, 8), 255).im
+        self.assertFalse(fonts._draws_latin(BoxFont()))
+        bundled = next((fonts.BUNDLED_FONT_DIR / "jetbrains-mono").glob("*400-normal.ttf"))
+        self.assertTrue(fonts._draws_latin(ImageFont.truetype(str(bundled), 32)))
+        registry = fonts.FontRegistry()
+        registry._families = {"Latin": [fonts.Face("a", 0, "Latin", "Regular")],
+                              "Hebrew": [fonts.Face("b", 0, "Hebrew", "Regular", latin=False)]}
+        registry._lookup = {"latin": "Latin", "hebrew": "Hebrew"}
+        registry._loaded = True
+        self.assertEqual(registry.families(), ["Latin"])
+        self.assertEqual(registry.families(include_all=True), ["Hebrew", "Latin"])
+        self.assertEqual(registry.find_family("hebrew"), "Hebrew")  # documents may still use it
 
     def test_install_font_files(self):
         source = next((fonts.BUNDLED_FONT_DIR / "barlow-condensed").glob("*400-normal.ttf"))

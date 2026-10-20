@@ -9,11 +9,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from functools import lru_cache
 
-import barcode
 import segno
 from PIL import Image, ImageDraw, ImageOps
 
-from . import fonts
+from . import barcodes, fonts
 from .i18n import tr
 from .model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
                     QRCodeObject, TextObject, expand)
@@ -247,42 +246,43 @@ def _render_qr(obj: QRCodeObject, scale: float, ctx: _Ctx) -> Image.Image:
 
 
 def _render_barcode(obj: BarcodeObject, scale: float, ctx: _Ctx) -> Image.Image:
-    data = expand(obj.data, ctx.counter, ctx.now)
-    kwargs = {"add_checksum": False} if obj.symbology == "code39" else {}
-    try:
-        code = barcode.get(obj.symbology, data, **kwargs)
-        modules = code.build()[0]
-    except Exception as exc:
-        raise ValueError(tr("invalid data for {symbology}: {error}").format(
-            symbology=obj.symbology.upper(), error=exc)) from exc
+    code = barcodes.encode(obj.symbology, expand(obj.data, ctx.counter, ctx.now))
     unit = max(1, round(obj.module * scale * MM_PER_INCH / DPI))
-    quiet = 10 * unit
-    width = len(modules) * unit + 2 * quiet
+    quiet_l, quiet_r = code.quiet
+    width = (quiet_l + len(code.modules) + quiet_r) * unit
 
-    text_img = None
+    def module_x(index: float) -> float:
+        return (quiet_l + index) * unit
+
+    font = text_h = None
     if obj.show_text:
-        text_px = max(3, round(obj.text_size * PT_TO_MM * scale))
-        font, _ = fonts.get_font("", text_px)
-        label = code.get_fullcode() if hasattr(code, "get_fullcode") else data
+        font, _ = fonts.get_font("", max(3, round(obj.text_size * PT_TO_MM * scale)))
         ascent, descent = font.getmetrics()
-        text_img = Image.new("L", (max(width, math.ceil(font.getlength(label))), ascent + descent), 0)
-        draw = ImageDraw.Draw(text_img)
-        draw.fontmode = "1"
-        draw.text((text_img.width / 2, 0), label, font=font, fill=255, anchor="ma")
-        width = text_img.width
+        text_h = ascent + descent
+        if not code.groups:
+            width = max(width, math.ceil(font.getlength(code.text)))
+    gap = max(1, round(0.3 * scale)) if font else 0
+    total_h = max(1, round(obj.height * scale))
+    bar_h = max(1, total_h - (text_h + gap if font else 0))  # the height includes the text
+    guard_h = min(total_h, bar_h + (text_h // 2 if font and code.groups else 0))
 
-    gap = max(1, round(0.3 * scale)) if text_img else 0
-    text_h = text_img.height + gap if text_img else 0
-    bar_h = max(1, round(obj.height * scale) - text_h)  # height includes the human readable text
-    img = Image.new("L", (width, bar_h + text_h), 0)
+    img = Image.new("L", (width, total_h if font else bar_h), 0)
     draw = ImageDraw.Draw(img)
-    x = (width - len(modules) * unit) // 2
-    for bit in modules:
+    offset = (width - (quiet_l + len(code.modules) + quiet_r) * unit) // 2
+    guard_modules = {i for start, end in code.guards for i in range(start, end)}
+    for i, bit in enumerate(code.modules):
         if bit == "1":
-            draw.rectangle((x, 0, x + unit - 1, bar_h - 1), fill=255)
-        x += unit
-    if text_img:
-        img.paste(text_img, ((width - text_img.width) // 2, bar_h + gap))
+            x = offset + module_x(i)
+            draw.rectangle((x, 0, x + unit - 1, (guard_h if i in guard_modules else bar_h) - 1), fill=255)
+    if font:
+        draw.fontmode = "1"
+        y = bar_h + gap
+        if code.groups:
+            for group in code.groups:
+                center = offset + (module_x(group.start) + module_x(group.end)) / 2
+                draw.text((center, y), group.text, font=font, fill=255, anchor="ma")
+        else:
+            draw.text((width / 2, y), code.text, font=font, fill=255, anchor="ma")
     return img
 
 

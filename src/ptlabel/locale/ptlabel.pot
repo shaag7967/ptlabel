@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-20 22:59+0200\n"
+"POT-Creation-Date: 2026-10-20 23:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,16 @@ msgstr ""
 msgid "(no image)"
 msgstr ""
 
+msgid "11 digits; the 12th (check digit) is added"
+msgstr ""
+
+msgid "12 digits; the 13th (check digit) is added"
+msgstr ""
+
 msgid "180×360 dpi: finer, but slower"
+msgstr ""
+
+msgid "7 digits; the 8th (check digit) is added"
 msgstr ""
 
 msgid "About…"
@@ -68,6 +77,11 @@ msgid "All categories"
 msgstr ""
 
 msgid "All files"
+msgstr ""
+
+msgid ""
+"Also list symbol fonts and fonts without Latin letters, which usually "
+"only print boxes"
 msgstr ""
 
 msgid "At the right margin"
@@ -143,6 +157,10 @@ msgid "Clear list"
 msgstr ""
 
 msgid "Content"
+msgstr ""
+
+#, python-brace-format
+msgid "Content: {rule}"
 msgstr ""
 
 msgid "Copies"
@@ -673,6 +691,9 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Show all fonts"
+msgstr ""
+
 msgid "Show text"
 msgstr ""
 
@@ -859,6 +880,15 @@ msgstr ""
 msgid "Zoom out"
 msgstr ""
 
+msgid "an even number of digits"
+msgstr ""
+
+msgid "capital letters A–Z, digits, space and - . $ / + %"
+msgstr ""
+
+msgid "digits and - $ : / . +, starting and ending with A, B, C or D"
+msgstr ""
+
 msgid "fixed label length in mm"
 msgstr ""
 
@@ -883,11 +913,10 @@ msgstr ""
 msgid "incompatible"
 msgstr ""
 
-#, python-brace-format
-msgid "invalid data for {symbology}: {error}"
+msgid "laminated"
 msgstr ""
 
-msgid "laminated"
+msgid "letters, digits and the usual characters"
 msgstr ""
 
 msgid "margin in mm (default 2)"
@@ -965,6 +994,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{object} extends beyond the printable area"
+msgstr ""
+
+#, python-brace-format
+msgid "{symbology} needs {rule} ({error})"
 msgstr ""
 
 msgid ""

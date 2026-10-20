@@ -89,11 +89,22 @@ An empty frame can only be clicked on its outline, so the objects inside it stay
 
 The German names `{datum}` and `{zeit}` work as well.
 
+### Barcodes
+
+EAN-13, EAN-8 and UPC-A are drawn in the usual retail layout (longer guard bars, digits in groups,
+standard quiet zones); the check digit is added automatically. The properties panel shows which
+content the selected barcode type expects, and switching to a type that cannot encode the current
+content fills in an example.
+
 ### Fonts
 
 All fonts installed on the system are available. PT-Label also ships with three fonts under the
 SIL Open Font License that suit labels well: **Atkinson Hyperlegible** (very legible),
 **Barlow Condensed** (narrow, fits more text) and **JetBrains Mono** (monospaced, for serial numbers).
+
+Fonts that cannot print Latin text are hidden from the font lists: fonts for other scripts (Arabic,
+Hebrew, Thai, …) that would only print empty boxes, and symbol fonts such as Dingbats. PT-Label tests
+every font once when it scans the font folders. “Fonts → Show all fonts” lists them anyway.
 
 The “Fonts” menu adds more:
 

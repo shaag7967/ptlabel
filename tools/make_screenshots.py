@@ -127,7 +127,7 @@ def main() -> int:
         document.set_data_file(str(csv_file))
         text = document.doc.objects[0]
         document.select(text)
-        document.set_property(text, "text", "{Cable}\n{From} – {To}")
+        document.set_property(text, "text", "{Cable}\n{From} → {To}")
         document.set_property(text, "font", FONT)
         window.data_dock.show()
         window.data_panel.table.setCurrentCell(3, 0)

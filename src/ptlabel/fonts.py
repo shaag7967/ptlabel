@@ -111,6 +111,7 @@ class FontRegistry:
         self._lookup: dict[str, str] = {}
         self._lock = threading.Lock()
         self._loaded = False
+        self.generation = 0  # counts (re)loads, so caches built on the font list can notice changes
 
     def ensure_loaded(self) -> None:
         with self._lock:
@@ -152,6 +153,7 @@ class FontRegistry:
                         families.setdefault(family, []).append(Face(path, index, family, style, latin))
         self._families = families
         self._lookup = {name.casefold(): name for name in families}
+        self.generation += 1
         if self.cache_file and new_cache != cache:
             try:
                 self.cache_file.parent.mkdir(parents=True, exist_ok=True)
@@ -221,6 +223,10 @@ REGISTRY = FontRegistry(config.config_dir() / "fontcache.json")
 @lru_cache(maxsize=256)
 def _load(path: str, index: int, size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(path, size, index=index)
+
+
+def load_face(face: Face, size_px: int) -> ImageFont.FreeTypeFont:
+    return _load(face.path, face.index, max(1, int(size_px)))
 
 
 def get_font(family: str, size_px: int, bold: bool = False, italic: bool = False):

@@ -12,7 +12,7 @@ from functools import lru_cache
 import segno
 from PIL import Image, ImageDraw, ImageOps
 
-from . import barcodes, fonts, layouts
+from . import barcodes, fallback, fonts, layouts
 from .i18n import tr
 from .model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
                     QRCodeObject, TextObject, expand)
@@ -175,21 +175,23 @@ def _render_object(obj: LabelObject, scale: float, ctx: _Ctx):
 # --- text -------------------------------------------------------------------
 
 def _text_block(obj: TextObject, text: str, size_px: int) -> Image.Image:
-    font, faux_bold = fonts.get_font(obj.font, size_px, obj.bold, obj.italic)
+    font, _ = fonts.get_font(obj.font, size_px, obj.bold, obj.italic)
     lines = text.split("\n")
+    # characters missing in the chosen font come from a fallback font, run by run
+    line_runs = [fallback.runs(line, obj.font, size_px, obj.bold, obj.italic) for line in lines]
     ascent, descent = font.getmetrics()
     line_h = ascent + descent
     pitch = max(1, round(line_h * obj.line_spacing))
-    widths = [font.getlength(line) for line in lines]
+    widths = [sum(f.getlength(chunk) for f, _, chunk in runs) for runs in line_runs]
     width = math.ceil(max(widths, default=0))
     height = pitch * (len(lines) - 1) + line_h
     pad = math.ceil(size_px * 0.5)
-    stroke = max(1, round(size_px / 28)) if faux_bold else 0
+    stroke = max(1, round(size_px / 28))
 
     img = Image.new("L", (width + 2 * pad, height + 2 * pad), 0)
     draw = ImageDraw.Draw(img)
     draw.fontmode = "1"  # crisp, hinted glyphs for the 180 dpi head
-    for i, (line, w) in enumerate(zip(lines, widths)):
+    for i, (line, runs, w) in enumerate(zip(lines, line_runs, widths)):
         if obj.align == "center":
             x = pad + (width - w) / 2
         elif obj.align == "right":
@@ -197,7 +199,11 @@ def _text_block(obj: TextObject, text: str, size_px: int) -> Image.Image:
         else:
             x = pad
         y = pad + i * pitch
-        draw.text((x, y), line, font=font, fill=255, anchor="la", stroke_width=stroke)
+        run_x = x
+        for run_font, faux_bold, chunk in runs:  # all runs share the baseline of the chosen font
+            draw.text((run_x, y + ascent), chunk, font=run_font, fill=255, anchor="ls",
+                      stroke_width=stroke if faux_bold else 0)
+            run_x += run_font.getlength(chunk)
         if obj.underline and line:
             thickness = max(1, round(size_px / 16))
             uy = y + ascent + max(1, round(descent / 3))
@@ -215,6 +221,9 @@ def _text_block(obj: TextObject, text: str, size_px: int) -> Image.Image:
 
 def _render_text(obj: TextObject, scale: float, ctx: _Ctx):
     text = ctx.expand(obj.text)
+    unknown = fallback.missing(text, obj.font, obj.bold, obj.italic)
+    if unknown:
+        ctx.warnings.append(tr("No installed font has these characters: {chars}").format(chars=" ".join(unknown)))
     if obj.auto_size:
         # extent across the tape grows linearly with the font size: measure once, then correct
         def extent(img: Image.Image) -> int:

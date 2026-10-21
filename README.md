@@ -152,6 +152,11 @@ Fonts that cannot print Latin text are hidden from the font lists: fonts for oth
 Hebrew, Thai, …) that would only print empty boxes, and symbol fonts such as Dingbats. PT-Label tests
 every font once when it scans the font folders. “Fonts → Show all fonts” lists them anyway.
 
+Characters that the chosen font does not contain – arrows, check marks, Greek, CJK, … – are taken
+automatically from another installed font that has them (fonts with a large character set such as
+DejaVu Sans or Noto Sans first), in the same weight and on the same baseline. If no installed font
+has a character, the status bar names it.
+
 The “Fonts” menu adds more; every font list shows the fonts in their own typeface:
 
 - **Add font files…** copies `.ttf`/`.otf` files into PT-Label's own font folder, without installing

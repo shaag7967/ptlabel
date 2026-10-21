@@ -20,6 +20,7 @@ from .tapes import DPI, MM_PER_INCH, Tape
 
 PT_TO_MM = MM_PER_INCH / 72
 MIN_CONTENT_MM = 4.0
+FOLD_MARK_MM = 1.0
 
 
 def _threshold(v: int) -> int:
@@ -42,10 +43,21 @@ class RenderResult:
     margin_px: int
     placed: list[Placed] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    face: tuple[int, int] | None = None  # editable area [x0, x1); None = the whole label
+    wrap: tuple[int, int] | None = None  # cable flag: part wrapped around the cable [x0, x1)
 
     @property
     def length_mm(self) -> float:
         return self.image.width / self.scale
+
+    @property
+    def face_box(self) -> tuple[int, int]:
+        return self.face or (0, self.image.width)
+
+    @property
+    def face_mm(self) -> float:
+        x0, x1 = self.face_box
+        return (x1 - x0) / self.scale
 
 
 @dataclass
@@ -59,6 +71,30 @@ class _Ctx:
 
 def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
            now: datetime | None = None) -> RenderResult:
+    """Render the label; ``counter`` overrides the start value of {nr}."""
+    result = _render_face(doc, dpi, counter, now)
+    return _cable_flag(doc, result) if doc.is_cable_flag else result
+
+
+def _cable_flag(doc: LabelDocument, face: RenderResult) -> RenderResult:
+    """Flag, part around the cable, the same flag again; the flags are stuck back to back."""
+    w, h = face.image.size
+    wrap_px = round(doc.wrap_mm * face.scale)
+    strip = Image.new("L", (2 * w + wrap_px, h), 0)
+    strip.paste(face.image, (0, 0))
+    strip.paste(face.image, (w + wrap_px, 0))
+    if doc.fold_marks:
+        draw = ImageDraw.Draw(strip)
+        top, bottom = face.band
+        mark = max(1, round(FOLD_MARK_MM * face.scale))
+        for x in (w, w + wrap_px - 1):
+            draw.line((x, top, x, top + mark - 1), fill=255)
+            draw.line((x, bottom - mark, x, bottom - 1), fill=255)
+    return RenderResult(strip, face.scale, face.tape, face.band, face.margin_px, face.placed, face.warnings,
+                        face=(0, w), wrap=(w, w + wrap_px))
+
+
+def _render_face(doc: LabelDocument, dpi: int, counter: int | None, now: datetime | None) -> RenderResult:
     scale = dpi / MM_PER_INCH
     tape = doc.tape
     tape_px = round(tape.width_mm * scale)

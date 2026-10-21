@@ -19,6 +19,7 @@ HANDLE = 9
 SNAP_PX = 6  # screen pixels
 GUIDE_COLOR = "#ff3d9a"
 MAX_ZOOM = 12
+MIN_AUTO_ZOOM = 0.5  # long labels (e.g. cable flags) are shown smaller to fit
 
 
 class LabelCanvas(QWidget):
@@ -37,6 +38,7 @@ class LabelCanvas(QWidget):
         self._hover: LabelObject | None = None
         self._drag: dict | None = None
         self._guides: list[Guide] = []
+        self._shift = 0  # see _flag_shift
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMouseTracking(True)
         self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
@@ -65,7 +67,7 @@ class LabelCanvas(QWidget):
             fit_w = (viewport.width() - 2 * PAD) / max(1, self._image.width())
             fit_h = (viewport.height() - RULER_H - 2 * PAD) / max(1, self._image.height())
             zoom = min(zoom, fit_w, fit_h)
-        return max(1.0, int(zoom * 4) / 4)
+        return max(MIN_AUTO_ZOOM, int(zoom * 4) / 4)
 
     def set_zoom(self, zoom: int) -> None:
         self.zoom = 0 if zoom <= 0 else min(MAX_ZOOM, zoom)
@@ -129,6 +131,24 @@ class LabelCanvas(QWidget):
         z = self.effective_zoom()
         return (pos.x() - ox) / z, (pos.y() - oy) / z
 
+    def _flag_shift(self, px: float) -> int:
+        """Cable flag: distance from the second flag back to the first one (0 elsewhere)."""
+        result = self.document.result
+        return result.wrap[1] if result is not None and result.wrap and px >= result.wrap[1] else 0
+
+    def _face_point(self, pos: QPointF) -> tuple[float, float]:
+        """Label coordinates; on the second flag of a cable flag those of the same spot on the first."""
+        px, py = self.to_label(pos)
+        return px - self._flag_shift(px), py
+
+    def _copies(self, box) -> list:
+        """The box and, for a cable flag, its copy on the second flag."""
+        result = self.document.result
+        if result is None or not result.wrap:
+            return [box]
+        shift = result.wrap[1]
+        return [box, (box[0] + shift, box[1], box[2] + shift, box[3])]
+
     def hit(self, px: float, py: float) -> LabelObject | None:
         """Smallest object under the cursor; empty frames only react to their outline."""
         result = self.document.result
@@ -168,10 +188,39 @@ class LabelCanvas(QWidget):
         target = QRect(ox, oy, round(self._image.width() * z), round(self._image.height() * z))
         for spread, alpha in ((6, 18), (4, 28), (2, 40)):  # soft shadow
             p.fillRect(target.adjusted(-spread // 2, -spread // 2 + 2, spread // 2, spread), QColor(0, 0, 0, alpha))
-        p.drawImage(target, self._image)  # no smoothing: one block per print dot
+        # no smoothing when enlarging: one block per print dot; smooth when an overview is smaller
+        p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, z < 1)
+        p.drawImage(target, self._image)
+        p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
+        if self.document.result.wrap:
+            self._paint_cable(p, target)
         self._paint_ruler(p, target)
         self._paint_overlays(p)
         p.end()
+
+    def _paint_cable(self, p: QPainter, target: QRect) -> None:
+        """Cable flag: hatch the part around the cable and show the fold lines."""
+        result, z = self.document.result, self.effective_zoom()
+        x0, x1 = (target.left() + x * z for x in result.wrap)
+        area = QRectF(x0, target.top(), x1 - x0, target.height())
+        p.save()
+        p.setClipRect(area)
+        ink = 255 if sum(self.tape_rgb) < 384 else 0  # light lines on dark tape
+        p.setPen(QPen(QColor(ink, ink, ink, 40), 1))
+        step = 8
+        for offset in range(-int(area.height()), int(area.width()) + step, step):
+            p.drawLine(QPointF(x0 + offset, area.bottom()), QPointF(x0 + offset + area.height(), area.top()))
+        p.restore()
+        pen = QPen(QColor(ink, ink, ink, 110), 1, Qt.PenStyle.DashLine)
+        p.setPen(pen)
+        for x in (x0, x1):
+            p.drawLine(QPointF(x, target.top()), QPointF(x, target.bottom()))
+        font = QFont(self.font())
+        font.setPointSizeF(max(7.0, font.pointSizeF() * 0.85))
+        p.setFont(font)
+        p.setPen(QColor(ink, ink, ink, 150))
+        text = f"Ø {self.document.doc.cable_diameter_mm:g} mm"
+        p.drawText(area, Qt.AlignmentFlag.AlignCenter, text)
 
     def _paint_ruler(self, p: QPainter, target: QRect) -> None:
         result, z = self.document.result, self.effective_zoom()
@@ -206,13 +255,16 @@ class LabelCanvas(QWidget):
             color = QColor(accent)
             color.setAlpha(140)
             p.setPen(QPen(color, 1))
-            p.drawRect(self.to_screen(hover.box).adjusted(-1, -1, 0, 0))
+            for box in self._copies(hover.box):
+                p.drawRect(self.to_screen(box).adjusted(-1, -1, 0, 0))
         selected = document.placed_of(document.selected)
         if selected:
-            rect = self.to_screen(selected.box).adjusted(-1, -1, 0, 0)
             pen = QPen(accent, 1, Qt.PenStyle.CustomDashLine)
             pen.setDashPattern([4, 3])
             p.setPen(pen)
+            for box in self._copies(selected.box)[1:]:  # the copy on the second flag: outline only
+                p.drawRect(self.to_screen(box).adjusted(-1, -1, 0, 0))
+            rect = self.to_screen(selected.box).adjusted(-1, -1, 0, 0)
             p.drawRect(rect)
             r = HANDLE / 2
             corner = rect.bottomRight()
@@ -237,7 +289,8 @@ class LabelCanvas(QWidget):
             return
         self.setFocus()
         document = self.document
-        px, py = self.to_label(event.position())
+        px, py = self._face_point(event.position())
+        self._shift = self._flag_shift(self.to_label(event.position())[0])  # kept while dragging
         if self._on_handle(px, py):
             obj = document.selected
             placed = document.placed_of(obj)
@@ -257,7 +310,11 @@ class LabelCanvas(QWidget):
                           "box": placed.box, "others": others, "moved": False}
 
     def mouseMoveEvent(self, event) -> None:
-        px, py = self.to_label(event.position())
+        if self._drag is not None:
+            px, py = self.to_label(event.position())
+            px -= self._shift
+        else:
+            px, py = self._face_point(event.position())
         if not (event.buttons() & Qt.MouseButton.LeftButton) or self._drag is None:
             self._update_hover(px, py)
             return
@@ -328,7 +385,7 @@ class LabelCanvas(QWidget):
             self.edit_text_requested.emit()
 
     def contextMenuEvent(self, event) -> None:
-        hit = self.hit(*self.to_label(QPointF(event.pos())))
+        hit = self.hit(*self._face_point(QPointF(event.pos())))
         if hit is not None:
             self.document.select(hit)
             self.context_menu_requested.emit(event.globalPos())

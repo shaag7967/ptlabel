@@ -1,3 +1,4 @@
+import math
 import tempfile
 import unittest
 from pathlib import Path
@@ -257,6 +258,31 @@ class MainWindowTest(unittest.TestCase):
         self.app.processEvents()
         label = canvas.to_screen((0, 0, *self.doc.result.image.size))
         self.assertAlmostEqual(label.center().x(), canvas.width() / 2, delta=1)
+
+    def test_cable_flag_in_the_editor(self):
+        self.doc._saved = self.doc.doc.to_json()  # nothing to ask
+        self.win.actions["new_cable"].trigger()
+        self.doc.render_now()
+        self.assertTrue(self.doc.doc.is_cable_flag)
+        panel = self.win.label_panel
+        self.assertFalse(panel.cable.isHidden())
+        self.assertEqual(panel.length_label.text(), "Flag length")
+        panel.cable.diameter.setValue(10)
+        self.doc.render_now()
+        result = self.doc.result
+        self.assertAlmostEqual((result.wrap[1] - result.wrap[0]) / result.scale, math.pi * 10 + 1, delta=0.2)
+        # clicking the text on the second flag selects the (only) text object
+        self.doc.select(None)
+        canvas = self.win.canvas
+        box = result.placed[0].box
+        copy = (box[0] + result.wrap[1], box[1], box[2] + result.wrap[1], box[3])
+        point = canvas.to_screen(copy).center().toPoint()
+        QTest.mouseClick(canvas, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, point)
+        self.assertIs(self.doc.selected, self.doc.doc.objects[0])
+        self.assertIn("flag", self.win.status.size.text())
+        panel.layout_box.setCurrentIndex(panel.layout_box.findData("normal"))
+        self.assertFalse(self.doc.doc.is_cable_flag)
+        self.assertTrue(panel.cable.isHidden())
 
     def test_drag_with_mouse_snaps_to_center(self):
         self.win.canvas.set_zoom(4)

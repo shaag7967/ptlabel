@@ -8,7 +8,7 @@ from pathlib import Path
 
 from . import __version__, config
 from .i18n import ntr, tr
-from .model import LabelDocument, QRCodeObject, TextObject
+from .model import CABLE_FLAG, LabelDocument, QRCodeObject, TextObject
 from .printer import PrinterError, discover_printers, open_printer, wait_for_completion
 from .raster import build_job
 from .render import print_pages, render
@@ -78,7 +78,8 @@ def cmd_print(args) -> int:
     return _output(doc, args)
 
 
-def cmd_text(args) -> int:
+def _text_document(args, layout: str = "normal") -> LabelDocument:
+    """Label with the given text lines (and optionally a QR code in front) for the text and cable commands."""
     lines = "\n".join(args.text).replace("\\n", "\n")
     tape_mm = args.tape
     if tape_mm is None:
@@ -89,7 +90,9 @@ def cmd_text(args) -> int:
                 tape_mm = status.tape.width_mm
         except PrinterError:
             pass
-    doc = LabelDocument(tape_mm=tape_mm, margin_mm=args.margin, copies=args.copies)
+    doc = LabelDocument(tape_mm=tape_mm, layout=layout, margin_mm=args.margin, copies=args.copies)
+    if getattr(args, "start", None) is not None:
+        doc.counter_start = args.start
     if args.length:
         doc.auto_length = False
         doc.length_mm = args.length
@@ -106,6 +109,19 @@ def cmd_text(args) -> int:
         text.size = args.size
         text.y = doc.tape.band_top_mm
     doc.objects.append(text)
+    return doc
+
+
+def cmd_text(args) -> int:
+    return _output(_text_document(args), args)
+
+
+def cmd_cable(args) -> int:
+    doc = _text_document(args, CABLE_FLAG)
+    doc.cable_diameter_mm = args.diameter
+    doc.fold_marks = not args.no_fold_marks
+    if not args.qr:  # a lone text sits in the middle of the flag
+        doc.objects[-1].h_align = "center"
     return _output(doc, args)
 
 
@@ -137,20 +153,30 @@ def main(argv: list[str] | None = None) -> int:
     output_args(p)
     p.set_defaults(func=cmd_print)
 
+    def text_args(p, align="left", length_help=tr("fixed label length in mm")):
+        p.add_argument("text", nargs="+")
+        p.add_argument("--tape", type=float, help=tr("tape width in mm (default: loaded tape)"))
+        p.add_argument("--font", help=tr("font, e.g. Arial"))
+        p.add_argument("--size", type=float, help=tr("font size in pt (default: automatic)"))
+        p.add_argument("--bold", action="store_true")
+        p.add_argument("--italic", action="store_true")
+        p.add_argument("--align", choices=("left", "center", "right"), default=align)
+        p.add_argument("--qr", metavar=tr("CONTENT"), help=tr("put a QR code in front of the text"))
+        p.add_argument("--length", type=float, help=length_help)
+        p.add_argument("--margin", type=float, default=2.0, help=tr("margin in mm (default 2)"))
+        p.add_argument("--copies", type=int, default=1)
+        output_args(p)
+
     p = sub.add_parser("text", help=tr("quickly print a text label (one argument per line)"))
-    p.add_argument("text", nargs="+")
-    p.add_argument("--tape", type=float, help=tr("tape width in mm (default: loaded tape)"))
-    p.add_argument("--font", help=tr("font, e.g. Arial"))
-    p.add_argument("--size", type=float, help=tr("font size in pt (default: automatic)"))
-    p.add_argument("--bold", action="store_true")
-    p.add_argument("--italic", action="store_true")
-    p.add_argument("--align", choices=("left", "center", "right"), default="left")
-    p.add_argument("--qr", metavar=tr("CONTENT"), help=tr("put a QR code in front of the text"))
-    p.add_argument("--length", type=float, help=tr("fixed label length in mm"))
-    p.add_argument("--margin", type=float, default=2.0, help=tr("margin in mm (default 2)"))
-    p.add_argument("--copies", type=int, default=1)
-    output_args(p)
+    text_args(p)
     p.set_defaults(func=cmd_text)
+
+    p = sub.add_parser("cable", help=tr("print a cable flag: the same text on both sides of the cable"))
+    text_args(p, "center", tr("fixed length of one flag in mm (default: fits the text)"))
+    p.add_argument("--diameter", type=float, default=6.0, help=tr("cable diameter in mm (default 6)"))
+    p.add_argument("--start", type=int, help=tr("start value for {nr}"))
+    p.add_argument("--no-fold-marks", action="store_true", help=tr("do not print fold marks"))
+    p.set_defaults(func=cmd_cable)
 
     args = parser.parse_args(argv)
     if args.cmd in (None, "gui"):

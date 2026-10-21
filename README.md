@@ -16,6 +16,7 @@ neither P-touch Editor nor the Brother driver. The user interface is available i
 - Tape widths 3.5 / 6 / 9 / 12 / 18 / 24 mm, automatic or fixed label length, margins.
 - Print options: copies, automatic cut, half cut, chain printing, mirror, high resolution.
 - Placeholders for serial numbers and dates: `{nr}`, `{nr:03}`, `{date}`, `{time}`.
+- Cable flags: the label is wrapped around a cable and shows the same text on both sides.
 - The printer status (tape, colors, errors such as “cover open”) is queried continuously.
 - Printers on the network are found automatically.
 - Fonts: all system fonts plus three bundled ones; more can be added from files or downloaded from
@@ -89,6 +90,21 @@ An empty frame can only be clicked on its outline, so the objects inside it stay
 
 The German names `{datum}` and `{zeit}` work as well.
 
+### Cable flags
+
+“File → New cable flag” (Ctrl+Shift+N) or “Label type: Cable flag” in the Label panel creates a
+label that is wrapped around a cable; the two ends are stuck together back to back:
+
+```
+| flag | ← around the cable (π × diameter + 1 mm) → | flag |
+```
+
+You design the flag once, PT-Label prints it twice with the part for the cable in between. Set the
+cable diameter in the Label panel; the length of a flag follows its content or can be fixed. Short
+fold marks show where to fold (can be switched off). Both flags can be selected and edited in the
+preview. With `{nr}` and several copies you get numbered flags such as `K-001`, `K-002`, …
+Flexible ID tape (TZe-FX…) wraps best around round cables.
+
 ### Barcodes
 
 EAN-13, EAN-8 and UPC-A are drawn in the usual retail layout (longer guard bars, digits in groups,
@@ -127,6 +143,9 @@ ptlabel text "Line 1" "Line 2" --bold
 ptlabel text "Server 1" --qr "https://intranet/server1"
 ptlabel text "Test" --preview preview.png         # preview only, no printing
 ptlabel print cable.ptlabel --copies 10 --start 1
+ptlabel cable "SW01-P12"                  # cable flag for a 6 mm cable
+ptlabel cable "SW01-P12" --diameter 8 --length 30   # 8 mm cable, flags 30 mm long
+ptlabel cable "K-{nr:03}" --copies 50 --start 1     # numbered series
 ```
 
 Without `--printer` the printer set in the user interface is used. `--printer` also accepts

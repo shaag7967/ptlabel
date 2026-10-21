@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMenu, QWid
 
 from .. import config, fonts
 from ..i18n import tr
-from ..model import ImageObject
+from ..model import CABLE_FLAG, ImageObject
 from ..tapes import DPI
 from . import dialogs, menus
 from .actions import INSERT_KINDS, Actions
@@ -100,7 +100,8 @@ class MainWindow(QMainWindow):
     def _connect(self) -> None:
         a, doc, canvas, workflow = self.actions, self.document, self.canvas, self.workflow
         a.connect({
-            "new": self.new_document, "open": self.open_document, "save": self.save_document,
+            "new": self.new_document, "new_cable": lambda: self.new_document(CABLE_FLAG),
+            "open": self.open_document, "save": self.save_document,
             "save_as": self.save_document_as, "export": self.export_png, "quit": self.close,
             "undo": doc.undo, "redo": doc.redo, "duplicate": doc.duplicate_selected, "delete": doc.delete_selected,
             "front": lambda: doc.restack(1), "back": lambda: doc.restack(-1), "center": doc.center_vertically,
@@ -191,10 +192,10 @@ class MainWindow(QMainWindow):
         answer = dialogs.ask_save_changes(self)
         return answer == "discard" or (answer == "save" and self.save_document())
 
-    def new_document(self) -> None:
+    def new_document(self, layout: str = "normal") -> None:
         if self._confirm_discard():
             tape = self.printer.tape
-            self.document.new(tape.width_mm if tape else self.document.doc.tape_mm)
+            self.document.new(tape.width_mm if tape else self.document.doc.tape_mm, layout)
 
     def open_document(self, name: str | None = None) -> None:
         if not self._confirm_discard():

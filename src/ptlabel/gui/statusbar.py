@@ -123,5 +123,8 @@ class StatusBar(QStatusBar):
         result = self.document.result
         if result is None:
             return
-        self.size.setText(f"{result.tape.label} × {result.length_mm:.1f} mm")
+        text = f"{result.tape.label} × {result.length_mm:.1f} mm"
+        if result.wrap:
+            text += "  " + tr("(flag {length:.1f} mm)").format(length=result.face_mm)
+        self.size.setText(text)
         self.warning.setText(" · ".join(dict.fromkeys(result.warnings)))

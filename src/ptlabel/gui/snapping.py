@@ -19,9 +19,9 @@ class Guide:
 
 
 def _targets(result: RenderResult, others: list[Box]) -> tuple[list[float], list[float]]:
-    width = result.image.width
+    x0, x1 = result.face_box  # a cable flag snaps to its first flag
     top, bottom = result.band
-    xs = [result.margin_px, width - result.margin_px, width / 2]
+    xs = [x0 + result.margin_px, x1 - result.margin_px, (x0 + x1) / 2]
     ys = [top, bottom, (top + bottom) / 2]
     for x0, y0, x1, y1 in others:
         xs += [x0, x1, (x0 + x1) / 2]

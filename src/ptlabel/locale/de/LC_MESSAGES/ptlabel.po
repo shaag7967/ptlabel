@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 23:27+0200\n"
-"PO-Revision-Date: 2026-10-20 21:27+0000\n"
+"POT-Creation-Date: 2026-10-21 20:19+0200\n"
+"PO-Revision-Date: 2026-10-21 18:19+0000\n"
 "Last-Translator: shaag7967\n"
 "Language: de\n"
 "Language-Team: German\n"
@@ -32,6 +32,10 @@ msgstr "D&rucker"
 
 msgid "&View"
 msgstr "&Ansicht"
+
+#, python-brace-format
+msgid "(flag {length:.1f} mm)"
+msgstr "(Fahne {length:.1f} mm)"
 
 msgid "(no image)"
 msgstr "(kein Bild)"
@@ -80,8 +84,15 @@ msgstr ""
 "Auch Symbolschriften und Schriften ohne lateinische Buchstaben anzeigen (drucken meist nur "
 "Kästchen)"
 
+#, python-brace-format
+msgid "Around the cable: {length} mm"
+msgstr "Um das Kabel: {length} mm"
+
 msgid "At the right margin"
 msgstr "Am rechten Rand"
+
+msgid "Automatic flag length"
+msgstr "Fahnenlänge automatisch"
 
 msgid "Automatic length"
 msgstr "Länge automatisch"
@@ -121,6 +132,15 @@ msgstr "BEFEHL"
 
 msgid "CONTENT"
 msgstr "INHALT"
+
+msgid "Cable 1"
+msgstr "Kabel 1"
+
+msgid "Cable diameter"
+msgstr "Kabeldurchmesser"
+
+msgid "Cable flag"
+msgstr "Kabelfahne"
 
 msgid "Center horizontally"
 msgstr "Horizontal zentrieren"
@@ -251,11 +271,17 @@ msgstr "Gefüllt"
 msgid "Find printers…"
 msgstr "Drucker suchen…"
 
+msgid "Flag length"
+msgstr "Fahnenlänge"
+
 msgid "Fluorescent orange"
 msgstr "Neon Orange"
 
 msgid "Fluorescent yellow"
 msgstr "Neon Gelb"
+
+msgid "Fold marks"
+msgstr "Falzmarken"
 
 msgid "Font"
 msgstr "Schriftart"
@@ -375,6 +401,9 @@ msgstr "Etikett"
 msgid "Label editor for the Brother PT-P750W"
 msgstr "Etiketten-Editor für Brother PT-P750W"
 
+msgid "Label type"
+msgstr "Etikettart"
+
 msgid "Left"
 msgstr "Links"
 
@@ -449,6 +478,12 @@ msgstr "Festbreite"
 msgid "New"
 msgstr "Neu"
 
+msgid "New cable flag"
+msgstr "Neue Kabelfahne"
+
+msgid "New label that is wrapped around a cable, with the same text on both sides"
+msgstr "Neues Etikett, das um ein Kabel gelegt wird, mit gleichem Text auf beiden Seiten"
+
 msgid "No Brother printer found."
 msgstr "Kein Brother-Drucker gefunden."
 
@@ -520,6 +555,9 @@ msgstr "Optionen"
 
 msgid "Other"
 msgstr "Andere"
+
+msgid "Outer diameter of the cable; it sets the length wrapped around it"
+msgstr "Außendurchmesser des Kabels; daraus ergibt sich die Länge um das Kabel"
 
 msgid "Overheating"
 msgstr "Überhitzung"
@@ -704,6 +742,9 @@ msgstr "Serif"
 msgid "Settings"
 msgstr "Einstellungen"
 
+msgid "Short marks where the tape is folded around the cable"
+msgstr "Kurze Markierungen, wo das Band um das Kabel gefaltet wird"
+
 msgid "Show all fonts"
 msgstr "Alle Schriften anzeigen"
 
@@ -823,6 +864,13 @@ msgstr "Der Drucker meldet:"
 msgid "The selected files are not usable fonts."
 msgstr "Die ausgewählten Dateien sind keine verwendbaren Schriften."
 
+msgid ""
+"The tape is wrapped around the cable and the two flags are stuck back to back, so the label reads"
+" the same from both sides."
+msgstr ""
+"Das Band wird um das Kabel gelegt und die beiden Fahnen werden Rücken an Rücken zusammengeklebt –"
+" so ist die Beschriftung von beiden Seiten gleich lesbar."
+
 msgid "Theme"
 msgstr "Design"
 
@@ -911,14 +959,23 @@ msgstr "Verkleinern"
 msgid "an even number of digits"
 msgstr "eine gerade Anzahl Ziffern"
 
+msgid "cable diameter in mm (default 6)"
+msgstr "Kabeldurchmesser in mm (Standard 6)"
+
 msgid "capital letters A–Z, digits, space and - . $ / + %"
 msgstr "Großbuchstaben A–Z, Ziffern, Leerzeichen und - . $ / + %"
 
 msgid "digits and - $ : / . +, starting and ending with A, B, C or D"
 msgstr "Ziffern und - $ : / . +, Anfang und Ende A, B, C oder D"
 
+msgid "do not print fold marks"
+msgstr "keine Falzmarken drucken"
+
 msgid "fixed label length in mm"
 msgstr "feste Etikettlänge in mm"
+
+msgid "fixed length of one flag in mm (default: fits the text)"
+msgstr "feste Länge einer Fahne in mm (Standard: passend zum Text)"
 
 msgid "font size in pt (default: automatic)"
 msgstr "Schriftgröße in pt (Standard: automatisch)"
@@ -955,6 +1012,9 @@ msgstr "kein Band"
 
 msgid "non-laminated"
 msgstr "nicht laminiert"
+
+msgid "print a cable flag: the same text on both sides of the cable"
+msgstr "Kabelfahne drucken: gleicher Text auf beiden Seiten des Kabels"
 
 msgid "print a label file (.ptlabel)"
 msgstr "Etikettendatei (.ptlabel) drucken"

@@ -90,9 +90,12 @@ class DocumentController(QObject):
 
     # ------------------------------------------------------------------ document lifecycle
 
-    def new(self, tape_mm: float = 12.0) -> None:
-        doc = LabelDocument(tape_mm=tape_mm)
-        doc.objects.append(TextObject(x=doc.margin_mm, font=fonts.REGISTRY.default_family()))
+    def new(self, tape_mm: float = 12.0, layout: str = "normal") -> None:
+        doc = LabelDocument(tape_mm=tape_mm, layout=layout)
+        text = TextObject(x=doc.margin_mm, font=fonts.REGISTRY.default_family())
+        if doc.is_cable_flag:
+            text.text, text.align, text.h_align = tr("Cable 1"), "center", "center"
+        doc.objects.append(text)
         self._replace(doc, None)
         self.select(doc.objects[0])
 
@@ -204,7 +207,7 @@ class DocumentController(QObject):
             data, name, aspect = image
             return ImageObject(x=x, y=top, data=data, name=name, height=band, width=round(band * aspect, 1))
         if kind == "frame":
-            length = (self.result.length_mm if self.result else 40) - 2 * self.doc.margin_mm
+            length = (self.result.face_mm if self.result else 40) - 2 * self.doc.margin_mm
             return FrameObject(x=self.doc.margin_mm, y=top, width=round(max(5.0, length), 1), height=band)
         return LineObject(x=x, y=round(top + band / 2 - 0.2, 2), length=20)
 
@@ -315,13 +318,21 @@ class DocumentController(QObject):
     # ------------------------------------------------------------------ label and print settings
 
     def set_label(self, tape_mm: float | None = None, auto_length: bool | None = None,
-                  length_mm: float | None = None, margin_mm: float | None = None) -> None:
+                  length_mm: float | None = None, margin_mm: float | None = None, layout: str | None = None,
+                  cable_diameter_mm: float | None = None, fold_marks: bool | None = None) -> None:
         doc = self.doc
+        if layout is not None and layout != doc.layout:
+            doc.layout = layout
+            doc.auto_length = True  # the length means something else now (label vs. one flag)
+        if cable_diameter_mm is not None:
+            doc.cable_diameter_mm = cable_diameter_mm
+        if fold_marks is not None:
+            doc.fold_marks = fold_marks
         if tape_mm is not None:
             doc.tape_mm = tape_mm
         if auto_length is not None and auto_length != doc.auto_length:
             if not auto_length and self.result:
-                doc.length_mm = round(self.result.length_mm, 1)  # start from the current length
+                doc.length_mm = round(self.result.face_mm, 1)  # start from the current length
             doc.auto_length = auto_length
         if length_mm is not None:
             doc.length_mm = length_mm

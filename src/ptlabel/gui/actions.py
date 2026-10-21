@@ -29,6 +29,8 @@ INSERT_KINDS = [("text", tr("Text"), "type"), ("qrcode", tr("QR code"), "qr-code
 
 SPECS = [
     ActionSpec("new", tr("New"), "file-plus", S.New),
+    ActionSpec("new_cable", tr("New cable flag"), "cable", "Ctrl+Shift+N",
+               tip=tr("New label that is wrapped around a cable, with the same text on both sides")),
     ActionSpec("open", tr("Open…"), "folder-open", S.Open),
     ActionSpec("save", tr("Save"), "save", S.Save),
     ActionSpec("save_as", tr("Save as…"), "save-all", "Ctrl+Shift+S"),

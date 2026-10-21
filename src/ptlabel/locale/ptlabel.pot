@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-20 23:27+0200\n"
+"POT-Creation-Date: 2026-10-21 20:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,10 @@ msgid "&Printer"
 msgstr ""
 
 msgid "&View"
+msgstr ""
+
+#, python-brace-format
+msgid "(flag {length:.1f} mm)"
 msgstr ""
 
 msgid "(no image)"
@@ -84,7 +88,14 @@ msgid ""
 "only print boxes"
 msgstr ""
 
+#, python-brace-format
+msgid "Around the cable: {length} mm"
+msgstr ""
+
 msgid "At the right margin"
+msgstr ""
+
+msgid "Automatic flag length"
 msgstr ""
 
 msgid "Automatic length"
@@ -124,6 +135,15 @@ msgid "COMMAND"
 msgstr ""
 
 msgid "CONTENT"
+msgstr ""
+
+msgid "Cable 1"
+msgstr ""
+
+msgid "Cable diameter"
+msgstr ""
+
+msgid "Cable flag"
 msgstr ""
 
 msgid "Center horizontally"
@@ -251,10 +271,16 @@ msgstr ""
 msgid "Find printers…"
 msgstr ""
 
+msgid "Flag length"
+msgstr ""
+
 msgid "Fluorescent orange"
 msgstr ""
 
 msgid "Fluorescent yellow"
+msgstr ""
+
+msgid "Fold marks"
 msgstr ""
 
 msgid "Font"
@@ -375,6 +401,9 @@ msgstr ""
 msgid "Label editor for the Brother PT-P750W"
 msgstr ""
 
+msgid "Label type"
+msgstr ""
+
 msgid "Left"
 msgstr ""
 
@@ -449,6 +478,12 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+msgid "New cable flag"
+msgstr ""
+
+msgid "New label that is wrapped around a cable, with the same text on both sides"
+msgstr ""
+
 msgid "No Brother printer found."
 msgstr ""
 
@@ -516,6 +551,9 @@ msgid "Options"
 msgstr ""
 
 msgid "Other"
+msgstr ""
+
+msgid "Outer diameter of the cable; it sets the length wrapped around it"
 msgstr ""
 
 msgid "Overheating"
@@ -693,6 +731,9 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Short marks where the tape is folded around the cable"
+msgstr ""
+
 msgid "Show all fonts"
 msgstr ""
 
@@ -799,6 +840,11 @@ msgstr ""
 msgid "The selected files are not usable fonts."
 msgstr ""
 
+msgid ""
+"The tape is wrapped around the cable and the two flags are stuck back to "
+"back, so the label reads the same from both sides."
+msgstr ""
+
 msgid "Theme"
 msgstr ""
 
@@ -885,13 +931,22 @@ msgstr ""
 msgid "an even number of digits"
 msgstr ""
 
+msgid "cable diameter in mm (default 6)"
+msgstr ""
+
 msgid "capital letters A–Z, digits, space and - . $ / + %"
 msgstr ""
 
 msgid "digits and - $ : / . +, starting and ending with A, B, C or D"
 msgstr ""
 
+msgid "do not print fold marks"
+msgstr ""
+
 msgid "fixed label length in mm"
+msgstr ""
+
+msgid "fixed length of one flag in mm (default: fits the text)"
 msgstr ""
 
 msgid "font size in pt (default: automatic)"
@@ -928,6 +983,9 @@ msgid "no tape"
 msgstr ""
 
 msgid "non-laminated"
+msgstr ""
+
+msgid "print a cable flag: the same text on both sides of the cable"
 msgstr ""
 
 msgid "print a label file (.ptlabel)"

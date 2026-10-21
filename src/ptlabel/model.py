@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import string
 from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime
@@ -14,6 +15,8 @@ from .raster import PrintOptions
 from .tapes import Tape, tape_for_width
 
 FILE_FORMAT = "ptlabel"
+CABLE_FLAG = "cable_flag"
+CABLE_SLACK_MM = 1.0  # a little play so the flag closes without stretching the tape
 FILE_VERSION = 1
 
 
@@ -233,9 +236,12 @@ def object_from_dict(data: dict) -> LabelObject:
 @dataclass
 class LabelDocument:
     tape_mm: float = 12.0
-    auto_length: bool = True
+    layout: str = "normal"  # "normal" or "cable_flag" (see CABLE_FLAG below)
+    auto_length: bool = True  # for a cable flag: length of one flag
     length_mm: float = 50.0
     margin_mm: float = 2.0
+    cable_diameter_mm: float = 6.0  # cable flag only
+    fold_marks: bool = True  # cable flag only: short marks where the tape is folded
     copies: int = 1
     counter_start: int = 1
     auto_cut: bool = True
@@ -244,6 +250,15 @@ class LabelDocument:
     mirror: bool = False
     high_res: bool = False
     objects: list[LabelObject] = field(default_factory=list)
+
+    @property
+    def is_cable_flag(self) -> bool:
+        return self.layout == CABLE_FLAG
+
+    @property
+    def wrap_mm(self) -> float:
+        """Length of the part that is wrapped around the cable between the two flags."""
+        return math.pi * self.cable_diameter_mm + CABLE_SLACK_MM
 
     @property
     def tape(self) -> Tape:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-21 20:19+0200\n"
+"POT-Creation-Date: 2026-10-21 20:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,6 +42,10 @@ msgstr ""
 msgid "(no image)"
 msgstr ""
 
+#, python-brace-format
+msgid "({count} × {length:.1f} mm)"
+msgstr ""
+
 msgid "11 digits; the 12th (check digit) is added"
 msgstr ""
 
@@ -55,6 +59,10 @@ msgid "7 digits; the 8th (check digit) is added"
 msgstr ""
 
 msgid "About…"
+msgstr ""
+
+#, python-brace-format
+msgid "Add a {column} placeholder to the selected text, QR code or barcode"
 msgstr ""
 
 msgid "Add font files"
@@ -92,6 +100,12 @@ msgstr ""
 msgid "Around the cable: {length} mm"
 msgstr ""
 
+#, python-brace-format
+msgid "Around the cable: {length} mm, {count} repetition"
+msgid_plural "Around the cable: {length} mm, {count} repetitions"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "At the right margin"
 msgstr ""
 
@@ -99,6 +113,9 @@ msgid "Automatic flag length"
 msgstr ""
 
 msgid "Automatic length"
+msgstr ""
+
+msgid "Automatic repetition length"
 msgstr ""
 
 msgid "Automatic size (fill tape height)"
@@ -146,6 +163,14 @@ msgstr ""
 msgid "Cable flag"
 msgstr ""
 
+msgid "Cable wrap"
+msgstr ""
+
+msgid ""
+"Cable wrap: the design fits around the cable only once – make it shorter,"
+" e.g. turn the text across the tape"
+msgstr ""
+
 msgid "Center horizontally"
 msgstr ""
 
@@ -174,6 +199,9 @@ msgid "Clear"
 msgstr ""
 
 msgid "Clear list"
+msgstr ""
+
+msgid "Click a row to see it in the preview"
 msgstr ""
 
 msgid "Content"
@@ -205,6 +233,9 @@ msgid "Cutter jammed"
 msgstr ""
 
 msgid "Dark"
+msgstr ""
+
+msgid "Data"
 msgstr ""
 
 msgid "Delete"
@@ -341,6 +372,9 @@ msgstr ""
 msgid "Host {host!r} not found"
 msgstr ""
 
+msgid "How often the tape goes around the cable; more than one turn holds better"
+msgstr ""
+
 msgid "ITF (2 of 5)"
 msgstr ""
 
@@ -354,6 +388,9 @@ msgid "Images"
 msgstr ""
 
 msgid "Image…"
+msgstr ""
+
+msgid "Insert field"
 msgstr ""
 
 #, python-brace-format
@@ -375,6 +412,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Installing {family} …"
+msgstr ""
+
+#, python-brace-format
+msgid "Invalid row selection: {rows}"
 msgstr ""
 
 msgid "Invalid status response"
@@ -431,6 +472,16 @@ msgstr ""
 msgid "Line width (mm)"
 msgstr ""
 
+msgid "Load CSV file…"
+msgstr ""
+
+#, python-brace-format
+msgid "Load a table; every row fills the {column} placeholders of one label"
+msgstr ""
+
+msgid "Load data for series printing"
+msgstr ""
+
 msgid "Load image"
 msgstr ""
 
@@ -481,6 +532,14 @@ msgstr ""
 msgid "New cable flag"
 msgstr ""
 
+msgid "New cable wrap"
+msgstr ""
+
+msgid ""
+"New label that is wound around a cable, the text repeated so it reads "
+"from all sides"
+msgstr ""
+
 msgid "New label that is wrapped around a cable, with the same text on both sides"
 msgstr ""
 
@@ -494,6 +553,15 @@ msgstr ""
 
 #, python-brace-format
 msgid "No SNMP response from {host}"
+msgstr ""
+
+#, python-brace-format
+msgid "No column for: {fields}"
+msgstr ""
+
+msgid ""
+"No data file. Load a CSV file with a header row; every row becomes one "
+"label."
 msgstr ""
 
 #, python-brace-format
@@ -524,6 +592,9 @@ msgid ""
 msgstr ""
 
 msgid "No recent files"
+msgstr ""
+
+msgid "No rows selected in the data table."
 msgstr ""
 
 msgid "No tape loaded"
@@ -591,6 +662,9 @@ msgstr ""
 msgid "Print mirror-inverted, e.g. for transparent tape on glass"
 msgstr ""
 
+msgid "Print only the selected rows"
+msgstr ""
+
 #, python-brace-format
 msgid "Printable area: {height:.1f} mm high"
 msgstr ""
@@ -641,8 +715,14 @@ msgstr ""
 msgid "Redo"
 msgstr ""
 
+msgid "Remove the data file from the label"
+msgstr ""
+
 #, python-brace-format
 msgid "Rendering error: {error}"
+msgstr ""
+
+msgid "Repetition length"
 msgstr ""
 
 msgid "Reset panel layout"
@@ -652,6 +732,10 @@ msgid "Right"
 msgstr ""
 
 msgid "Rotation"
+msgstr ""
+
+#, python-brace-format
+msgid "Rows must be between 1 and {count}: {rows}"
 msgstr ""
 
 msgid "Sans serif"
@@ -725,6 +809,9 @@ msgstr[1] ""
 msgid "Sending …"
 msgstr ""
 
+msgid "Series printing from CSV…"
+msgstr ""
+
 msgid "Serif"
 msgstr ""
 
@@ -772,6 +859,9 @@ msgstr ""
 msgid "System error"
 msgstr ""
 
+msgid "Tables"
+msgstr ""
+
 msgid "Tape"
 msgstr ""
 
@@ -790,8 +880,31 @@ msgstr ""
 
 #, python-brace-format
 msgid ""
+"The data file cannot be read:\n"
+"{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The data file has no column for {fields}. These placeholders stay as they"
+" are.\n"
+"\n"
+"Print anyway?"
+msgstr ""
+
+#, python-brace-format
+msgid ""
 "The file cannot be opened:\n"
 "{error}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The file cannot be read:\n"
+"{error}"
+msgstr ""
+
+msgid "The file contains no data"
 msgstr ""
 
 #, python-brace-format
@@ -841,6 +954,12 @@ msgid "The selected files are not usable fonts."
 msgstr ""
 
 msgid ""
+"The tape is wound around the cable; the design is repeated so it can be "
+"read from all sides. Text across the tape reads along the cable. Flexible"
+" ID tape works best."
+msgstr ""
+
+msgid ""
 "The tape is wrapped around the cable and the two flags are stuck back to "
 "back, so the label reads the same from both sides."
 msgstr ""
@@ -855,6 +974,9 @@ msgid "Transmission buffer full"
 msgstr ""
 
 msgid "Transmission error"
+msgstr ""
+
+msgid "Turns"
 msgstr ""
 
 msgid "Type"
@@ -949,6 +1071,9 @@ msgstr ""
 msgid "fixed length of one flag in mm (default: fits the text)"
 msgstr ""
 
+msgid "fixed length of one repetition in mm (default: fits the text)"
+msgstr ""
+
 msgid "font size in pt (default: automatic)"
 msgstr ""
 
@@ -967,6 +1092,9 @@ msgstr ""
 msgid "host name/IP, file:PATH or /dev/usb/lp0"
 msgstr ""
 
+msgid "how often the tape goes around the cable (default 1.5)"
+msgstr ""
+
 msgid "incompatible"
 msgstr ""
 
@@ -976,7 +1104,8 @@ msgstr ""
 msgid "letters, digits and the usual characters"
 msgstr ""
 
-msgid "margin in mm (default 2)"
+#, python-brace-format
+msgid "margin in mm (default {margin:g})"
 msgstr ""
 
 msgid "no tape"
@@ -988,7 +1117,13 @@ msgstr ""
 msgid "print a cable flag: the same text on both sides of the cable"
 msgstr ""
 
+msgid "print a cable wrap: the text across the tape, repeated around the cable"
+msgstr ""
+
 msgid "print a label file (.ptlabel)"
+msgstr ""
+
+msgid "print only these rows of the CSV file"
 msgstr ""
 
 msgid "printing"
@@ -1007,6 +1142,10 @@ msgid "save a preview as PNG (prints only with --printer)"
 msgstr ""
 
 msgid "search the network for Brother printers"
+msgstr ""
+
+#, python-brace-format
+msgid "series printing: one label per row, {column} placeholders are filled in"
 msgstr ""
 
 msgid "show the printer status"
@@ -1030,6 +1169,12 @@ msgid "write the print data to a file (prints only with --printer)"
 msgstr ""
 
 #, python-brace-format
+msgid "{count} label"
+msgid_plural "{count} labels"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
 msgid "{count} label printed"
 msgid_plural "{count} labels printed"
 msgstr[0] ""
@@ -1042,7 +1187,17 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "{count} record loaded"
+msgid_plural "{count} records loaded"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
 msgid "{error} – is the printer switched on and connected to the network?"
+msgstr ""
+
+#, python-brace-format
+msgid "{file} has no column(s): {columns}"
 msgstr ""
 
 #, python-brace-format, python-format

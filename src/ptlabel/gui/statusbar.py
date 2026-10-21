@@ -126,5 +126,8 @@ class StatusBar(QStatusBar):
         text = f"{result.tape.label} × {result.length_mm:.1f} mm"
         if result.wrap:
             text += "  " + tr("(flag {length:.1f} mm)").format(length=result.face_mm)
+        elif result.copies:
+            text += "  " + tr("({count} × {length:.1f} mm)").format(count=len(result.copies) + 1,
+                                                                 length=result.face_mm)
         self.size.setText(text)
         self.warning.setText(" · ".join(dict.fromkeys(result.warnings)))

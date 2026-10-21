@@ -132,22 +132,23 @@ class LabelCanvas(QWidget):
         return (pos.x() - ox) / z, (pos.y() - oy) / z
 
     def _flag_shift(self, px: float) -> int:
-        """Cable flag: distance from the second flag back to the first one (0 elsewhere)."""
+        """Cable labels: distance from a repeated copy of the design back to the editable one."""
         result = self.document.result
-        return result.wrap[1] if result is not None and result.wrap and px >= result.wrap[1] else 0
+        if result is None or not result.copies:
+            return 0
+        x0, x1 = result.face_box
+        return next((shift for shift in result.copies if x0 + shift <= px < x1 + shift), 0)
 
     def _face_point(self, pos: QPointF) -> tuple[float, float]:
-        """Label coordinates; on the second flag of a cable flag those of the same spot on the first."""
+        """Label coordinates; on a repeated copy those of the same spot in the editable design."""
         px, py = self.to_label(pos)
         return px - self._flag_shift(px), py
 
     def _copies(self, box) -> list:
-        """The box and, for a cable flag, its copy on the second flag."""
+        """The box and its repetitions on cable labels."""
         result = self.document.result
-        if result is None or not result.wrap:
-            return [box]
-        shift = result.wrap[1]
-        return [box, (box[0] + shift, box[1], box[2] + shift, box[3])]
+        shifts = result.copies if result is not None else []
+        return [box] + [(box[0] + s, box[1], box[2] + s, box[3]) for s in shifts]
 
     def hit(self, px: float, py: float) -> LabelObject | None:
         """Smallest object under the cursor; empty frames only react to their outline."""

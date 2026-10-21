@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 from ptlabel import cli
-from ptlabel.model import CABLE_FLAG, LabelDocument, QRCodeObject, TextObject
+from ptlabel.model import CABLE_FLAG, CABLE_WRAP, LabelDocument, QRCodeObject, TextObject
 from ptlabel.render import print_pages, render
 
 
@@ -78,6 +78,40 @@ class CableFlagTest(unittest.TestCase):
         result = render(doc)
         self.assertEqual(result.warnings, [])
         self.assertEqual(len(result.placed), 2)
+
+
+class CableWrapTest(unittest.TestCase):
+    def wrap(self, **kwargs) -> LabelDocument:
+        doc = LabelDocument(tape_mm=12, layout=CABLE_WRAP, margin_mm=1, **kwargs)
+        doc.objects.append(TextObject(text="K-001", rotation=90, h_align="center"))
+        return doc
+
+    def test_design_repeats_along_the_circumference(self):
+        result = render(self.wrap(cable_diameter_mm=6, wrap_turns=1.5))
+        self.assertAlmostEqual(result.length_mm, math.pi * 6 * 1.5, delta=0.2)
+        x0, x1 = result.face_box
+        self.assertGreaterEqual(len(result.copies), 2)
+        for shift in result.copies:  # every repetition is identical
+            copy = result.image.crop((x0 + shift, 0, x1 + shift, result.image.height))
+            self.assertEqual(copy.tobytes(), result.image.crop((x0, 0, x1, result.image.height)).tobytes())
+        self.assertEqual(result.placed[0].box[0] >= x0, True)
+
+    def test_thicker_cable_more_repetitions(self):
+        thin = render(self.wrap(cable_diameter_mm=4))
+        thick = render(self.wrap(cable_diameter_mm=12))
+        self.assertGreater(len(thick.copies), len(thin.copies))
+
+    def test_long_design_warns(self):
+        doc = self.wrap(cable_diameter_mm=3, wrap_turns=1)
+        doc.objects[0].rotation = 0
+        doc.objects[0].text = "A rather long text"
+        self.assertTrue(any("only once" in w for w in render(doc).warnings))
+
+    def test_cli_wrap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            preview = Path(tmp) / "wrap.png"
+            self.assertEqual(cli.main(["wrap", "K-001", "--tape", "12", "--preview", str(preview)]), 0)
+            self.assertTrue(preview.exists())
 
 
 if __name__ == "__main__":

@@ -12,52 +12,19 @@ from functools import lru_cache
 import segno
 from PIL import Image, ImageDraw, ImageOps
 
-from . import barcodes, fonts
+from . import barcodes, fonts, layouts
 from .i18n import tr
 from .model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
                     QRCodeObject, TextObject, expand)
-from .tapes import DPI, MM_PER_INCH, Tape
+from .result import Placed, RenderResult  # noqa: F401 (re-exported)
+from .tapes import DPI, MM_PER_INCH
 
 PT_TO_MM = MM_PER_INCH / 72
 MIN_CONTENT_MM = 4.0
-FOLD_MARK_MM = 1.0
 
 
 def _threshold(v: int) -> int:
     return 255 if v >= 128 else 0
-
-
-@dataclass
-class Placed:
-    obj: LabelObject
-    box: tuple[int, int, int, int]  # pixel box (x0, y0, x1, y1) in the rendered image
-    size_pt: float | None = None  # effective font size of text objects
-
-
-@dataclass
-class RenderResult:
-    image: Image.Image  # "L", 255 = ink; full tape width x label length
-    scale: float  # pixels per mm
-    tape: Tape
-    band: tuple[int, int]  # printable rows [top, bottom)
-    margin_px: int
-    placed: list[Placed] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
-    face: tuple[int, int] | None = None  # editable area [x0, x1); None = the whole label
-    wrap: tuple[int, int] | None = None  # cable flag: part wrapped around the cable [x0, x1)
-
-    @property
-    def length_mm(self) -> float:
-        return self.image.width / self.scale
-
-    @property
-    def face_box(self) -> tuple[int, int]:
-        return self.face or (0, self.image.width)
-
-    @property
-    def face_mm(self) -> float:
-        x0, x1 = self.face_box
-        return (x1 - x0) / self.scale
 
 
 @dataclass
@@ -67,41 +34,29 @@ class _Ctx:
     band_h: int
     warnings: list[str]
     step: int = 1  # rendered pixels per print head pin (2 at high resolution, see _band)
+    fields: dict[str, str] = field(default_factory=dict)  # data record for {column} placeholders
+
+    def expand(self, text: str) -> str:
+        return expand(text, self.counter, self.now, self.fields)
 
 
 def render(doc: LabelDocument, dpi: int = DPI, counter: int | None = None,
-           now: datetime | None = None) -> RenderResult:
-    """Render the label; ``counter`` overrides the start value of {nr}."""
-    result = _render_face(doc, dpi, counter, now)
-    return _cable_flag(doc, result) if doc.is_cable_flag else result
+           now: datetime | None = None, fields: dict[str, str] | None = None) -> RenderResult:
+    """Render the label; ``counter`` overrides the start value of {nr}, ``fields`` are the
+    values of a data record for {column} placeholders."""
+    face = _render_face(doc, dpi, counter, now, fields)
+    return layouts.compose(doc, face)
 
 
-def _cable_flag(doc: LabelDocument, face: RenderResult) -> RenderResult:
-    """Flag, part around the cable, the same flag again; the flags are stuck back to back."""
-    w, h = face.image.size
-    wrap_px = round(doc.wrap_mm * face.scale)
-    strip = Image.new("L", (2 * w + wrap_px, h), 0)
-    strip.paste(face.image, (0, 0))
-    strip.paste(face.image, (w + wrap_px, 0))
-    if doc.fold_marks:
-        draw = ImageDraw.Draw(strip)
-        top, bottom = face.band
-        mark = max(1, round(FOLD_MARK_MM * face.scale))
-        for x in (w, w + wrap_px - 1):
-            draw.line((x, top, x, top + mark - 1), fill=255)
-            draw.line((x, bottom - mark, x, bottom - 1), fill=255)
-    return RenderResult(strip, face.scale, face.tape, face.band, face.margin_px, face.placed, face.warnings,
-                        face=(0, w), wrap=(w, w + wrap_px))
-
-
-def _render_face(doc: LabelDocument, dpi: int, counter: int | None, now: datetime | None) -> RenderResult:
+def _render_face(doc: LabelDocument, dpi: int, counter: int | None, now: datetime | None,
+                 fields: dict[str, str] | None) -> RenderResult:
     scale = dpi / MM_PER_INCH
     tape = doc.tape
     tape_px = round(tape.width_mm * scale)
     band_top = round(tape.band_top_mm * scale)
     band_h = round(tape.print_pins * dpi / DPI)
     ctx = _Ctx(doc.counter_start if counter is None else counter, now or datetime.now(), band_h, [],
-               max(1, dpi // DPI))
+               max(1, dpi // DPI), fields or {})
 
     items = []
     for obj in doc.objects:
@@ -154,14 +109,24 @@ def _render_face(doc: LabelDocument, dpi: int, counter: int | None, now: datetim
     return RenderResult(canvas, scale, tape, (band_top, band_top + band_h), margin_px, placed, ctx.warnings)
 
 
-def print_pages(doc: LabelDocument, now: datetime | None = None) -> list[Image.Image]:
-    """Printable bands (one per copy) ready for :func:`raster.build_job`."""
+def print_pages(doc: LabelDocument, now: datetime | None = None,
+                records: list[dict[str, str]] | None = None) -> list[Image.Image]:
+    """Printable bands ready for :func:`raster.build_job`: every copy of every data record.
+
+    {nr} counts on from label to label across all records.
+    """
     dpi = DPI * 2 if doc.high_res else DPI
     now = now or datetime.now()
     copies = max(1, int(doc.copies))
-    if doc.uses_counter():
-        return [_band(render(doc, dpi, doc.counter_start + i, now), dpi) for i in range(copies)]
-    return [_band(render(doc, dpi, None, now), dpi)] * copies
+    if records is None:
+        if not doc.uses_counter():
+            return [_band(render(doc, dpi, None, now), dpi)] * copies
+        records = [{}]
+    pages = []
+    for record in records:
+        for _ in range(copies):
+            pages.append(_band(render(doc, dpi, doc.counter_start + len(pages), now, record), dpi))
+    return pages
 
 
 def _band(result: RenderResult, dpi: int) -> Image.Image:
@@ -249,7 +214,7 @@ def _text_block(obj: TextObject, text: str, size_px: int) -> Image.Image:
 
 
 def _render_text(obj: TextObject, scale: float, ctx: _Ctx):
-    text = expand(obj.text, ctx.counter, ctx.now)
+    text = ctx.expand(obj.text)
     if obj.auto_size:
         # extent across the tape grows linearly with the font size: measure once, then correct
         def extent(img: Image.Image) -> int:
@@ -270,7 +235,7 @@ def _render_text(obj: TextObject, scale: float, ctx: _Ctx):
 # --- codes ------------------------------------------------------------------
 
 def _render_qr(obj: QRCodeObject, scale: float, ctx: _Ctx) -> Image.Image:
-    data = expand(obj.data, ctx.counter, ctx.now) or " "
+    data = ctx.expand(obj.data) or " "
     # boost_error: use a higher error correction if it fits into the same symbol size
     qr = segno.make_qr(data, error=obj.error.lower(), boost_error=True)
     n = qr.symbol_size(border=0)[0]
@@ -292,7 +257,7 @@ def _render_qr(obj: QRCodeObject, scale: float, ctx: _Ctx) -> Image.Image:
 
 
 def _render_barcode(obj: BarcodeObject, scale: float, ctx: _Ctx) -> Image.Image:
-    code = barcodes.encode(obj.symbology, expand(obj.data, ctx.counter, ctx.now))
+    code = barcodes.encode(obj.symbology, ctx.expand(obj.data))
     unit = max(1, round(obj.module * scale * MM_PER_INCH / DPI))
     quiet_l, quiet_r = code.quiet
     width = (quiet_l + len(code.modules) + quiet_r) * unit

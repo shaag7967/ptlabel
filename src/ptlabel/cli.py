@@ -6,9 +6,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, config
+from . import __version__, config, merge
 from .i18n import ntr, tr
-from .model import CABLE_FLAG, LabelDocument, QRCodeObject, TextObject
+from .model import CABLE_FLAG, CABLE_WRAP, LabelDocument, QRCodeObject, TextObject
 from .printer import PrinterError, discover_printers, open_printer, wait_for_completion
 from .raster import build_job
 from .render import print_pages, render
@@ -21,11 +21,26 @@ def _printer_target(args) -> str:
     return target
 
 
+def _records(doc: LabelDocument, args) -> list[dict[str, str]] | None:
+    """Data records for series printing: --csv, otherwise the CSV file linked in the label."""
+    path = getattr(args, "csv", None) or doc.data_file
+    if not path:
+        return None
+    table = merge.read_csv(path)
+    missing = merge.missing_columns(doc, table)
+    if missing:
+        raise ValueError(tr("{file} has no column(s): {columns}").format(file=path, columns=", ".join(missing)))
+    return table.select(merge.parse_rows(getattr(args, "rows", None) or "", len(table)))
+
+
 def _output(doc: LabelDocument, args) -> int:
+    records = _records(doc, args)
     if args.preview:
-        render(doc).image.point(lambda v: 0 if v else 255).save(args.preview)
+        first = records[0] if records else None
+        render(doc, fields=first).image.point(lambda v: 0 if v else 255).save(args.preview)
         print(tr("Preview saved: {path}").format(path=args.preview))
-    job = build_job(print_pages(doc), doc.tape, doc.print_options())
+    pages = print_pages(doc, records=records)
+    job = build_job(pages, doc.tape, doc.print_options())
     if args.output:
         Path(args.output).write_bytes(job)
         print(tr("Print data saved: {path} ({size} bytes)").format(path=args.output, size=len(job)))
@@ -45,7 +60,7 @@ def _output(doc: LabelDocument, args) -> int:
         status = wait_for_completion(printer)
         if status.errors:
             raise PrinterError(", ".join(status.errors))
-    print(ntr("{count} label printed.", "{count} labels printed.", doc.copies).format(count=doc.copies))
+    print(ntr("{count} label printed.", "{count} labels printed.", len(pages)).format(count=len(pages)))
     return 0
 
 
@@ -116,6 +131,17 @@ def cmd_text(args) -> int:
     return _output(_text_document(args), args)
 
 
+def cmd_wrap(args) -> int:
+    doc = _text_document(args, CABLE_WRAP)
+    doc.cable_diameter_mm = args.diameter
+    doc.wrap_turns = args.turns
+    doc.margin_mm = args.margin
+    text = doc.objects[-1]
+    text.rotation = 90  # reads along the cable
+    text.h_align = "center"
+    return _output(doc, args)
+
+
 def cmd_cable(args) -> int:
     doc = _text_document(args, CABLE_FLAG)
     doc.cable_diameter_mm = args.diameter
@@ -141,6 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=cmd_discover)
 
     def output_args(p):
+        p.add_argument("--csv", metavar=tr("FILE"),
+                       help=tr("series printing: one label per row, {column} placeholders are filled in"))
+        p.add_argument("--rows", metavar="1-5,8", help=tr("print only these rows of the CSV file"))
         p.add_argument("--printer", help=tr("host name/IP, file:PATH or /dev/usb/lp0"))
         p.add_argument("--preview", metavar="PNG", help=tr("save a preview as PNG (prints only with --printer)"))
         p.add_argument("--output", metavar=tr("FILE"),
@@ -153,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
     output_args(p)
     p.set_defaults(func=cmd_print)
 
-    def text_args(p, align="left", length_help=tr("fixed label length in mm")):
+    def text_args(p, align="left", length_help=tr("fixed label length in mm"), margin=2.0):
         p.add_argument("text", nargs="+")
         p.add_argument("--tape", type=float, help=tr("tape width in mm (default: loaded tape)"))
         p.add_argument("--font", help=tr("font, e.g. Arial"))
@@ -163,7 +192,8 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--align", choices=("left", "center", "right"), default=align)
         p.add_argument("--qr", metavar=tr("CONTENT"), help=tr("put a QR code in front of the text"))
         p.add_argument("--length", type=float, help=length_help)
-        p.add_argument("--margin", type=float, default=2.0, help=tr("margin in mm (default 2)"))
+        p.add_argument("--margin", type=float, default=margin, help=tr("margin in mm (default {margin:g})").format(
+            margin=margin))
         p.add_argument("--copies", type=int, default=1)
         output_args(p)
 
@@ -177,6 +207,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--start", type=int, help=tr("start value for {nr}"))
     p.add_argument("--no-fold-marks", action="store_true", help=tr("do not print fold marks"))
     p.set_defaults(func=cmd_cable)
+
+    p = sub.add_parser("wrap", help=tr("print a cable wrap: the text across the tape, repeated around the cable"))
+    text_args(p, "center", tr("fixed length of one repetition in mm (default: fits the text)"), margin=1.0)
+    p.add_argument("--diameter", type=float, default=6.0, help=tr("cable diameter in mm (default 6)"))
+    p.add_argument("--turns", type=float, default=1.5, help=tr("how often the tape goes around the cable (default 1.5)"))
+    p.add_argument("--start", type=int, help=tr("start value for {nr}"))
+    p.set_defaults(func=cmd_wrap)
 
     args = parser.parse_args(argv)
     if args.cmd in (None, "gui"):

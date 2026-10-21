@@ -5,6 +5,7 @@ from __future__ import annotations
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QWidget
 
+from .. import merge
 from ..i18n import ntr, tr
 from . import dialogs
 from .document import DocumentController
@@ -14,8 +15,10 @@ from .statusbar import StatusBar
 
 class PrintWorkflow(QObject):
     def __init__(self, parent: QWidget, document: DocumentController, printer: PrinterController,
-                 status: StatusBar):
+                 status: StatusBar, records=None):
+        """``records()`` returns the data records to print (None without series printing)."""
         super().__init__(parent)
+        self.records = records or (lambda: None)
         self.parent_widget = parent
         self.document, self.printer, self.status = document, printer, status
         self._tape_checked = False
@@ -73,8 +76,18 @@ class PrintWorkflow(QObject):
                 "The printer has {loaded} tape loaded, the label is designed for {label}.\n\nPrint anyway?").format(
                     loaded=tape.label, label=label_tape.label)):
             return
+        records = self.records()
+        if records is not None:
+            missing = merge.missing_columns(document.doc, document.table)
+            if missing and not dialogs.confirm(parent, tr(
+                    "The data file has no column for {fields}. These placeholders stay as they are.\n\n"
+                    "Print anyway?").format(fields=", ".join(f"{{{m}}}" for m in missing))):
+                return
+            if not records:
+                dialogs.info(parent, tr("No rows selected in the data table."))
+                return
         try:
-            printer.print_document(document.doc)
+            printer.print_document(document.doc, records)
         except Exception as exc:
             dialogs.error(parent, tr("The label cannot be created:\n{error}").format(error=exc))
 

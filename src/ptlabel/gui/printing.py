@@ -120,9 +120,10 @@ class PrinterController(QObject):
 
     # ------------------------------------------------------------------ printing
 
-    def print_document(self, doc: LabelDocument) -> None:
-        """Render and send ``doc``; raises on rendering errors, reports the rest via signals."""
-        pages = print_pages(doc)
+    def print_document(self, doc: LabelDocument, records: list[dict[str, str]] | None = None) -> None:
+        """Render and send ``doc`` (once per data record); raises on rendering errors, reports
+        the rest via signals."""
+        pages = print_pages(doc, records=records)
         job = build_job(pages, doc.tape, doc.print_options())
         target = self.target
         self.busy = True

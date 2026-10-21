@@ -16,6 +16,7 @@ if QTest is not None:
     from ptlabel.gui.document import DocumentController, UndoHistory
     from ptlabel.gui.snapping import snap
     from ptlabel.gui.theme import ThemeManager
+    from ptlabel.gui import window
     from ptlabel.gui.window import MainWindow
     from ptlabel.model import LabelDocument, TextObject
     from ptlabel.printer import PrinterStatus
@@ -172,7 +173,12 @@ class MainWindowTest(unittest.TestCase):
 
     def test_docks_and_toolbars(self):
         names = {dock.objectName() for dock in self.win.docks}
-        self.assertEqual(names, {"properties_dock", "label_dock", "print_dock", "objects_dock"})
+        self.assertEqual(names, {"properties_dock", "label_dock", "print_dock", "objects_dock", "data_dock"})
+        area = self.win.dockWidgetArea
+        self.assertEqual({area(d).name for d in (self.win.objects_dock, self.win.properties_dock)},
+                         {"LeftDockWidgetArea"})
+        self.assertEqual({area(d).name for d in (self.win.label_dock, self.win.print_dock)}, {"RightDockWidgetArea"})
+        self.assertTrue(self.win.data_dock.isHidden())  # only with a data file
         self.assertGreaterEqual(self.win.properties_dock.width(), 300)
         self.win.reset_layout()
         self.assertFalse(any(dock.isFloating() for dock in self.win.docks))
@@ -283,6 +289,55 @@ class MainWindowTest(unittest.TestCase):
         panel.layout_box.setCurrentIndex(panel.layout_box.findData("normal"))
         self.assertFalse(self.doc.doc.is_cable_flag)
         self.assertTrue(panel.cable.isHidden())
+
+    def test_series_printing_from_csv(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_file = Path(tmp) / "kabel.csv"
+            csv_file.write_text("Kabel;Ziel\nK-001;PP03-24\nK-002;PP03-25\nK-003;PP03-26\n", encoding="cp1252")
+            text = self.doc.doc.objects[0]
+            self.doc.select(text)
+            self.doc.set_property(text, "text", "")
+            with mock.patch.object(window.QFileDialog, "getOpenFileName", return_value=(str(csv_file), "")):
+                self.win.load_data()
+            self.assertFalse(self.win.data_dock.isHidden())
+            panel = self.win.data_panel
+            self.assertEqual(panel.table.rowCount(), 3)
+            panel.insert_menu.actions()[0].trigger()  # {Kabel}
+            self.assertEqual(text.text, "{Kabel}")
+            panel.table.setCurrentCell(1, 0)
+            self.doc.render_now()
+            self.assertEqual(self.doc.fields["Kabel"], "K-002")
+            self.assertEqual(len(panel.selected_records()), 3)
+            panel.only_selected.setChecked(True)
+            panel.table.selectRow(2)
+            self.assertEqual([r["Kabel"] for r in panel.selected_records()], ["K-003"])
+            with mock.patch.object(self.win.printer, "print_document") as send:
+                self.win.printer.target = "file:/dev/null"
+                self.win.workflow.print_label()
+            self.assertEqual(send.call_args.args[1], [{"Kabel": "K-003", "Ziel": "PP03-26"}])
+            self.doc.undo()  # undo the placeholder, then unlinking the file
+            self.doc.set_data_file("")
+            self.assertIsNone(self.doc.table)
+
+    def test_cable_wrap_in_the_editor(self):
+        self.doc._saved = self.doc.doc.to_json()
+        self.win.actions["new_wrap"].trigger()
+        self.doc.render_now()
+        doc = self.doc.doc
+        self.assertTrue(doc.is_cable_wrap)
+        self.assertEqual(doc.objects[0].rotation, 90)
+        result = self.doc.result
+        self.assertGreaterEqual(len(result.copies), 2)
+        self.assertAlmostEqual(result.length_mm, math.pi * 6 * 1.5, delta=0.3)
+        self.assertFalse(self.win.label_panel.cable.turns.isHidden())
+        self.assertTrue(self.win.label_panel.cable.fold_marks.isHidden())
+        # a click on the last repetition selects the text
+        self.doc.select(None)
+        box = result.placed[0].box
+        shift = result.copies[-1]
+        point = self.win.canvas.to_screen((box[0] + shift, box[1], box[2] + shift, box[3])).center().toPoint()
+        QTest.mouseClick(self.win.canvas, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, point)
+        self.assertIs(self.doc.selected, doc.objects[0])
 
     def test_drag_with_mouse_snaps_to_center(self):
         self.win.canvas.set_zoom(4)

@@ -15,7 +15,9 @@ from .raster import PrintOptions
 from .tapes import Tape, tape_for_width
 
 FILE_FORMAT = "ptlabel"
-CABLE_FLAG = "cable_flag"
+CABLE_FLAG = "cable_flag"  # flag, part around the cable, flag again; flags stuck back to back
+CABLE_WRAP = "cable_wrap"  # wound around the cable, the design repeated along the circumference
+LAYOUTS = ("normal", CABLE_FLAG, CABLE_WRAP)
 CABLE_SLACK_MM = 1.0  # a little play so the flag closes without stretching the tape
 FILE_VERSION = 1
 
@@ -236,12 +238,14 @@ def object_from_dict(data: dict) -> LabelObject:
 @dataclass
 class LabelDocument:
     tape_mm: float = 12.0
-    layout: str = "normal"  # "normal" or "cable_flag" (see CABLE_FLAG below)
-    auto_length: bool = True  # for a cable flag: length of one flag
+    layout: str = "normal"  # one of LAYOUTS
+    auto_length: bool = True  # for cable labels: length of one flag / one repeated tile
     length_mm: float = 50.0
     margin_mm: float = 2.0
     cable_diameter_mm: float = 6.0  # cable flag only
     fold_marks: bool = True  # cable flag only: short marks where the tape is folded
+    wrap_turns: float = 1.5  # cable wrap only: how often the tape goes around the cable
+    data_file: str = ""  # CSV file for {column} placeholders (series printing)
     copies: int = 1
     counter_start: int = 1
     auto_cut: bool = True
@@ -254,6 +258,15 @@ class LabelDocument:
     @property
     def is_cable_flag(self) -> bool:
         return self.layout == CABLE_FLAG
+
+    @property
+    def is_cable_wrap(self) -> bool:
+        return self.layout == CABLE_WRAP
+
+    @property
+    def wrap_length_mm(self) -> float:
+        """Cable wrap: total length wound around the cable."""
+        return math.pi * self.cable_diameter_mm * self.wrap_turns
 
     @property
     def wrap_mm(self) -> float:
@@ -325,9 +338,9 @@ PLACEHOLDER_HELP = tr(
 )
 
 
-def expand(text: str, counter: int, now: datetime | None = None) -> str:
-    """Replace {nr}, {date}, {time} placeholders (German aliases {datum}, {zeit});
-    leave the text unchanged on errors."""
+def expand(text: str, counter: int, now: datetime | None = None, fields: dict[str, str] | None = None) -> str:
+    """Replace {nr}, {date}, {time} placeholders (German aliases {datum}, {zeit}) and the
+    columns of a data record (``fields``); leave the text unchanged on errors."""
     if "{" not in text:
         return text
     now = now or datetime.now()
@@ -337,6 +350,7 @@ def expand(text: str, counter: int, now: datetime | None = None) -> str:
         "zeit": _DateValue(now, "%H:%M"),
         "date": _DateValue(now, "%Y-%m-%d"),
         "time": _DateValue(now, "%H:%M"),
+        **(fields or {}),
     }
     try:
         return _Formatter().vformat(text, (), values)

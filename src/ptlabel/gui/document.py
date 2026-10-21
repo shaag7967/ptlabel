@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
-from .. import barcodes, fonts
+from .. import barcodes, fonts, merge
 from ..i18n import tr
 from ..model import (BarcodeObject, FrameObject, ImageObject, LabelDocument, LabelObject, LineObject,
                      QRCodeObject, TextObject, expand)
@@ -72,6 +72,7 @@ class DocumentController(QObject):
     reset = Signal()              # a new document or undo/redo replaced everything
     selection_changed = Signal()
     rendered = Signal()           # ``result`` is up to date
+    data_changed = Signal()       # data table for series printing or the previewed record changed
     render_failed = Signal(str)
     state_changed = Signal()      # path, modified flag or undo/redo availability
 
@@ -81,6 +82,9 @@ class DocumentController(QObject):
         self.path: Path | None = None
         self.selected: LabelObject | None = None
         self.result: RenderResult | None = None
+        self.table: merge.DataTable | None = None  # data for series printing
+        self.data_error = ""  # why the linked data file could not be read
+        self.record = 0  # row of ``table`` shown in the preview
         self.history = UndoHistory(self.doc.to_json())
         self._saved = self.history.current
         self._commit_timer = QTimer(self, singleShot=True, interval=500)
@@ -93,8 +97,11 @@ class DocumentController(QObject):
     def new(self, tape_mm: float = 12.0, layout: str = "normal") -> None:
         doc = LabelDocument(tape_mm=tape_mm, layout=layout)
         text = TextObject(x=doc.margin_mm, font=fonts.REGISTRY.default_family())
-        if doc.is_cable_flag:
+        if doc.is_cable_flag or doc.is_cable_wrap:
             text.text, text.align, text.h_align = tr("Cable 1"), "center", "center"
+        if doc.is_cable_wrap:
+            text.rotation = 90  # across the tape: reads along the cable
+            doc.margin_mm = 1.0
         doc.objects.append(text)
         self._replace(doc, None)
         self.select(doc.objects[0])
@@ -115,6 +122,7 @@ class DocumentController(QObject):
     def _replace(self, doc: LabelDocument, path: Path | None) -> None:
         self._commit_timer.stop()
         self.doc, self.path, self.selected = doc, path, None
+        self._load_table()
         state = doc.to_json()
         self.history.reset(state)
         self._saved = state
@@ -136,6 +144,50 @@ class DocumentController(QObject):
     @property
     def name(self) -> str:
         return self.path.name if self.path else tr("Untitled")
+
+    # ------------------------------------------------------------------ data for series printing
+
+    def _load_table(self) -> None:
+        self.table, self.data_error, self.record = None, "", 0
+        if self.doc.data_file:
+            try:
+                self.table = merge.read_csv(self.doc.data_file)
+            except (OSError, ValueError) as exc:
+                self.data_error = str(exc)
+        self.data_changed.emit()
+
+    def set_data_file(self, path: str) -> None:
+        """Link a CSV file (raises OSError/ValueError if it cannot be read); "" removes the link."""
+        table = merge.read_csv(path) if path else None
+        self.doc.data_file = path
+        self.table, self.data_error, self.record = table, "", 0
+        self.data_changed.emit()
+        self.edited(commit=True)
+
+    def show_record(self, index: int) -> None:
+        if self.table is not None and 0 <= index < len(self.table) and index != self.record:
+            self.record = index
+            self.data_changed.emit()
+            self.schedule_render()
+
+    def insert_field(self, name: str) -> bool:
+        """Append the placeholder {name} to the text or content of the selected object."""
+        obj = self.selected
+        attr = "text" if hasattr(obj, "text") else "data" if isinstance(getattr(obj, "data", None), str) else None
+        if obj is None or attr is None or getattr(obj, "kind", "") == "image":
+            return False
+        value = getattr(obj, attr)
+        separator = "" if not value or value.endswith((" ", "\n")) else " "
+        self.set_property(obj, attr, f"{value}{separator}{{{name}}}")
+        self.commit()
+        return True
+
+    @property
+    def fields(self) -> dict[str, str] | None:
+        """The record shown in the preview."""
+        if self.table is None or not self.table.rows:
+            return None
+        return self.table.rows[min(self.record, len(self.table) - 1)]
 
     # ------------------------------------------------------------------ undo
 
@@ -176,6 +228,8 @@ class DocumentController(QObject):
         self.doc = LabelDocument.from_json(state)
         objects = self.doc.objects
         self.selected = objects[index] if index is not None and index < len(objects) else None
+        if (self.table.path if self.table else "") != self.doc.data_file:
+            self._load_table()  # undo/redo of linking a data file
         self._after_reset()
 
     # ------------------------------------------------------------------ selection
@@ -319,7 +373,8 @@ class DocumentController(QObject):
 
     def set_label(self, tape_mm: float | None = None, auto_length: bool | None = None,
                   length_mm: float | None = None, margin_mm: float | None = None, layout: str | None = None,
-                  cable_diameter_mm: float | None = None, fold_marks: bool | None = None) -> None:
+                  cable_diameter_mm: float | None = None, fold_marks: bool | None = None,
+                  wrap_turns: float | None = None) -> None:
         doc = self.doc
         if layout is not None and layout != doc.layout:
             doc.layout = layout
@@ -328,6 +383,8 @@ class DocumentController(QObject):
             doc.cable_diameter_mm = cable_diameter_mm
         if fold_marks is not None:
             doc.fold_marks = fold_marks
+        if wrap_turns is not None:
+            doc.wrap_turns = wrap_turns
         if tape_mm is not None:
             doc.tape_mm = tape_mm
         if auto_length is not None and auto_length != doc.auto_length:
@@ -357,7 +414,7 @@ class DocumentController(QObject):
     def render_now(self) -> None:
         self._render_timer.stop()
         try:
-            self.result = render(self.doc)
+            self.result = render(self.doc, fields=self.fields)
         except Exception as exc:  # keep the editor alive on unexpected input
             self.render_failed.emit(str(exc))
             return

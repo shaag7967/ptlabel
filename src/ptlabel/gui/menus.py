@@ -54,10 +54,11 @@ def fill_object_menu(menu: QMenu, window: MainWindow) -> None:
 def build_menu_bar(window: MainWindow) -> None:
     a, bar = window.actions, window.menuBar()
     file = bar.addMenu(tr("&File"))
-    file.addActions([a["new"], a["new_cable"], a["open"]])
+    file.addActions([a["new"], a["new_cable"], a["new_wrap"], a["open"]])
     file.addMenu(window.recent.menu)
     file.addActions([a["save"], a["save_as"]])
     file.addSeparator()
+    file.addAction(a["load_data"])
     file.addAction(a["export"])
     file.addSeparator()
     file.addAction(a["quit"])

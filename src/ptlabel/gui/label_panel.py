@@ -5,19 +5,26 @@ from __future__ import annotations
 from PySide6.QtCore import QSignalBlocker
 from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QLabel, QVBoxLayout, QWidget
 
-from ..i18n import tr
-from ..model import CABLE_FLAG
+from ..i18n import ntr, tr
+from ..model import CABLE_FLAG, CABLE_WRAP
 from ..tapes import TAPES
 from .document import DocumentController
 from .icons import icon
 from .qtutil import fmt, set_tone
 from .widgets import NumberSpin, section_label
 
-LAYOUTS = [("normal", tr("Label"), "tag"), (CABLE_FLAG, tr("Cable flag"), "cable")]
+LAYOUTS = [("normal", tr("Label"), "tag"), (CABLE_FLAG, tr("Cable flag"), "cable"),
+           (CABLE_WRAP, tr("Cable wrap"), "repeat")]
+HINTS = {
+    CABLE_FLAG: tr("The tape is wrapped around the cable and the two flags are stuck back to back, "
+                   "so the label reads the same from both sides."),
+    CABLE_WRAP: tr("The tape is wound around the cable; the design is repeated so it can be read from all "
+                   "sides. Text across the tape reads along the cable. Flexible ID tape works best."),
+}
 
 
 class CableSettings(QWidget):
-    """Cable diameter and fold marks of a cable flag."""
+    """Cable diameter and the settings of cable flags and cable wraps."""
 
     def __init__(self, document: DocumentController):
         super().__init__()
@@ -28,25 +35,43 @@ class CableSettings(QWidget):
         set_tone(self.wrap, "info")
         self.fold_marks = QCheckBox(tr("Fold marks"))
         self.fold_marks.setToolTip(tr("Short marks where the tape is folded around the cable"))
-        hint = QLabel(tr("The tape is wrapped around the cable and the two flags are stuck back to back, "
-                         "so the label reads the same from both sides."))
-        hint.setWordWrap(True)
-        set_tone(hint, "info")
+        self.turns = NumberSpin(1, 4, 0.25)
+        self.turns.setToolTip(tr("How often the tape goes around the cable; more than one turn holds better"))
+        self.turns_label = QLabel(tr("Turns"))
+        self.hint = QLabel()
+        self.hint.setWordWrap(True)
+        set_tone(self.hint, "info")
         form = QFormLayout(self)
         form.setContentsMargins(0, 0, 0, 0)
         form.addRow(tr("Cable diameter"), self.diameter)
+        form.addRow(self.turns_label, self.turns)
         form.addRow(self.wrap)
         form.addRow(self.fold_marks)
-        form.addRow(hint)
+        form.addRow(self.hint)
         self.diameter.valueChanged.connect(lambda v: document.set_label(cable_diameter_mm=v))
         self.fold_marks.toggled.connect(lambda on: document.set_label(fold_marks=on))
+        self.turns.valueChanged.connect(lambda v: document.set_label(wrap_turns=v))
+        document.rendered.connect(self.refresh)
 
     def refresh(self) -> None:
         doc = self.document.doc
         self.diameter.set_quietly(doc.cable_diameter_mm)
         with QSignalBlocker(self.fold_marks):
             self.fold_marks.setChecked(doc.fold_marks)
-        self.wrap.setText(tr("Around the cable: {length} mm").format(length=fmt(round(doc.wrap_mm, 1))))
+        wrap = doc.is_cable_wrap
+        self.turns.set_quietly(doc.wrap_turns)
+        self.turns.setVisible(wrap)
+        self.turns_label.setVisible(wrap)
+        self.fold_marks.setVisible(doc.is_cable_flag)
+        self.hint.setText(HINTS.get(doc.layout, ""))
+        if wrap:
+            result = self.document.result
+            repeats = len(result.copies) + 1 if result is not None and result.face else 1
+            self.wrap.setText(ntr("Around the cable: {length} mm, {count} repetition",
+                                  "Around the cable: {length} mm, {count} repetitions", repeats).format(
+                length=fmt(round(doc.wrap_length_mm, 1)), count=repeats))
+        else:
+            self.wrap.setText(tr("Around the cable: {length} mm").format(length=fmt(round(doc.wrap_mm, 1))))
 
 
 class LabelPanel(QWidget):
@@ -104,11 +129,16 @@ class LabelPanel(QWidget):
                     box.setCurrentIndex(max(0, box.findData(value)))
                 else:
                     box.setCurrentIndex(max(0, box.findText(doc.tape.label)))
-        self.cable.setVisible(doc.is_cable_flag)
+        self.cable.setVisible(doc.is_cable_flag or doc.is_cable_wrap)
         self.cable.refresh()
-        flag = doc.is_cable_flag
-        self.auto_length.setText(tr("Automatic flag length") if flag else tr("Automatic length"))
-        self.length_label.setText(tr("Flag length") if flag else tr("Length"))
+        if doc.is_cable_flag:
+            auto, length = tr("Automatic flag length"), tr("Flag length")
+        elif doc.is_cable_wrap:
+            auto, length = tr("Automatic repetition length"), tr("Repetition length")
+        else:
+            auto, length = tr("Automatic length"), tr("Length")
+        self.auto_length.setText(auto)
+        self.length_label.setText(length)
         with QSignalBlocker(self.auto_length):
             self.auto_length.setChecked(doc.auto_length)
         self.length.set_quietly(doc.length_mm)

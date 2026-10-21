@@ -3,6 +3,8 @@
 Design and print labels on a Brother PT-P750W over Wi-Fi. Runs on Windows and Linux and needs
 neither P-touch Editor nor the Brother driver. The user interface is available in English and German.
 
+![PT-Label main window](docs/screenshots/main.png)
+
 ## Features
 
 - WYSIWYG editor that previews the colors of the loaded tape; non-printable areas are shaded gray.
@@ -16,7 +18,9 @@ neither P-touch Editor nor the Brother driver. The user interface is available i
 - Tape widths 3.5 / 6 / 9 / 12 / 18 / 24 mm, automatic or fixed label length, margins.
 - Print options: copies, automatic cut, half cut, chain printing, mirror, high resolution.
 - Placeholders for serial numbers and dates: `{nr}`, `{nr:03}`, `{date}`, `{time}`.
-- Cable flags: the label is wrapped around a cable and shows the same text on both sides.
+- Cable labels: cable flags (same text on both sides of the cable) and cable wraps (text repeated
+  around the cable).
+- Series printing from CSV tables: every row fills the `{column}` placeholders of one label.
 - The printer status (tape, colors, errors such as “cover open”) is queried continuously.
 - Printers on the network are found automatically.
 - Fonts: all system fonts plus three bundled ones; more can be added from files or downloaded from
@@ -54,11 +58,15 @@ switched on again.
 
 ## Usage
 
-The window consists of the label preview in the middle, two toolbars and four panels:
-**Objects** (all objects; drag entries to change which one is in front), **Properties** (settings of
-the selected object), **Label** (tape width, length, margins) and **Print** (printer, copies, cutting).
-Panels can be moved, stacked as tabs, detached or closed; “View → Panels and toolbars” brings them
-back and resets the layout. “View → Theme” switches between system, light and dark.
+The window consists of the label preview in the middle, two toolbars and the panels
+**Objects** (all objects; drag entries to change which one is in front) and **Properties** (settings
+of the selected object) on the left, **Label** (label type, tape, length, margins) and **Print**
+(printer, copies, cutting) on the right, and **Data** (series printing, shown when a CSV file is
+loaded) below the preview. Panels can be moved, stacked as tabs, detached or closed; “View → Panels
+and toolbars” brings them back and resets the layout. “View → Theme” switches between system, light
+and dark:
+
+![Dark theme](docs/screenshots/dark.png)
 
 | Action | How |
 |---|---|
@@ -105,6 +113,28 @@ fold marks show where to fold (can be switched off). Both flags can be selected 
 preview. With `{nr}` and several copies you get numbered flags such as `K-001`, `K-002`, …
 Flexible ID tape (TZe-FX…) wraps best around round cables.
 
+![Cable flag](docs/screenshots/cable-flag.png)
+
+### Cable wraps
+
+“File → New cable wrap” or “Label type: Cable wrap” creates a label that is wound around the cable.
+The design (by default a text turned across the tape, so it reads along the cable) is repeated
+evenly over the whole length, so it can be read from every side. The length is
+π × diameter × turns; 1.5 turns hold well. The Label panel shows how many repetitions fit.
+
+![Cable wrap](docs/screenshots/cable-wrap.png)
+
+### Series printing from a table
+
+“File → Series printing from CSV…” links a table to the label; every row becomes one label. Use the
+column names as placeholders, e.g. `{Cable}` or `{From} – {To}` (“Insert field” in the Data panel adds
+them to the selected text, QR code or barcode). Click a row to see it in the preview; “Print only the
+selected rows” limits the job. CSV files from Excel or LibreOffice work as they are (separator `;`,
+`,` or tab, UTF-8 or Windows encoding, first row = column names). The link is saved with the label,
+and `{nr}` keeps counting from label to label.
+
+![Series printing](docs/screenshots/series.png)
+
 ### Barcodes
 
 EAN-13, EAN-8 and UPC-A are drawn in the usual retail layout (longer guard bars, digits in groups,
@@ -122,13 +152,15 @@ Fonts that cannot print Latin text are hidden from the font lists: fonts for oth
 Hebrew, Thai, …) that would only print empty boxes, and symbol fonts such as Dingbats. PT-Label tests
 every font once when it scans the font folders. “Fonts → Show all fonts” lists them anyway.
 
-The “Fonts” menu adds more:
+The “Fonts” menu adds more; every font list shows the fonts in their own typeface:
 
 - **Add font files…** copies `.ttf`/`.otf` files into PT-Label's own font folder, without installing
   them system-wide.
 - **Download Google Fonts…** searches the Google Fonts collection (via [Fontsource](https://fontsource.org)),
   shows a preview and installs the regular and bold styles, upright and italic. The files contain the
   Latin character set (Western and Central European languages incl. umlauts and €).
+![Google Fonts](docs/screenshots/fonts.png)
+
 - **Open font folder** shows that folder (`~/.local/share/ptlabel/fonts` on Linux,
   `%APPDATA%\ptlabel\fonts` on Windows).
 
@@ -146,6 +178,10 @@ ptlabel print cable.ptlabel --copies 10 --start 1
 ptlabel cable "SW01-P12"                  # cable flag for a 6 mm cable
 ptlabel cable "SW01-P12" --diameter 8 --length 30   # 8 mm cable, flags 30 mm long
 ptlabel cable "K-{nr:03}" --copies 50 --start 1     # numbered series
+ptlabel wrap "K-001" --diameter 8                   # cable wrap, text across the tape
+ptlabel cable "{Cable}" --csv cables.csv            # one cable flag per row of the table
+ptlabel text "{Name}" "{Room}" --csv people.csv --rows 2-5
+ptlabel print template.ptlabel --csv cables.csv     # saved label with placeholders
 ```
 
 Without `--printer` the printer set in the user interface is used. `--printer` also accepts
@@ -160,6 +196,7 @@ python3 -m venv .venv
 .venv/bin/ptlabel           # run the program
 .venv/bin/pytest            # tests
 .venv/bin/python -m build   # packages for PyPI in dist/
+.venv/bin/python tools/make_screenshots.py   # README screenshots in docs/screenshots
 ```
 
 ### Translations
@@ -201,6 +238,10 @@ src/ptlabel/
   printer.py   status decoding, sending via TCP 9100 / file
   model.py     label and objects, file format, placeholders
   render.py    label → bitmap
+  layouts.py   cable flags and cable wraps (the design arranged several times)
+  result.py    render result: bitmap and object positions
+  merge.py     series printing: CSV tables, row selection
+  barcodes.py  barcode encoding and retail layout
   fonts.py     font discovery (system, bundled and user fonts)
   webfonts.py  Google Fonts download via Fontsource
   i18n.py      translations (gettext)
@@ -215,7 +256,7 @@ src/ptlabel/
     canvas.py          label preview: ruler, selection, dragging, resizing
     snapping.py        guides and snapping while dragging
     properties.py      property editor of the selected object
-    label_panel.py, print_panel.py, objects_panel.py   dock contents
+    label_panel.py, print_panel.py, objects_panel.py, data_panel.py   dock contents
     format_toolbar.py  font, size, style and alignment of texts
     statusbar.py       printer state, tape, label size, zoom
     theme.py, icons.py light/dark theme, SVG icons in the palette color
@@ -224,6 +265,8 @@ src/ptlabel/
   data/icons/  Lucide icons (ISC license)
   locale/      translations
 tests/         unit tests: pytest
+tools/         make_screenshots.py
+docs/          screenshots
 ```
 
 ## Known limitations

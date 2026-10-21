@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 20:19+0200\n"
-"PO-Revision-Date: 2026-10-21 18:19+0000\n"
+"POT-Creation-Date: 2026-10-21 20:30+0200\n"
+"PO-Revision-Date: 2026-10-21 18:31+0000\n"
 "Last-Translator: shaag7967\n"
 "Language: de\n"
 "Language-Team: German\n"
@@ -40,6 +40,10 @@ msgstr "(Fahne {length:.1f} mm)"
 msgid "(no image)"
 msgstr "(kein Bild)"
 
+#, python-brace-format
+msgid "({count} × {length:.1f} mm)"
+msgstr "({count} × {length:.1f} mm)"
+
 msgid "11 digits; the 12th (check digit) is added"
 msgstr "11 Ziffern; die 12. (Prüfziffer) wird ergänzt"
 
@@ -54,6 +58,10 @@ msgstr "7 Ziffern; die 8. (Prüfziffer) wird ergänzt"
 
 msgid "About…"
 msgstr "Über…"
+
+#, python-brace-format
+msgid "Add a {column} placeholder to the selected text, QR code or barcode"
+msgstr "Platzhalter {column} in den ausgewählten Text, QR-Code oder Barcode einfügen"
 
 msgid "Add font files"
 msgstr "Schriftdateien hinzufügen"
@@ -88,6 +96,12 @@ msgstr ""
 msgid "Around the cable: {length} mm"
 msgstr "Um das Kabel: {length} mm"
 
+#, python-brace-format
+msgid "Around the cable: {length} mm, {count} repetition"
+msgid_plural "Around the cable: {length} mm, {count} repetitions"
+msgstr[0] "Um das Kabel: {length} mm, {count} Wiederholung"
+msgstr[1] "Um das Kabel: {length} mm, {count} Wiederholungen"
+
 msgid "At the right margin"
 msgstr "Am rechten Rand"
 
@@ -96,6 +110,9 @@ msgstr "Fahnenlänge automatisch"
 
 msgid "Automatic length"
 msgstr "Länge automatisch"
+
+msgid "Automatic repetition length"
+msgstr "Wiederholungslänge automatisch"
 
 msgid "Automatic size (fill tape height)"
 msgstr "Größe automatisch (Bandhöhe füllen)"
@@ -142,6 +159,16 @@ msgstr "Kabeldurchmesser"
 msgid "Cable flag"
 msgstr "Kabelfahne"
 
+msgid "Cable wrap"
+msgstr "Kabelwickel"
+
+msgid ""
+"Cable wrap: the design fits around the cable only once – make it shorter, e.g. turn the text "
+"across the tape"
+msgstr ""
+"Kabelwickel: Das Motiv passt nur einmal um das Kabel – kürzer machen, z. B. den Text quer zum "
+"Band drehen"
+
 msgid "Center horizontally"
 msgstr "Horizontal zentrieren"
 
@@ -171,6 +198,9 @@ msgstr "Transparent"
 
 msgid "Clear list"
 msgstr "Liste leeren"
+
+msgid "Click a row to see it in the preview"
+msgstr "Zeile anklicken, um sie in der Vorschau zu sehen"
 
 msgid "Content"
 msgstr "Inhalt"
@@ -202,6 +232,9 @@ msgstr "Schneidemesser blockiert"
 
 msgid "Dark"
 msgstr "Dunkel"
+
+msgid "Data"
+msgstr "Daten"
 
 msgid "Delete"
 msgstr "Löschen"
@@ -339,6 +372,9 @@ msgstr "Hostname oder IP-Adresse"
 msgid "Host {host!r} not found"
 msgstr "Host {host!r} nicht gefunden"
 
+msgid "How often the tape goes around the cable; more than one turn holds better"
+msgstr "Wie oft das Band um das Kabel geht; mehr als eine Windung hält besser"
+
 msgid "ITF (2 of 5)"
 msgstr "ITF (2 aus 5)"
 
@@ -353,6 +389,9 @@ msgstr "Bilder"
 
 msgid "Image…"
 msgstr "Bild…"
+
+msgid "Insert field"
+msgstr "Feld einfügen"
 
 #, python-brace-format
 msgid "Insert {object}"
@@ -376,6 +415,10 @@ msgstr "Installiert: {families}"
 #, python-brace-format
 msgid "Installing {family} …"
 msgstr "Installiere {family} …"
+
+#, python-brace-format
+msgid "Invalid row selection: {rows}"
+msgstr "Ungültige Zeilenauswahl: {rows}"
 
 msgid "Invalid status response"
 msgstr "Ungültige Statusantwort"
@@ -431,6 +474,16 @@ msgstr "Zeilenabstand"
 msgid "Line width (mm)"
 msgstr "Linienstärke (mm)"
 
+msgid "Load CSV file…"
+msgstr "CSV-Datei laden…"
+
+#, python-brace-format
+msgid "Load a table; every row fills the {column} placeholders of one label"
+msgstr "Tabelle laden; jede Zeile füllt die {column}-Platzhalter eines Etiketts"
+
+msgid "Load data for series printing"
+msgstr "Daten für den Seriendruck laden"
+
 msgid "Load image"
 msgstr "Bild laden"
 
@@ -481,6 +534,14 @@ msgstr "Neu"
 msgid "New cable flag"
 msgstr "Neue Kabelfahne"
 
+msgid "New cable wrap"
+msgstr "Neuer Kabelwickel"
+
+msgid "New label that is wound around a cable, the text repeated so it reads from all sides"
+msgstr ""
+"Neues Etikett, das um ein Kabel gewickelt wird; der Text wiederholt sich, damit er von allen "
+"Seiten lesbar ist"
+
 msgid "New label that is wrapped around a cable, with the same text on both sides"
 msgstr "Neues Etikett, das um ein Kabel gelegt wird, mit gleichem Text auf beiden Seiten"
 
@@ -497,6 +558,13 @@ msgstr ""
 #, python-brace-format
 msgid "No SNMP response from {host}"
 msgstr "Keine SNMP-Antwort von {host}"
+
+#, python-brace-format
+msgid "No column for: {fields}"
+msgstr "Keine Spalte für: {fields}"
+
+msgid "No data file. Load a CSV file with a header row; every row becomes one label."
+msgstr "Keine Datendatei. CSV-Datei mit Kopfzeile laden; jede Zeile ergibt ein Etikett."
 
 #, python-brace-format
 msgid "No downloadable files for {family}"
@@ -528,6 +596,9 @@ msgstr "Kein Drucker eingestellt – Drucker einschalten und „Suchen…“ kli
 
 msgid "No recent files"
 msgstr "Keine zuletzt geöffneten Dateien"
+
+msgid "No rows selected in the data table."
+msgstr "In der Datentabelle sind keine Zeilen ausgewählt."
 
 msgid "No tape loaded"
 msgstr "Kein Band eingelegt"
@@ -594,6 +665,9 @@ msgstr "Druckdaten gespeichert: {path} ({size} Bytes)"
 msgid "Print mirror-inverted, e.g. for transparent tape on glass"
 msgstr "Spiegelverkehrt drucken, z. B. für transparentes Band auf Glas"
 
+msgid "Print only the selected rows"
+msgstr "Nur ausgewählte Zeilen drucken"
+
 #, python-brace-format
 msgid "Printable area: {height:.1f} mm high"
 msgstr "Druckbereich: {height:.1f} mm hoch"
@@ -648,9 +722,15 @@ msgstr "Rot"
 msgid "Redo"
 msgstr "Wiederholen"
 
+msgid "Remove the data file from the label"
+msgstr "Datendatei vom Etikett entfernen"
+
 #, python-brace-format
 msgid "Rendering error: {error}"
 msgstr "Fehler bei der Darstellung: {error}"
+
+msgid "Repetition length"
+msgstr "Wiederholungslänge"
 
 msgid "Reset panel layout"
 msgstr "Anordnung zurücksetzen"
@@ -660,6 +740,10 @@ msgstr "Rechts"
 
 msgid "Rotation"
 msgstr "Drehung"
+
+#, python-brace-format
+msgid "Rows must be between 1 and {count}: {rows}"
+msgstr "Zeilen müssen zwischen 1 und {count} liegen: {rows}"
 
 msgid "Sans serif"
 msgstr "Serifenlos"
@@ -736,6 +820,9 @@ msgstr[1] "Sende {count} Etiketten …"
 msgid "Sending …"
 msgstr "Sende …"
 
+msgid "Series printing from CSV…"
+msgstr "Seriendruck aus CSV…"
+
 msgid "Serif"
 msgstr "Serif"
 
@@ -783,6 +870,9 @@ msgstr "System"
 msgid "System error"
 msgstr "Systemfehler"
 
+msgid "Tables"
+msgstr "Tabellen"
+
 msgid "Tape"
 msgstr "Band"
 
@@ -801,11 +891,40 @@ msgstr "Klartext-Größe (pt)"
 
 #, python-brace-format
 msgid ""
+"The data file cannot be read:\n"
+"{error}"
+msgstr ""
+"Die Datendatei kann nicht gelesen werden:\n"
+"{error}"
+
+#, python-brace-format
+msgid ""
+"The data file has no column for {fields}. These placeholders stay as they are.\n"
+"\n"
+"Print anyway?"
+msgstr ""
+"Die Datendatei hat keine Spalte für {fields}. Diese Platzhalter bleiben unverändert.\n"
+"\n"
+"Trotzdem drucken?"
+
+#, python-brace-format
+msgid ""
 "The file cannot be opened:\n"
 "{error}"
 msgstr ""
 "Datei kann nicht geöffnet werden:\n"
 "{error}"
+
+#, python-brace-format
+msgid ""
+"The file cannot be read:\n"
+"{error}"
+msgstr ""
+"Die Datei kann nicht gelesen werden:\n"
+"{error}"
+
+msgid "The file contains no data"
+msgstr "Die Datei enthält keine Daten"
 
 #, python-brace-format
 msgid ""
@@ -865,6 +984,13 @@ msgid "The selected files are not usable fonts."
 msgstr "Die ausgewählten Dateien sind keine verwendbaren Schriften."
 
 msgid ""
+"The tape is wound around the cable; the design is repeated so it can be read from all sides. Text"
+" across the tape reads along the cable. Flexible ID tape works best."
+msgstr ""
+"Das Band wird um das Kabel gewickelt; das Motiv wiederholt sich, damit es von allen Seiten lesbar"
+" ist. Quer gedrehter Text verläuft entlang des Kabels. Am besten eignet sich flexibles ID-Band."
+
+msgid ""
 "The tape is wrapped around the cable and the two flags are stuck back to back, so the label reads"
 " the same from both sides."
 msgstr ""
@@ -882,6 +1008,9 @@ msgstr "Übertragungspuffer voll"
 
 msgid "Transmission error"
 msgstr "Übertragungsfehler"
+
+msgid "Turns"
+msgstr "Windungen"
 
 msgid "Type"
 msgstr "Typ"
@@ -977,6 +1106,9 @@ msgstr "feste Etikettlänge in mm"
 msgid "fixed length of one flag in mm (default: fits the text)"
 msgstr "feste Länge einer Fahne in mm (Standard: passend zum Text)"
 
+msgid "fixed length of one repetition in mm (default: fits the text)"
+msgstr "feste Länge einer Wiederholung in mm (Standard: passend zum Text)"
+
 msgid "font size in pt (default: automatic)"
 msgstr "Schriftgröße in pt (Standard: automatisch)"
 
@@ -995,6 +1127,9 @@ msgstr "Hostname/IP des Druckers"
 msgid "host name/IP, file:PATH or /dev/usb/lp0"
 msgstr "Hostname/IP, file:PFAD oder /dev/usb/lp0"
 
+msgid "how often the tape goes around the cable (default 1.5)"
+msgstr "wie oft das Band um das Kabel geht (Standard 1,5)"
+
 msgid "incompatible"
 msgstr "inkompatibel"
 
@@ -1004,8 +1139,9 @@ msgstr "laminiert"
 msgid "letters, digits and the usual characters"
 msgstr "Buchstaben, Ziffern und die üblichen Zeichen"
 
-msgid "margin in mm (default 2)"
-msgstr "Rand in mm (Standard 2)"
+#, python-brace-format
+msgid "margin in mm (default {margin:g})"
+msgstr "Rand in mm (Standard {margin:g})"
 
 msgid "no tape"
 msgstr "kein Band"
@@ -1016,8 +1152,14 @@ msgstr "nicht laminiert"
 msgid "print a cable flag: the same text on both sides of the cable"
 msgstr "Kabelfahne drucken: gleicher Text auf beiden Seiten des Kabels"
 
+msgid "print a cable wrap: the text across the tape, repeated around the cable"
+msgstr "Kabelwickel drucken: Text quer zum Band, rund um das Kabel wiederholt"
+
 msgid "print a label file (.ptlabel)"
 msgstr "Etikettendatei (.ptlabel) drucken"
+
+msgid "print only these rows of the CSV file"
+msgstr "nur diese Zeilen der CSV-Datei drucken"
 
 msgid "printing"
 msgstr "druckt"
@@ -1036,6 +1178,10 @@ msgstr "Vorschau als PNG speichern (druckt nur zusätzlich mit --printer)"
 
 msgid "search the network for Brother printers"
 msgstr "Brother-Drucker im Netzwerk suchen"
+
+#, python-brace-format
+msgid "series printing: one label per row, {column} placeholders are filled in"
+msgstr "Seriendruck: ein Etikett pro Zeile, {column}-Platzhalter werden ausgefüllt"
 
 msgid "show the printer status"
 msgstr "Druckerstatus anzeigen"
@@ -1058,6 +1204,12 @@ msgid "write the print data to a file (prints only with --printer)"
 msgstr "Druckdaten in Datei schreiben (druckt nur zusätzlich mit --printer)"
 
 #, python-brace-format
+msgid "{count} label"
+msgid_plural "{count} labels"
+msgstr[0] "{count} Etikett"
+msgstr[1] "{count} Etiketten"
+
+#, python-brace-format
 msgid "{count} label printed"
 msgid_plural "{count} labels printed"
 msgstr[0] "{count} Etikett gedruckt"
@@ -1070,8 +1222,18 @@ msgstr[0] "{count} Etikett gedruckt."
 msgstr[1] "{count} Etiketten gedruckt."
 
 #, python-brace-format
+msgid "{count} record loaded"
+msgid_plural "{count} records loaded"
+msgstr[0] "{count} Datensatz geladen"
+msgstr[1] "{count} Datensätze geladen"
+
+#, python-brace-format
 msgid "{error} – is the printer switched on and connected to the network?"
 msgstr "{error} – Drucker eingeschaltet und im WLAN?"
+
+#, python-brace-format
+msgid "{file} has no column(s): {columns}"
+msgstr "{file} hat keine Spalte(n): {columns}"
 
 #, python-brace-format, python-format
 msgid ""

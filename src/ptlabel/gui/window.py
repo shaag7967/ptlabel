@@ -10,14 +10,15 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMenu, QWidget
 
 from .. import config, fonts
-from ..i18n import tr
-from ..model import CABLE_FLAG, ImageObject
+from ..i18n import ntr, tr
+from ..model import CABLE_FLAG, CABLE_WRAP, ImageObject
 from ..tapes import DPI
 from . import dialogs, menus
 from .actions import INSERT_KINDS, Actions
 from .canvas import LabelCanvas
 from .document import DocumentController
 from .fontui import FONT_LIST, WebFontDialog
+from .data_panel import DataPanel
 from .format_toolbar import FormatToolBar
 from .label_panel import LabelPanel
 from .objects_panel import ObjectsPanel
@@ -33,7 +34,8 @@ from .theme import ThemeManager
 from .widgets import scrolling
 
 STATE_VERSION = 2
-DOCK_WIDTHS = (380, 210)  # right and left dock area on first start
+DEFAULT_SIZE = (1500, 920)
+DOCK_WIDTHS = (380, 400)  # left and right dock area on first start
 
 
 class MainWindow(QMainWindow):
@@ -55,10 +57,12 @@ class MainWindow(QMainWindow):
         self.label_panel = LabelPanel(self.document)
         self.print_panel = PrintPanel(self.document, self.printer, theme)
         self.objects_panel = ObjectsPanel(self.document)
+        self.data_panel = DataPanel(self.document)
         self.format_bar = FormatToolBar(self.document)
         self.status = StatusBar(self.document, self.printer, self.canvas, theme)
         self.setStatusBar(self.status)
-        self.workflow = PrintWorkflow(self, self.document, self.printer, self.status)
+        self.workflow = PrintWorkflow(self, self.document, self.printer, self.status,
+                                      self.data_panel.selected_records)
 
         self._build_docks()
         self.main_toolbar = menus.build_main_toolbar(self)
@@ -84,23 +88,34 @@ class MainWindow(QMainWindow):
         return dock
 
     def _build_docks(self) -> None:
-        right, left = Qt.DockWidgetArea.RightDockWidgetArea, Qt.DockWidgetArea.LeftDockWidgetArea
-        self.setDockOptions(QMainWindow.DockOption.AnimatedDocks | QMainWindow.DockOption.AllowTabbedDocks)
-        self.properties_dock = self._dock("properties_dock", tr("Properties"), self.properties, right)
-        self.label_dock = self._dock("label_dock", tr("Label"), self.label_panel, right)
-        self.print_dock = self._dock("print_dock", tr("Print"), self.print_panel, right)
-        self.objects_dock = self._dock("objects_dock", tr("Objects"), self.objects_panel, left, scroll=False)
-        self.tabifyDockWidget(self.label_dock, self.print_dock)
-        self.label_dock.raise_()
+        """Objects and properties on the left, label and print settings on the right, the data
+        table for series printing below the preview (shown when a CSV file is loaded)."""
+        area = Qt.DockWidgetArea
+        self.setDockOptions(QMainWindow.DockOption.AnimatedDocks | QMainWindow.DockOption.AllowTabbedDocks
+                            | QMainWindow.DockOption.AllowNestedDocks)
+        self.objects_dock = self._dock("objects_dock", tr("Objects"), self.objects_panel, area.LeftDockWidgetArea,
+                                       scroll=False)
+        self.properties_dock = self._dock("properties_dock", tr("Properties"), self.properties,
+                                          area.LeftDockWidgetArea)
+        self.label_dock = self._dock("label_dock", tr("Label"), self.label_panel, area.RightDockWidgetArea)
+        self.print_dock = self._dock("print_dock", tr("Print"), self.print_panel, area.RightDockWidgetArea)
+        self.data_dock = self._dock("data_dock", tr("Data"), self.data_panel, area.BottomDockWidgetArea,
+                                    scroll=False)
+        self.data_dock.hide()
 
     @property
     def docks(self) -> list[QDockWidget]:
-        return [self.properties_dock, self.label_dock, self.print_dock, self.objects_dock]
+        return [self.objects_dock, self.properties_dock, self.label_dock, self.print_dock, self.data_dock]
+
+    @property
+    def main_docks(self) -> list[QDockWidget]:
+        return self.docks[:4]
 
     def _connect(self) -> None:
         a, doc, canvas, workflow = self.actions, self.document, self.canvas, self.workflow
         a.connect({
             "new": self.new_document, "new_cable": lambda: self.new_document(CABLE_FLAG),
+            "new_wrap": lambda: self.new_document(CABLE_WRAP), "load_data": self.load_data,
             "open": self.open_document, "save": self.save_document,
             "save_as": self.save_document_as, "export": self.export_png, "quit": self.close,
             "undo": doc.undo, "redo": doc.redo, "duplicate": doc.duplicate_selected, "delete": doc.delete_selected,
@@ -135,9 +150,11 @@ class MainWindow(QMainWindow):
         self.printer.status_changed.connect(lambda: a["print"].setEnabled(self.printer.activity is None))
         doc.state_changed.connect(self._update_state)
         doc.selection_changed.connect(self._update_state)
+        doc.data_changed.connect(self._show_data_dock)
+        self.data_panel.load_requested.connect(self.load_data)
 
     def _restore_layout(self) -> None:
-        self.resize(1360, 820)
+        self.resize(*DEFAULT_SIZE)
         self._default_state = self.saveState(STATE_VERSION)
         self._default_dock_sizes()
         geometry, state = self.cfg.get("window_geometry"), self.cfg.get("window_state")
@@ -147,15 +164,40 @@ class MainWindow(QMainWindow):
             self.restoreState(QByteArray.fromBase64(state.encode("ascii")), STATE_VERSION)
 
     def _default_dock_sizes(self) -> None:
-        self.resizeDocks([self.properties_dock, self.objects_dock], list(DOCK_WIDTHS), Qt.Orientation.Horizontal)
-        self.resizeDocks([self.properties_dock, self.label_dock], [520, 300], Qt.Orientation.Vertical)
+        self.resizeDocks([self.objects_dock, self.label_dock], list(DOCK_WIDTHS), Qt.Orientation.Horizontal)
+        self.resizeDocks([self.objects_dock, self.properties_dock], [180, 600], Qt.Orientation.Vertical)
+        self.resizeDocks([self.label_dock, self.print_dock], [380, 420], Qt.Orientation.Vertical)
 
     def reset_layout(self) -> None:
-        for dock in self.docks:
+        for dock in self.main_docks:
             dock.setFloating(False)
             dock.show()
         self.restoreState(self._default_state, STATE_VERSION)
         self._default_dock_sizes()
+
+    def _show_data_dock(self) -> None:
+        """Bring up the data table when a label with data is opened or a CSV file is loaded."""
+        table = self.document.table
+        if table is not None and getattr(self, "_shown_table", None) is not table:
+            self._shown_table = table
+            self.data_dock.show()
+            self.data_dock.raise_()
+
+    def load_data(self) -> None:
+        name, _ = QFileDialog.getOpenFileName(self, tr("Load data for series printing"), self._start_dir(),
+                                              dialogs.CSV_FILTER)
+        if not name:
+            return
+        try:
+            self.document.set_data_file(name)
+        except (OSError, ValueError) as exc:
+            dialogs.error(self, tr("The file cannot be read:\n{error}").format(error=exc))
+            return
+        self.data_dock.show()
+        self.data_dock.raise_()
+        table = self.document.table
+        self.status.show_message(ntr("{count} record loaded", "{count} records loaded", len(table)).format(
+            count=len(table)), "ok")
 
     def set_theme(self, mode: str) -> None:
         self.theme.set_mode(mode)

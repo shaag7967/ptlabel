@@ -40,7 +40,7 @@ class FontComboBox(QComboBox):
         self.setEditable(True)
         self.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
         self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
-        self.setMinimumContentsLength(14)
+        self.setMinimumContentsLength(18)
         self.reload()
         FONT_LIST.changed.connect(self.reload)
 

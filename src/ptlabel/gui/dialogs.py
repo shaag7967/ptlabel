@@ -18,6 +18,7 @@ from .qtutil import APP_NAME, MAX_IMAGE_PX
 
 LABEL_FILTER = tr("PT-Label label") + " (*.ptlabel);;" + tr("All files") + " (*)"
 IMAGE_FILTER = tr("Images") + " (*.png *.jpg *.jpeg *.bmp *.gif *.tif *.tiff *.webp);;" + tr("All files") + " (*)"
+CSV_FILTER = tr("Tables") + " (*.csv *.txt *.tsv);;" + tr("All files") + " (*)"
 FONT_FILTER = tr("Fonts") + " (*.ttf *.otf *.ttc *.otc);;" + tr("All files") + " (*)"
 USAGE = tr(
     "• Add objects with the toolbar or the “Insert” menu.\n"

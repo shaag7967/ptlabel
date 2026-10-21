@@ -18,10 +18,10 @@ LIGHT = {
     R.Accent: "#2f6fe4",
 }
 DARK = {
-    R.Window: "#1f2125", R.WindowText: "#e4e6ea", R.Base: "#16181b", R.AlternateBase: "#24272c",
+    R.Window: "#1f2125", R.WindowText: "#e4e6ea", R.Base: "#2b2e34", R.AlternateBase: "#31353b",
     R.ToolTipBase: "#2a2d33", R.ToolTipText: "#e4e6ea", R.PlaceholderText: "#7d838d", R.Text: "#e4e6ea",
     R.Button: "#2a2d33", R.ButtonText: "#e4e6ea", R.BrightText: "#ffffff", R.Light: "#3a3e45",
-    R.Midlight: "#30343a", R.Mid: "#3d4148", R.Dark: "#121316", R.Shadow: "#000000",
+    R.Midlight: "#30343a", R.Mid: "#454a52", R.Dark: "#5b616b", R.Shadow: "#000000",
     R.Highlight: "#4c8dff", R.HighlightedText: "#ffffff", R.Link: "#6ea2ff", R.LinkVisited: "#a98bff",
     R.Accent: "#4c8dff",
 }

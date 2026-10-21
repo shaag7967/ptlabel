@@ -17,6 +17,7 @@ def create_app() -> QApplication:
     app = QApplication.instance() or QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setWindowIcon(app_icon())
+    QLocale.setDefault(QLocale(i18n.language()))  # numbers like 1.5 / 1,5 match the language of the texts
     translator = QTranslator(app)  # standard dialogs and buttons in the same language as PT-Label
     translations = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
     if translator.load(QLocale(i18n.language()), "qtbase", "_", translations):

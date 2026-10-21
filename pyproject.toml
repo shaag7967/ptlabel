@@ -31,6 +31,12 @@ dependencies = [
     "PySide6-Essentials>=6.8",
 ]
 
+[project.urls]
+Homepage = "https://github.com/shaag7967/ptlabel"
+Repository = "https://github.com/shaag7967/ptlabel"
+Issues = "https://github.com/shaag7967/ptlabel/issues"
+Changelog = "https://github.com/shaag7967/ptlabel/releases"
+
 [project.optional-dependencies]
 dev = ["pytest", "build", "twine", "babel"]
 

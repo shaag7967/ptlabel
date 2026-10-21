@@ -1,9 +1,12 @@
 # PT-Label – label editor for the Brother PT-P750W
 
+[![CI](https://github.com/shaag7967/ptlabel/actions/workflows/ci.yml/badge.svg)](https://github.com/shaag7967/ptlabel/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/shaag7967/ptlabel/blob/main/LICENSE)
+
 Design and print labels on a Brother PT-P750W over Wi-Fi. Runs on Windows and Linux and needs
 neither P-touch Editor nor the Brother driver. The user interface is available in English and German.
 
-![PT-Label main window](docs/screenshots/main.png)
+![PT-Label main window](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/main.png)
 
 ## Features
 
@@ -37,6 +40,12 @@ pipx install ptlabel        # or: pip install ptlabel
 ptlabel                     # starts the user interface
 ```
 
+The latest version straight from GitHub:
+
+```sh
+pipx install git+https://github.com/shaag7967/ptlabel.git
+```
+
 On Windows, `ptlabel-gui` starts the user interface without a console window.
 
 The user interface uses Qt (PySide6), which is installed automatically. Some Linux distributions
@@ -66,7 +75,7 @@ loaded) below the preview. Panels can be moved, stacked as tabs, detached or clo
 and toolbars” brings them back and resets the layout. “View → Theme” switches between system, light
 and dark:
 
-![Dark theme](docs/screenshots/dark.png)
+![Dark theme](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/dark.png)
 
 | Action | How |
 |---|---|
@@ -113,7 +122,7 @@ fold marks show where to fold (can be switched off). Both flags can be selected 
 preview. With `{nr}` and several copies you get numbered flags such as `K-001`, `K-002`, …
 Flexible ID tape (TZe-FX…) wraps best around round cables.
 
-![Cable flag](docs/screenshots/cable-flag.png)
+![Cable flag](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/cable-flag.png)
 
 ### Cable wraps
 
@@ -122,7 +131,7 @@ The design (by default a text turned across the tape, so it reads along the cabl
 evenly over the whole length, so it can be read from every side. The length is
 π × diameter × turns; 1.5 turns hold well. The Label panel shows how many repetitions fit.
 
-![Cable wrap](docs/screenshots/cable-wrap.png)
+![Cable wrap](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/cable-wrap.png)
 
 ### Series printing from a table
 
@@ -133,7 +142,7 @@ selected rows” limits the job. CSV files from Excel or LibreOffice work as the
 `,` or tab, UTF-8 or Windows encoding, first row = column names). The link is saved with the label,
 and `{nr}` keeps counting from label to label.
 
-![Series printing](docs/screenshots/series.png)
+![Series printing](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/series.png)
 
 ### Barcodes
 
@@ -164,7 +173,7 @@ The “Fonts” menu adds more; every font list shows the fonts in their own typ
 - **Download Google Fonts…** searches the Google Fonts collection (via [Fontsource](https://fontsource.org)),
   shows a preview and installs the regular and bold styles, upright and italic. The files contain the
   Latin character set (Western and Central European languages incl. umlauts and €).
-![Google Fonts](docs/screenshots/fonts.png)
+![Google Fonts](https://raw.githubusercontent.com/shaag7967/ptlabel/main/docs/screenshots/fonts.png)
 
 - **Open font folder** shows that folder (`~/.local/share/ptlabel/fonts` on Linux,
   `%APPDATA%\ptlabel\fonts` on Windows).
@@ -283,6 +292,6 @@ docs/          screenshots
 
 ## License
 
-MIT, see `LICENSE`. The bundled fonts are licensed under the SIL Open Font License 1.1
+MIT, see [LICENSE](https://github.com/shaag7967/ptlabel/blob/main/LICENSE). The bundled fonts are licensed under the SIL Open Font License 1.1
 (see the `OFL.txt` next to each font), the icons come from [Lucide](https://lucide.dev) (ISC license,
-see `src/ptlabel/data/icons/LICENSE`).
+see [src/ptlabel/data/icons/LICENSE](https://github.com/shaag7967/ptlabel/blob/main/src/ptlabel/data/icons/LICENSE)).

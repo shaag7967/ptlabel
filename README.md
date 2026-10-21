@@ -33,18 +33,15 @@ neither P-touch Editor nor the Brother driver. The user interface is available i
 
 ## Installation
 
-Python 3.10 or newer is required, on Windows and Linux alike:
-
-```sh
-pipx install ptlabel        # or: pip install ptlabel
-ptlabel                     # starts the user interface
-```
-
-The latest version straight from GitHub:
+Python 3.10 or newer is required, on Windows and Linux alike. Install PT-Label straight from GitHub
+with [pipx](https://pipx.pypa.io) (or `pip`):
 
 ```sh
 pipx install git+https://github.com/shaag7967/ptlabel.git
+ptlabel                     # starts the user interface
 ```
+
+Later updates: `pipx upgrade ptlabel`.
 
 On Windows, `ptlabel-gui` starts the user interface without a console window.
 
@@ -209,7 +206,7 @@ python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 .venv/bin/ptlabel           # run the program
 .venv/bin/pytest            # tests
-.venv/bin/python -m build   # packages for PyPI in dist/
+.venv/bin/python -m build   # wheel and source package in dist/
 .venv/bin/python tools/make_screenshots.py   # README screenshots in docs/screenshots
 ```
 

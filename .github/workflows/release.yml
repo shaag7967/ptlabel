@@ -1,6 +1,5 @@
-# Publishes a release when a version tag is pushed, e.g.:  git tag v1.1.0 && git push origin v1.1.0
-# PyPI: add a "trusted publisher" for this repository (workflow release.yml, environment pypi) at
-# https://pypi.org/manage/account/publishing/ before the first release.
+# Creates a GitHub release with the built packages when a version tag is pushed, e.g.:
+#   git tag v1.1.0 && git push origin v1.1.0
 name: Release
 
 on:
@@ -41,18 +40,3 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
-
-  pypi:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/ptlabel
-    permissions:
-      id-token: write  # trusted publishing, no API token needed
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: dist
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1

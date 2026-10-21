@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
             "zoom_in": lambda: canvas.zoom_by(1), "zoom_out": lambda: canvas.zoom_by(-1),
             "zoom_auto": lambda: canvas.set_zoom(0), "reset_layout": self.reset_layout,
             "print": workflow.print_label, "status": lambda: self.printer.refresh(manual=True),
-            "discover": workflow.discover, "add_fonts": self.add_font_files,
+            "discover": workflow.discover, "printer_web": self.open_printer_web, "add_fonts": self.add_font_files,
             "web_fonts": self.download_fonts, "font_folder": self.open_font_folder,
             "placeholders": lambda: dialogs.show_placeholders(self), "usage": lambda: dialogs.show_usage(self),
             "about": lambda: dialogs.show_about(self),
@@ -143,6 +143,8 @@ class MainWindow(QMainWindow):
         self.properties.image_requested.connect(self.load_image_for_selected)
         self.print_panel.print_requested.connect(workflow.print_label)
         self.print_panel.printer_card.search_requested.connect(workflow.discover)
+        self.print_panel.printer_card.web_requested.connect(self.open_printer_web)
+        self.printer.status_changed.connect(lambda: a["printer_web"].setEnabled(self.printer.web_url is not None))
         self.status.adopt_tape_requested.connect(workflow.adopt_tape)
         self.status.printer_clicked.connect(lambda: self.printer.refresh(manual=True))
         self.recent.open_requested.connect(self.open_document)
@@ -174,6 +176,11 @@ class MainWindow(QMainWindow):
             dock.show()
         self.restoreState(self._default_state, STATE_VERSION)
         self._default_dock_sizes()
+
+    def open_printer_web(self) -> None:
+        url = self.printer.web_url
+        if url:
+            QDesktopServices.openUrl(QUrl(url))
 
     def _show_data_dock(self) -> None:
         """Bring up the data table when a label with data is opened or a CSV file is loaded."""

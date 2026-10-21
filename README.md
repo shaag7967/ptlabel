@@ -62,6 +62,15 @@ configuration report) or its IP address under “Print → Printer”. The PT-P7
 after a while without use; the status line then reports that it does not respond until it is
 switched on again.
 
+**Changing the Wi-Fi network:** the printer has its own web page (“Printer → Open printer web page”
+or the globe button next to the printer address). Under *Network → Wireless → Wireless (Personal)*
+you set the network name (SSID), authentication, encryption and passphrase – no Brother software
+needed. After saving, the printer joins the new network and is no longer reachable at the old
+address. Without access to the old network, press and hold the printer's Wi-Fi button to connect
+via WPS, or use Wireless Direct (see the printer's manual). The web page has no administrator
+password by default; set one under *Administrator* so nobody else on the network can change the
+settings.
+
 ## Usage
 
 The window consists of the label preview in the middle, two toolbars and the panels

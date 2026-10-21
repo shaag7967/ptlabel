@@ -92,6 +92,8 @@ def build_menu_bar(window: MainWindow) -> None:
 
     printer = bar.addMenu(tr("&Printer"))
     printer.addActions([a["print"], a["status"], a["discover"]])
+    printer.addSeparator()
+    printer.addAction(a["printer_web"])
 
     help_menu = bar.addMenu(tr("&Help"))
     help_menu.addActions([a["placeholders"], a["usage"], a["about"]])

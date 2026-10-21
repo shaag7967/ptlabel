@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 20:53+0200\n"
-"PO-Revision-Date: 2026-10-21 18:53+0000\n"
+"POT-Creation-Date: 2026-10-21 21:11+0200\n"
+"PO-Revision-Date: 2026-10-21 19:11+0000\n"
 "Last-Translator: shaag7967\n"
 "Language: de\n"
 "Language-Team: German\n"
@@ -619,6 +619,9 @@ msgstr "Schriftordner öffnen"
 msgid "Open label"
 msgstr "Etikett öffnen"
 
+msgid "Open printer web page"
+msgstr "Weboberfläche des Druckers öffnen"
+
 msgid "Open recent"
 msgstr "Zuletzt geöffnet"
 
@@ -678,6 +681,9 @@ msgstr "Druckbereich: {height:.1f} mm hoch"
 
 msgid "Printer"
 msgstr "Drucker"
+
+msgid "Printer settings in the browser, e.g. the Wi-Fi network (Network → Wireless)"
+msgstr "Druckereinstellungen im Browser, z. B. das WLAN (Network → Wireless)"
 
 #, python-brace-format
 msgid "Printer: {model}"

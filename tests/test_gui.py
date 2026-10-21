@@ -359,6 +359,19 @@ class MainWindowTest(unittest.TestCase):
         self.assertAlmostEqual((box[1] + box[3]) / 2, (top + bottom) / 2, delta=1)
         self.assertTrue(self.doc.history.can_undo())
 
+    def test_printer_web_page(self):
+        printer = self.win.printer
+        for target, url in (("BRW0123", "http://BRW0123/"), ("192.0.2.10:9100", "http://192.0.2.10/"),
+                            ("file:job.bin", None), ("/dev/usb/lp0", None), ("", None)):
+            printer.target = target
+            self.assertEqual(printer.web_url, url, target)
+        printer.target = "BRW0123"
+        printer.status_changed.emit()
+        self.assertTrue(self.win.actions["printer_web"].isEnabled())
+        with mock.patch.object(window.QDesktopServices, "openUrl") as open_url:
+            self.win.actions["printer_web"].trigger()
+        self.assertEqual(open_url.call_args.args[0].toString().lower(), "http://brw0123/")  # hosts are case-insensitive
+
     def test_theme_switch_and_status(self):
         self.win.printer.apply_status(PrinterStatus.parse(REAL_STATUS))
         self.assertEqual(self.win.canvas.tape_rgb, (248, 214, 22))

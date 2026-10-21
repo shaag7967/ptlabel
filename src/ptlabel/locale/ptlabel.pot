@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptlabel 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-21 20:53+0200\n"
+"POT-Creation-Date: 2026-10-21 21:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -616,6 +616,9 @@ msgstr ""
 msgid "Open label"
 msgstr ""
 
+msgid "Open printer web page"
+msgstr ""
+
 msgid "Open recent"
 msgstr ""
 
@@ -674,6 +677,11 @@ msgid "Printable area: {height:.1f} mm high"
 msgstr ""
 
 msgid "Printer"
+msgstr ""
+
+msgid ""
+"Printer settings in the browser, e.g. the Wi-Fi network (Network → "
+"Wireless)"
 msgstr ""
 
 #, python-brace-format

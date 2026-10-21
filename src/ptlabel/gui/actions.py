@@ -60,6 +60,8 @@ SPECS = [
     ActionSpec("print", tr("Print"), "printer", S.Print),
     ActionSpec("status", tr("Query status"), "refresh-cw"),
     ActionSpec("discover", tr("Find printers…"), "radar"),
+    ActionSpec("printer_web", tr("Open printer web page"), "globe",
+               tip=tr("Printer settings in the browser, e.g. the Wi-Fi network (Network → Wireless)")),
     ActionSpec("add_fonts", tr("Add font files…"), "file-type"),
     ActionSpec("web_fonts", tr("Download Google Fonts…"), "download"),
     ActionSpec("font_folder", tr("Open font folder"), "folder"),

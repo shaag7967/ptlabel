@@ -100,6 +100,15 @@ class PrinterController(QObject):
         return tr("Printing …") if printing else None
 
     @property
+    def web_url(self) -> str | None:
+        """Address of the printer's web page (Web Based Management), None for file/USB targets."""
+        target = self.target.strip()
+        if not target or target.startswith(("file:", "/")) or target.lower().endswith((".bin", ".prn")):
+            return None
+        host = target.rsplit(":", 1)[0] if target.count(":") == 1 else target  # drop a raw port like :9100
+        return f"http://{host}/"
+
+    @property
     def tape(self):
         return self.status.tape if self.status else None
 

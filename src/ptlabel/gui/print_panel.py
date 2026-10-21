@@ -26,6 +26,7 @@ class PrinterCard(QWidget):
     """Printer address, search button and the live status."""
 
     search_requested = Signal()
+    web_requested = Signal()
 
     def __init__(self, printer: PrinterController, theme):
         super().__init__()
@@ -41,6 +42,10 @@ class PrinterCard(QWidget):
         refresh.setIcon(icon("refresh-cw"))
         refresh.setToolTip(tr("Query status"))
         refresh.clicked.connect(lambda: printer.refresh(manual=True))
+        self.web = QToolButton()
+        self.web.setIcon(icon("globe"))
+        self.web.setToolTip(tr("Open printer web page"))
+        self.web.clicked.connect(self.web_requested)
 
         box = card()
         layout = QVBoxLayout(box)
@@ -48,6 +53,7 @@ class PrinterCard(QWidget):
         row.addWidget(self.address, 1)
         row.addWidget(search)
         row.addWidget(refresh)
+        row.addWidget(self.web)
         layout.addLayout(row)
         status_row = QHBoxLayout()
         self.dot = StatusDot()
@@ -72,6 +78,7 @@ class PrinterCard(QWidget):
         if self.address.text() != printer.target and not self.address.hasFocus():
             self.address.setText(printer.target)
         self.state.setText(printer.text)
+        self.web.setEnabled(printer.web_url is not None)
         set_tone(self.state, "error" if printer.tone == "error" else "info")
         self.dot.set_color(self.theme.tone_color(printer.tone))
         status = printer.status
